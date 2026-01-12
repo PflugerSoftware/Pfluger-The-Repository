@@ -1,0 +1,390 @@
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Send, Sparkles, Search, FolderOpen, Users, TrendingUp, Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { useProjects } from '../../context/ProjectsContext';
+
+interface TheRepoProps {
+  onNavigate: (view: string) => void;
+}
+
+interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
+
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const QUICK_PROMPTS = [
+  { icon: Search, label: 'Find projects', prompt: 'What research projects are currently in progress?' },
+  { icon: FolderOpen, label: 'Browse categories', prompt: 'What research categories do you have?' },
+  { icon: Users, label: 'Find collaborators', prompt: 'Which projects have external partners?' },
+  { icon: TrendingUp, label: 'Recent work', prompt: 'What are the most recent completed projects?' },
+];
+
+const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate }) => {
+  const { projects } = useProjects();
+  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Save current messages to active session
+  useEffect(() => {
+    if (activeSessionId && messages.length > 0) {
+      setChatSessions(prev => prev.map(session =>
+        session.id === activeSessionId
+          ? { ...session, messages, updatedAt: new Date() }
+          : session
+      ));
+    }
+  }, [messages, activeSessionId]);
+
+  const startNewChat = () => {
+    setMessages([]);
+    setActiveSessionId(null);
+    setInputValue('');
+  };
+
+  const loadSession = (session: ChatSession) => {
+    setMessages(session.messages);
+    setActiveSessionId(session.id);
+  };
+
+  const deleteSession = (sessionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setChatSessions(prev => prev.filter(s => s.id !== sessionId));
+    if (activeSessionId === sessionId) {
+      startNewChat();
+    }
+  };
+
+  const createNewSession = (firstMessage: string): string => {
+    const newSession: ChatSession = {
+      id: Date.now().toString(),
+      title: firstMessage.slice(0, 40) + (firstMessage.length > 40 ? '...' : ''),
+      messages: [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    setChatSessions(prev => [newSession, ...prev]);
+    setActiveSessionId(newSession.id);
+    return newSession.id;
+  };
+
+  const generateResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase();
+
+    // Search for specific projects
+    if (lowerMessage.includes('progress') || lowerMessage.includes('active') || lowerMessage.includes('developmental')) {
+      const activeProjects = projects.filter(p => p.phase === 'Developmental');
+      if (activeProjects.length > 0) {
+        return `There are ${activeProjects.length} projects currently in development:\n\n${activeProjects.map(p => `- **${p.title}** (${p.id}) - ${p.researcher}`).join('\n')}`;
+      }
+      return 'No projects are currently in the developmental phase.';
+    }
+
+    if (lowerMessage.includes('completed') || lowerMessage.includes('finished') || lowerMessage.includes('recent')) {
+      const completedProjects = projects.filter(p => p.phase === 'Completed');
+      if (completedProjects.length > 0) {
+        return `There are ${completedProjects.length} completed projects:\n\n${completedProjects.map(p => `- **${p.title}** (${p.id})`).join('\n')}`;
+      }
+      return 'No projects have been completed yet.';
+    }
+
+    if (lowerMessage.includes('categories') || lowerMessage.includes('types')) {
+      const categories = [...new Set(projects.map(p => p.category))];
+      const categoryCounts = categories.map(cat => {
+        const count = projects.filter(p => p.category === cat).length;
+        return `- **${cat}**: ${count} project${count !== 1 ? 's' : ''}`;
+      });
+      return `Research is organized into ${categories.length} categories:\n\n${categoryCounts.join('\n')}`;
+    }
+
+    if (lowerMessage.includes('partner') || lowerMessage.includes('collaborat') || lowerMessage.includes('external')) {
+      const partneredProjects = projects.filter(p => p.partners && p.partners.length > 0);
+      if (partneredProjects.length > 0) {
+        return `${partneredProjects.length} projects have external partners:\n\n${partneredProjects.map(p => `- **${p.title}**: ${p.partners?.join(', ')}`).join('\n')}`;
+      }
+      return 'No projects currently have external partners listed.';
+    }
+
+    if (lowerMessage.includes('psychology') || lowerMessage.includes('sustainability') || lowerMessage.includes('campus') || lowerMessage.includes('health') || lowerMessage.includes('fine arts') || lowerMessage.includes('immersive')) {
+      const category = projects.find(p => lowerMessage.includes(p.category.toLowerCase()))?.category;
+      if (category) {
+        const categoryProjects = projects.filter(p => p.category === category);
+        return `Found ${categoryProjects.length} projects in ${category}:\n\n${categoryProjects.map(p => `- **${p.title}** (${p.phase})\n  ${p.description.slice(0, 100)}...`).join('\n\n')}`;
+      }
+    }
+
+    if (lowerMessage.includes('how many') || lowerMessage.includes('total')) {
+      return `The repository contains **${projects.length} research projects** across ${[...new Set(projects.map(p => p.category))].length} categories.`;
+    }
+
+    // Default response
+    return `I can help you explore the research repository. Try asking about:\n\n- Active or completed projects\n- Research categories\n- Projects with partners\n- Specific topics like psychology, sustainability, etc.\n\nWhat would you like to know?`;
+  };
+
+  const handleSend = (message?: string) => {
+    const text = message || inputValue;
+    if (!text.trim()) return;
+
+    // Create new session if none active
+    if (!activeSessionId) {
+      createNewSession(text);
+    }
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: text,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsTyping(true);
+
+    // Simulate AI response delay
+    setTimeout(() => {
+      const response = generateResponse(text);
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: response,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
+      setIsTyping(false);
+    }, 600);
+  };
+
+  const handleQuickPrompt = (prompt: string) => {
+    handleSend(prompt);
+  };
+
+  const hasMessages = messages.length > 0;
+
+  return (
+    <div className="h-screen flex overflow-hidden">
+      {/* Left Sidebar - Chat History */}
+      <div className="w-64 shrink-0 bg-card border-r border-card flex flex-col">
+        {/* New Chat Button */}
+        <div className="p-4">
+          <button
+            onClick={startNewChat}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-100 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            New Chat
+          </button>
+        </div>
+
+        {/* Chat History List */}
+        <div className="flex-1 overflow-y-auto px-3 pb-4">
+          {chatSessions.length === 0 ? (
+            <div className="text-center py-8">
+              <MessageSquare className="w-8 h-8 text-gray-700 mx-auto mb-2" />
+              <p className="text-sm text-gray-600">No conversations yet</p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {chatSessions.map((session) => (
+                <button
+                  key={session.id}
+                  onClick={() => loadSession(session)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors group ${
+                    activeSessionId === session.id
+                      ? 'bg-gray-800 text-white'
+                      : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                  }`}
+                >
+                  <MessageSquare className="w-4 h-4 shrink-0" />
+                  <span className="flex-1 text-sm truncate">{session.title}</span>
+                  <button
+                    onClick={(e) => deleteSession(session.id, e)}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded transition-all"
+                  >
+                    <Trash2 className="w-3 h-3 text-gray-500" />
+                  </button>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0 px-6 py-8">
+          <AnimatePresence mode="wait">
+            {!hasMessages ? (
+              // Empty state - centered welcome
+              <motion.div
+                key="welcome"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full"
+              >
+                <h1 className="text-4xl font-bold text-white mb-3">The Repo</h1>
+                <p className="text-gray-400 text-center mb-12">
+                  Let's explore
+                </p>
+
+                {/* Quick prompts */}
+                <div className="grid grid-cols-2 gap-3 w-full mb-8">
+                  {QUICK_PROMPTS.map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                      <motion.button
+                        key={item.label}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 + index * 0.05 }}
+                        onClick={() => handleQuickPrompt(item.prompt)}
+                        className="flex items-center gap-3 p-4 bg-card border border-card rounded-xl text-left hover:border-gray-600 transition-colors group"
+                      >
+                        <Icon className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
+                        <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                          {item.label}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Input */}
+                <div className="w-full">
+                  <div className="flex gap-3">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                      placeholder="Ask anything..."
+                      className="flex-1 bg-card border border-card text-white placeholder-gray-500 rounded-full px-6 py-4 focus:outline-none focus:border-gray-600 transition-colors"
+                    />
+                    <button
+                      onClick={() => handleSend()}
+                      disabled={!inputValue.trim()}
+                      className="p-4 bg-white text-black rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              // Chat view
+              <motion.div
+                key="chat"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex-1 flex flex-col min-h-0 max-w-3xl mx-auto w-full"
+              >
+                {/* Header */}
+                <div className="shrink-0 pb-6">
+                  <h1 className="text-2xl font-bold text-white">The Repo</h1>
+                  <p className="text-sm text-gray-500">Research assistant</p>
+                </div>
+
+                {/* Messages */}
+                <div className="flex-1 overflow-y-auto space-y-6 pb-6">
+                  {messages.map((msg) => (
+                    <motion.div
+                      key={msg.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                    >
+                      {msg.role === 'assistant' && (
+                        <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center shrink-0">
+                          <Sparkles className="w-5 h-5 text-white" />
+                        </div>
+                      )}
+                      <div className={`max-w-[80%] ${msg.role === 'user' ? 'text-right' : ''}`}>
+                        <div
+                          className={`inline-block rounded-2xl px-4 py-3 ${
+                            msg.role === 'user'
+                              ? 'bg-white text-black rounded-tr-sm'
+                              : 'bg-card border border-card rounded-tl-sm'
+                          }`}
+                        >
+                          <p className={`text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'text-black' : 'text-gray-300'}`}>
+                            {msg.content}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {/* Typing indicator */}
+                  {isTyping && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-4"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center shrink-0">
+                        <Sparkles className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="bg-card border border-card rounded-2xl rounded-tl-sm px-4 py-3">
+                        <div className="flex gap-1">
+                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Input */}
+                <div className="shrink-0 pt-4 border-t border-gray-800">
+                  <div className="flex gap-3">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                      placeholder="Ask a follow-up question..."
+                      className="flex-1 bg-card border border-card text-white placeholder-gray-500 rounded-full px-5 py-3 focus:outline-none focus:border-gray-600 transition-colors"
+                    />
+                    <button
+                      onClick={() => handleSend()}
+                      disabled={!inputValue.trim() || isTyping}
+                      className="p-3 bg-white text-black rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Send className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default TheRepo;
