@@ -16,9 +16,9 @@ The platform serves two audiences:
 - **Mapbox GL JS** - 3D interactive mapping
 - **Framer Motion** - Animations
 - **Radix UI** - Accessible components
-- **Supabase** - PostgreSQL database + Edge Functions + Auth
+- **Supabase** - PostgreSQL database + Edge Functions + Auth + Storage
 - **Claude AI** - Tiered RAG system (Haiku/Sonnet/Opus)
-- **PapaParse** - CSV data parsing (legacy, being replaced by Supabase)
+- **Cloudflare Pages** - Hosting and deployment
 
 ## Features
 
@@ -325,6 +325,16 @@ Supabase Edge Functions need `ANTHROPIC_API_KEY` set in the dashboard secrets.
 npm run build
 ```
 
+### Deploy to Cloudflare Pages
+
+```bash
+npm run build && wrangler pages deploy dist --project-name=pfluger-the-repo
+```
+
+**URLs:**
+- Production: `https://pfluger-the-repo-67g.pages.dev`
+- Custom domain: `https://repository.pflugerarchitects.com` (pending DNS)
+
 ## Authentication
 
 For internal team members, click the login icon in the top navigation:
@@ -356,17 +366,18 @@ src/
 │   ├── Repo/                       # Internal dashboard views
 │   ├── About/                      # About section views
 │   └── projects/
-│       └── ProjectDashboard.tsx    # Project detail overlay
+│       ├── ProjectDashboard.tsx        # Project detail overlay
+│       └── DynamicProjectDashboard.tsx # Database-driven project loader
 ├── data/
-│   ├── loadProjects.ts             # CSV data loader
-│   └── projects/                   # Project configurations
-│       ├── X24RB01-immersive/      # 2024 projects
-│       ├── X25RB01-sanctuary/      # 2025 projects
-│       └── X00-block-showcase/     # Block demo project
+│   ├── loadProjects.ts             # CSV data loader (legacy)
+│   └── projects/
+│       └── X00-block-showcase/     # Block demo project (only static config)
 ├── config/
-│   └── supabase.ts                 # Supabase client
+│   ├── supabase.ts                 # Supabase client
+│   └── storage.ts                  # Supabase Storage URL helper
 ├── services/
-│   └── rag.ts                      # RAG system (search, intent, synthesis)
+│   ├── rag.ts                      # RAG system (search, intent, synthesis)
+│   └── projects.ts                 # Project config fetcher (database)
 ├── context/
 │   └── ProjectsContext.tsx         # Global project state
 supabase/
@@ -380,7 +391,17 @@ public/
 
 ## Block System
 
-Project dashboards use a composable block system. Each project has a config file defining its content using typed blocks.
+Project dashboards use a composable block system. Blocks are stored in the Supabase `project_blocks` table and fetched dynamically when a project is opened.
+
+**Architecture:**
+- Project metadata (title, researcher, etc.) stored in `src/services/projects.ts`
+- Block content stored in Supabase `project_blocks` table
+- `DynamicProjectDashboard` fetches blocks on demand with loading state
+- Images served from Supabase Storage bucket
+
+**Database Stats (as of Jan 2026):**
+- 182 blocks across 8 projects
+- RAG-searchable with summary, tags, and searchable_text fields
 
 ### Available Blocks (21 types)
 
@@ -409,11 +430,16 @@ Project dashboards use a composable block system. Each project has a config file
 
 ### Creating a Project Dashboard
 
-1. Create folder: `src/data/projects/[ID]-[name]/project/`
-2. Create config: `[name]Config.ts`
-3. Define `ProjectConfig` with blocks array
-4. Import in `App.tsx` and add to `openProject()` switch
-5. Add to `PROJECTS_WITH_DASHBOARDS` in Portfolio.tsx
+1. Add project metadata to `src/services/projects.ts` in `PROJECT_METADATA`
+2. Insert blocks into Supabase `project_blocks` table with:
+   - `id`: Unique block ID (e.g., "section-overview")
+   - `project_id`: Project ID (e.g., "X25-RB01")
+   - `block_type`: One of the 21 block types
+   - `block_order`: Sequential order (1, 2, 3...)
+   - `data`: Block-specific JSON content
+   - Optional RAG fields: `summary`, `tags`, `searchable_text`
+3. Upload images to Supabase Storage bucket: `Repository Bucket/projects/[project-folder]/`
+4. Add to `PROJECTS_WITH_DASHBOARDS` in Portfolio.tsx
 
 ### Block Showcase
 
@@ -507,14 +533,19 @@ Each category has a dedicated color:
   - Add role-based permissions (Admin, Researcher, Viewer)
   - Session management and token refresh
 
-- [x] **Database Schema (Supabase)** - Schema complete, frontend integration pending
+- [x] **Database Schema (Supabase)** - Schema complete, project blocks migrated
   - 17 tables created with proper foreign keys and constraints
   - Supabase Auth integrated with users table
   - RLS policies configured
-  - **Next**: Install `@supabase/supabase-js` and connect frontend
+  - **182 project blocks migrated** to `project_blocks` table
 
-- [ ] **Frontend-Database Integration**
-  - Replace CSV loading with Supabase queries
+- [x] **Project Blocks Database Integration**
+  - Project dashboards fetch blocks from Supabase dynamically
+  - `DynamicProjectDashboard` component with loading states
+  - RAG system searches `project_blocks` for research queries
+  - Images served from Supabase Storage
+
+- [ ] **Remaining Frontend-Database Integration**
   - Connect pitch submission to `pitches` table
   - Connect collaboration form to `collaboration_requests` table
   - Wire up chat persistence to `chat_sessions`/`chat_messages`
@@ -614,7 +645,7 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | `contact_projects` | Many-to-many contacts/projects |
 | `collaboration_requests` | Public contact form submissions |
 | `calendar_events` | Project timeline events |
-| `project_blocks` | Dashboard block configurations |
+| `project_blocks` | Dashboard block content (182 blocks) |
 | `project_partners` | Many-to-many projects/partners |
 | `project_researchers` | Many-to-many projects/users |
 | `project_sources` | Project citations |
@@ -626,6 +657,20 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 - `pitches.converted_to_project_id` references `projects(id)`
 - `chat_messages.session_id` references `chat_sessions(id)`
 - Normalized many-to-many tables for researchers, partners, sources
+
+### project_blocks Schema
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | text | Block ID (e.g., "section-overview") |
+| `project_id` | text | Project ID (e.g., "X25-RB01") |
+| `block_type` | text | One of 21 block types |
+| `block_order` | int | Display order (1, 2, 3...) |
+| `data` | jsonb | Block-specific content |
+| `summary` | text | RAG: Brief summary for search |
+| `tags` | text[] | RAG: Searchable tags |
+| `searchable_text` | text | RAG: Full-text search content |
+| `conclusions` | text[] | RAG: Key takeaways |
 
 ### Roles
 
