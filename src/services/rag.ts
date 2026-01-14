@@ -98,22 +98,40 @@ export async function searchBlocks(
   }));
 }
 
-// Get sources by IDs
+// Get sources by IDs - looks up from the sources block, not a separate table
 export async function getSources(sourceIds: number[], projectId: string): Promise<Source[]> {
   if (!sourceIds.length) return [];
 
-  const { data, error } = await supabase
-    .from('project_sources')
-    .select('id, project_id, title, author, url')
+  // Get the sources block for this project
+  const { data: sourcesBlock, error } = await supabase
+    .from('project_blocks')
+    .select('data')
     .eq('project_id', projectId)
-    .in('id', sourceIds);
+    .eq('block_type', 'sources')
+    .single();
 
-  if (error) {
-    console.error('Sources error:', error);
+  if (error || !sourcesBlock?.data?.sources) {
+    console.error('Sources block error:', error);
     return [];
   }
 
-  return data || [];
+  // Filter to requested source IDs
+  const allSources = sourcesBlock.data.sources as Array<{
+    id: number;
+    title: string;
+    author: string;
+    url: string | null;
+  }>;
+
+  return allSources
+    .filter(s => sourceIds.includes(s.id))
+    .map(s => ({
+      id: s.id,
+      project_id: projectId,
+      title: s.title,
+      author: s.author,
+      url: s.url,
+    }));
 }
 
 // Format sources for citation
