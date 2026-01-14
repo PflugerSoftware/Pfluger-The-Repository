@@ -90,7 +90,7 @@ export async function searchBlocks(
     return [];
   }
 
-  return (data || []).map((block, index) => ({
+  return (data || []).map((block: Omit<BlockMatch, 'relevance_rank'>, index: number) => ({
     ...block,
     conclusions: block.conclusions || [],
     source_ids: block.source_ids || [],
