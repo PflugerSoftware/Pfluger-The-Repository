@@ -378,6 +378,30 @@ Let me know what works for their schedules this week or early next.
 - Burnet (example used)
 - Del Valle (potential - Dustin)
 - Dripping Springs (mentioned as data source)
+
+**Post-Meeting Email (1/15 AW → Claire, cc TH):**
+> Hello,
+>
+> Im following up on some items after our meeting.
+>
+> NDA: Did we receive a signed NDA back from Vermeulens?
+>
+> Terry would also like to shoot over a coordination email to Blair and his team prompting a discussion about what the partnership looks like in 2026 and the options of licensing data. Here's a draft:
+>
+> ---
+>
+> Blair,
+> Happy new year, following up on our conversations around the cost estimating tool. We'd like to explore what a licensing arrangement looks like for 2026 - specifically around data sharing and structuring a long term partnership.
+>
+> Let me know your availability in the next couple weeks to sit down and talk through the details.
+>
+> Thanks,
+> Terry
+>
+> ---
+>
+> @Terry Hoyle I believe that covers it all?
+>
  
  ---
  
