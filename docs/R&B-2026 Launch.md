@@ -1,7 +1,7 @@
 # Ezra Rollout: Decisions Needed
 
 **Target:** End of January 2026
-**Status:** Built and ready. Blocked on approvals.
+**Status:** Ezra live at repository.pflugerarchitects.com. Blocked by Directors until feedback from Directors Forum (mid-Feb).
 
 This document lists decisions that need to be made by stakeholders to move forward. Each item includes context, options, and consequences of delay.
 
@@ -44,9 +44,12 @@ This document lists decisions that need to be made by stakeholders to move forwa
 - Give Vermeulens access to log in
 
 ### Ezra
+**Live at:** https://repository.pflugerarchitects.com (Cloudflare Pages)
 - Table schema for pitch
 - My Research page
-- AI RAG
+- ~~AI RAG~~ ✅ Done (1/16) - Haiku relevance + Sonnet synthesis + section expansion
+- ~~Supabase frontend integration~~ ✅ Done - @supabase/supabase-js, projects from DB
+- ~~Cloudflare deployment + DNS~~ ✅ Done - repository.pflugerarchitects.com
 - Check block system and research .ts for accuracy
 - SSO sign in
 
@@ -120,6 +123,7 @@ Done
 *- AW create SB account | software@pflugerarchitects.com -bQ98aK!kQ94pnT, deleted old org and requested deletion of account. project Pfluger_RB_Repo -c77.xSjc9v_RJc.
 - aw create resend account | software@pflugerarchitects.com X-khxUcD.fjcWV9
 new apple cloud account first: software last: pfluger, 01/01/1972 software@pflugerarchitects.com
+open asset is $4500/TB, about $4k per TB. 
 
 **Attendees:** CO, CM, LP, LF, CB, DC
 **Agenda:**

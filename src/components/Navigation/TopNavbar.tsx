@@ -127,10 +127,10 @@ const NAV_SECTIONS: NavSection[] = [
 
 const REPO_SECTION: NavSection = {
   id: 'the-repo',
-  label: 'the repo',
+  label: 'repository',
   view: 'the-repo',
   subItems: [
-    { label: 'The Repo', view: 'the-repo' },
+    { label: 'Repository', view: 'the-repo' },
     'My Research',
     { label: 'Schedule', view: 'schedule' },
     { label: 'Contacts', view: 'contacts' }
@@ -202,7 +202,7 @@ export function TopNavbar({ onNavigate, onLogoClick }: TopNavbarProps) {
                 strokeWidth="10"
               />
             </svg>
-            <span className="text-xl font-bold text-white tracking-wide">The Repo</span>
+            <span className="text-xl font-bold text-white tracking-wide">Repository</span>
           </button>
 
           {/* Nav items - centered */}

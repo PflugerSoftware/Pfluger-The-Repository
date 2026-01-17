@@ -1,6 +1,6 @@
-# Data Pipeline & RAG Architecture
+# Block System & RAG Architecture
 
-This document explains how project content flows from TypeScript configs to Supabase to the RAG-powered AI assistant.
+This document explains the block-based project system and how content flows from TypeScript configs to Supabase to the RAG-powered AI assistant.
 
 ---
 
@@ -10,6 +10,17 @@ This document explains how project content flows from TypeScript configs to Supa
 TypeScript Configs (.ts)  →  Supabase Tables  →  RAG Search  →  Claude Response
      (source)                  (database)         (query)         (output)
 ```
+
+### Design Philosophy
+
+Instead of custom React components per project, pages are composed of reusable **blocks**. Each project is defined by a TypeScript configuration that specifies which blocks to render and in what order.
+
+**Benefits:**
+- Consistent UI/UX across all projects
+- AI can search structured content (RAG-ready)
+- Blocks are composable for infinite flexibility
+- Single source of truth for UI and AI
+- Section headers act as entry points to grouped content
 
 ---
 
@@ -131,23 +142,40 @@ project_sources (
 ## 3. RAG Flow
 
 ```
-User Query: "What is immersive learning?"
+User Query: "What are some immersive learning vendors?"
          ↓
-    Text Search
-    (searches searchable_text column)
+    Keyword Search (up to 25 blocks)
+    (searches searchable_text column, 8 terms, 10 results per term)
          ↓
-    Matching Blocks Retrieved
-    (with project_id, source_ids)
+    Haiku Relevance Check
+    (filters to relevant blocks, may include sections)
          ↓
-    Sources Joined
-    (project_sources linked via source_ids)
+    Section Expansion
+    (if section picked, pull in all child content blocks)
          ↓
-    Context Sent to Claude
-    (blocks + sources + user query)
+    Sources Gathered
+    (from source_ids on expanded blocks)
          ↓
-    Claude Response
-    (with citations like [1] X24-RB01 Title...)
+    Sonnet Synthesis
+    (reads searchable_text, cites using actual source IDs)
+         ↓
+    Filter to Cited Sources
+    (only sources referenced in response are returned)
+         ↓
+    Response with Citations
+    (e.g., [12] X24-RB01 EyeClick. EyeClick Games Library)
 ```
+
+### Section Expansion
+
+Sections act as **entry points** to their content. When Haiku picks a section block (e.g., `section-vendors`), the system automatically includes all child blocks between that section and the next section (based on `block_order`).
+
+**Example:**
+- Haiku picks: `section-vendors` (block_order: 22)
+- System expands to include: `vendors-cards` (block_order: 23)
+- Next section starts at: `section-costs` (block_order: 24)
+
+This ensures that picking a section header gives Sonnet the actual content to synthesize from.
 
 ### Search Query (simplified)
 
@@ -241,22 +269,60 @@ GROUP BY project_id;
 
 **Solution:** Ran extraction queries to populate `searchable_text` for all 45 blocks.
 
+### RAG returns section but not content
+
+**Symptom:** Haiku picks `section-vendors` but response doesn't include vendor details.
+
+**Root cause:** Section blocks were being passed to Sonnet, but their child content blocks weren't included.
+
+**Solution (Jan 2026):** Added section expansion - when Haiku picks a section block, the system automatically includes all child blocks (based on `block_order`) up to the next section.
+
+### Sources not showing in response
+
+**Symptom:** Response mentions research but no sources appear below.
+
+**Diagnosis:**
+```sql
+-- Check if blocks have source_ids
+SELECT id, source_ids FROM project_blocks
+WHERE project_id = 'X25-RB05' AND source_ids IS NULL;
+```
+
+**Fix:** Add `source_ids` to content blocks linking them to the project's sources.
+
 ---
 
 ## 6. Checklist: Adding a New Project
 
 1. **Create TypeScript config** in `src/data/projects/[ID]-[name]/project/`
+   - Define blocks with `sources` arrays on section blocks
+   - Define sources block with all citations
+
 2. **Migrate to Supabase:**
    - Insert row in `projects` table
    - Insert rows in `project_blocks` table (one per block)
-   - Insert rows in `project_sources` table
-3. **Populate searchable_text** for each block using extraction rules
+   - Ensure `block_order` is sequential (for section expansion)
+
+3. **Populate RAG fields:**
+   - `searchable_text` for each block (use extraction rules)
+   - `source_ids` linking content blocks to their sources
+   - `summary` for key blocks (optional but helpful)
+
 4. **Verify RAG can find it:**
    ```sql
-   SELECT COUNT(*) FROM project_blocks
+   -- Check searchable_text coverage
+   SELECT COUNT(*) as total,
+          COUNT(searchable_text) as with_text,
+          COUNT(source_ids) as with_sources
+   FROM project_blocks
+   WHERE project_id = '[ID]';
+
+   -- Check source_ids on content blocks (exclude sections, galleries, sources)
+   SELECT id, source_ids
+   FROM project_blocks
    WHERE project_id = '[ID]'
-   AND searchable_text IS NOT NULL
-   AND searchable_text != '';
+     AND block_type NOT IN ('section', 'image-gallery', 'sources')
+     AND source_ids IS NULL;
    ```
 
 ---
@@ -298,3 +364,25 @@ ORDER BY project_id;
 -- Run each block type's extraction query
 -- See Section 4 above
 ```
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/services/rag.ts` | RAG logic: search, intent, relevance, section expansion, synthesis |
+| `src/views/Repo/TheRepo.tsx` | Chat UI, displays sources with citations |
+| `src/data/projects/*/project/*Config.ts` | TypeScript block configs (source of truth) |
+| `supabase/functions/claude/index.ts` | Claude API proxy (Edge Function) |
+
+### RAG Functions in `rag.ts`
+
+| Function | Model | Purpose |
+|----------|-------|---------|
+| `searchBlocks()` | - | Keyword search on `searchable_text` (25 blocks, 8 terms) |
+| `analyzeIntent()` | Haiku | Determine query type and search terms |
+| `checkRelevance()` | Haiku | Filter blocks to relevant ones |
+| `expandSectionBlocks()` | - | Pull child blocks when section is picked |
+| `synthesizeAnswer()` | Sonnet | Generate response with citations |
+| `getSources()` | - | Fetch source details from sources block |

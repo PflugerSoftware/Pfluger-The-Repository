@@ -265,7 +265,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate }) => {
                 exit={{ opacity: 0, y: -20 }}
                 className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full"
               >
-                <h1 className="text-4xl font-bold text-white mb-3">The Repo</h1>
+                <h1 className="text-4xl font-bold text-white mb-3">Repository</h1>
                 <p className="text-gray-400 text-center mb-12">
                   Let's explore
                 </p>
@@ -324,7 +324,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate }) => {
               >
                 {/* Header */}
                 <div className="shrink-0 pb-6">
-                  <h1 className="text-2xl font-bold text-white">The Repo</h1>
+                  <h1 className="text-2xl font-bold text-white">Repository</h1>
                   <p className="text-sm text-gray-500">Research assistant</p>
                 </div>
 

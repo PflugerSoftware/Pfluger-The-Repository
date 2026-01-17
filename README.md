@@ -1,70 +1,41 @@
-# The Repo - Research Platform
+# Repository - Research Platform
 
-**The Repo** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
+**Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
-## Handoff Notes (Jan 14, 2026)
+## Handoff Notes (Jan 16, 2026)
 
 **Latest Deploy:** https://pfluger-the-repo-67g.pages.dev
 
 **What we fixed today:**
-- Fixed `.claude/settings.local.json` merge conflict (had git conflict markers)
-- Added `.env` with Supabase credentials (gitignored)
-- Fixed RAG to return ALL sources, not just explicitly cited ones with `[n]` format
+- RAG section expansion: sections now act as entry points to their child content blocks
+- Increased search limits: 25 blocks (was 10), 8 terms (was 5), 10 per term (was 5)
+- Citations now use actual source IDs from project (e.g., `[12]` not renumbered to `[1]`)
+- Only cited sources are returned (not all sources from blocks)
+- Populated source_ids for ALL projects (was only X25-RB01)
 
-**Next step: Add source_ids to X25-RB05 (Mass Timber)**
+**Source coverage (content blocks only):**
+| Project | Coverage |
+|---------|----------|
+| X24-RB01 | 96% |
+| X25-RB01 | 78% |
+| X25-RB02 | 67% |
+| X25-RB03 | 100% |
+| X25-RB05 | 100% |
+| X25-RB06 | 88% |
+| X25-RB08 | 100% |
+| X25-RB13 | 95% |
 
-The RAG chat shows sources for X25-RB01 (Sanctuary) but not X25-RB05 because the mass timber blocks don't have `source_ids` linked.
+**How RAG works now:**
+1. Keyword search finds up to 25 blocks
+2. Haiku picks relevant blocks (may include section headers)
+3. Section expansion: if section picked, pull in all child blocks
+4. Sonnet reads content, cites using actual source IDs
+5. Only cited sources returned to UI
 
-**Database check:**
-```sql
--- X25-RB01 has source_ids populated:
-SELECT id, source_ids FROM project_blocks WHERE project_id = 'X25-RB01' AND source_ids IS NOT NULL;
--- Returns: insight-scale {1,2,3}, insight-color {4,5,6,7,8,9}, etc.
-
--- X25-RB05 source_ids are all NULL:
-SELECT id, source_ids FROM project_blocks WHERE project_id = 'X25-RB05';
--- All NULL
-
--- But X25-RB05 has sources defined:
-SELECT data FROM project_blocks WHERE project_id = 'X25-RB05' AND block_type = 'sources';
--- Returns: Timberlab (1), AISD (2), WoodWorks (3), FPInnovations (4)
-```
-
-**To fix - two options:**
-
-1. **Update TypeScript config** (`src/data/projects/X25RB05-masstimber/project/massTimberConfig.ts`):
-   - Add `sourceIds: [1, 2]` to `overview-text`, `main-findings`, etc.
-   - Re-sync to database
-
-2. **Update database directly:**
-   ```sql
-   UPDATE project_blocks SET source_ids = ARRAY[1, 2]
-   WHERE project_id = 'X25-RB05' AND id = 'overview-text';
-
-   UPDATE project_blocks SET source_ids = ARRAY[1]
-   WHERE project_id = 'X25-RB05' AND id IN ('main-findings', 'scenarios-intro', 'scenarios-chart', 'cost-builder');
-   ```
-
-**Logical source mappings for X25-RB05:**
-- `overview-text` → `{1, 2}` (Timberlab estimate, AISD requirements)
-- `main-findings` → `{1}` (Timberlab estimate)
-- `scenarios-*` → `{1}` (cost data from estimate)
-- `cost-builder`, `alternates-table` → `{1}` (alternates from estimate)
-
-sources should appear under the responces with Sources - the ai model we used and then list them. check the sanctuary spaces, the code is correct on that one. 
-
-sources - sonnet
-
-1.
-2.
-3. 
-
-
-3. update map box account, need to back up old stuff and put onto new account. 
-
-
-
-4. OPEN ASSET
+**Source display in chat:**
+- Book icon + "Sources" label + model badge (haiku/sonnet/opus)
+- Source numbers match the project page (e.g., `[12] X24-RB01 EyeClick...`)
+- Links clickable if URL exists
 
 ---
 
@@ -107,7 +78,7 @@ The app uses a centered top navigation bar with expandable mega-menu dropdowns:
 - **Use of AI** - Transparency about AI in research
 - **Sources & Citations** - APA formatting standards
 
-### AI Research Assistant (The Repo)
+### AI Research Assistant (Repository)
 
 Conversational AI interface for exploring research findings:
 
@@ -119,17 +90,18 @@ Conversational AI interface for exploring research findings:
 **Features:**
 - Full conversation history - understands context across messages
 - Smart routing - determines if query needs research, clarification, or general knowledge
-- Numbered citations with project attribution (e.g., `[1] X25-RB01`)
+- Numbered citations with project attribution (e.g., `[12] X24-RB01 EyeClick...`)
 - Web search fallback for topics outside our research
 - Natural, conversational tone - not robotic Q&A
 
 **Data Flow:**
 1. User asks question
 2. Haiku analyzes intent with conversation context
-3. Search `project_blocks` table for relevant research
-4. Haiku checks relevance of results
-5. Sonnet synthesizes answer with citations
-6. Sources extracted and renumbered for display
+3. Search `project_blocks` table for relevant research (up to 25 blocks)
+4. Haiku checks relevance of results (may pick section headers)
+5. Section expansion: pull in child content blocks if section picked
+6. Sonnet synthesizes answer with citations (uses actual source IDs)
+7. Only cited sources returned for display
 
 ## RAG System Deep Dive
 
@@ -256,7 +228,7 @@ VOICE:
 - Reference earlier parts of the conversation if relevant
 
 STRUCTURE (flexible, not rigid):
-- Share one compelling insight from the research (cite with [1], [2])
+- Share one compelling insight from the research (cite using source ID like [12], [13])
 - Mention the project naturally (X25-RB01)
 - Connect to what they've shared about their project/interests
 - Keep it conversational - 2-4 sentences total
@@ -270,9 +242,9 @@ AVOID:
 Research Content:
 [blocks with searchable_text, conclusions, source_ids]
 
-Source Numbers:
-[1] = source_id 5
-[2] = source_id 7
+Available Sources (use these exact IDs when citing):
+[12] EyeClick. EyeClick Games Library
+[13] Kids Jump Tech. Kids Jump Tech Products
 ```
 
 ### Voice & Tone Guidelines
@@ -291,7 +263,7 @@ Source Numbers:
 - Ignoring what they've already told us
 
 **Example good response:**
-> That's interesting you're working on a large site - from the X25-RB01 sanctuary spaces research, one thing that stood out is how children's wayfinding changes dramatically with scale. Younger kids can feel genuinely lost in expansive spaces, which affects their sense of safety before they even get to the classroom [1]. Are you thinking about how to break down the scale, or is there flexibility in the site layout?
+> That's interesting you're working on a large site - from the X25-RB01 sanctuary spaces research, one thing that stood out is how children's wayfinding changes dramatically with scale. Younger kids can feel genuinely lost in expansive spaces, which affects their sense of safety before they even get to the classroom [3]. Are you thinking about how to break down the scale, or is there flexibility in the site layout?
 
 **Example bad response:**
 > Based on our research, large sites present several considerations:
@@ -303,11 +275,13 @@ Source Numbers:
 
 ### Citation System
 
-1. Sonnet cites using source numbers: `[1]`, `[2]`, `[1, 3]`
-2. After synthesis, we extract which numbers were actually cited
-3. Filter sources to only cited ones
-4. Renumber sequentially (so `[22][23]` becomes `[1][2]`)
-5. Display shows project attribution: `[1] X25-RB01 Author. Title`
+1. Sonnet is given actual source IDs: `[12] EyeClick`, `[13] Kids Jump Tech`
+2. Sonnet cites using those real IDs: `[12]`, `[13]`
+3. After synthesis, we extract which IDs were cited
+4. Filter sources to only those actually cited
+5. Display shows: `[12] X24-RB01 EyeClick. EyeClick Games Library`
+
+**Note:** Citation numbers now match the project's sources block, so `[12]` in the chat corresponds to source 12 on the project page.
 
 ### Conversation History
 
@@ -584,7 +558,7 @@ Each category has a dedicated color:
 - Qualtrics
 
 ### Custom Tools
-- The Repo (this platform)
+- Repository (this platform)
 - Modulizer
 - POE Dashboard (in development)
 - Region Intel (in development)

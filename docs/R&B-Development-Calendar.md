@@ -2,7 +2,7 @@
 
 **Target Launch:** End of January 2026
 **Tech Stack:** Supabase (PostgreSQL + Auth) - Approved
-**Last Updated:** January 13, 2026
+**Last Updated:** January 16, 2026
 
 ---
 
@@ -15,14 +15,14 @@
 | Research Map | ✅ Done | Mapbox 3D |
 | Portfolio/Gallery | ✅ Done | Year grouping |
 | Pitch UI | ✅ Done | Form, chat panel |
-| TheRepo UI | ✅ Done | Chat interface |
-| Auth | ⚠️ Mock | Hardcoded creds (Supabase Auth ready) |
+| Repository UI | ✅ Done | Chat interface |
+| Auth | ⚠️ Mock | Hardcoded creds (Azure SSO pending) |
 | Database Schema | ✅ Done | 17 tables in Supabase |
-| Frontend-DB Integration | ❌ None | Need to install @supabase/supabase-js |
-| AI Integration | ❌ None | Pattern matching only |
+| Frontend-DB Integration | ✅ Done | @supabase/supabase-js installed, connected |
+| AI Integration | ✅ Done | RAG: Haiku relevance + Sonnet synthesis + section expansion |
 | Persistence | ❌ None | State lost on refresh |
 
-**UI is ~90% complete. Frontend-database integration is the priority.**
+**Live at:** https://repository.pflugerarchitects.com (Cloudflare Pages, DNS via Bluehost)
 
 ---
 
@@ -49,11 +49,11 @@
 
 | Day | Task | Priority |
 |-----|------|----------|
-| Mon 1/13 | Install @supabase/supabase-js | Critical |
-| Mon 1/13 | Create Supabase client config | Critical |
-| Tue 1/14 | Connect auth to Supabase Auth | Critical |
-| Tue 1/14 | Replace hardcoded login with real auth | Critical |
-| Wed 1/15 | Load research_projects from Supabase | High |
+| ~~Mon 1/13~~ | ~~Install @supabase/supabase-js~~ | ✅ Done |
+| ~~Mon 1/13~~ | ~~Create Supabase client config~~ | ✅ Done |
+| Tue 1/14 | ~~Connect auth to Supabase Auth~~ | Skipped - using Azure SSO |
+| Tue 1/14 | Azure SSO integration | Blocked (Craig/Austin) |
+| ~~Wed 1/15~~ | ~~Load research_projects from Supabase~~ | ✅ Done |
 | Wed 1/15 | Connect pitch submission to pitches table | High |
 | Thu 1/16 | Connect collaboration form to collaboration_requests | High |
 | Thu 1/16 | Set up Resend for email notifications | Medium |
@@ -65,9 +65,9 @@
 
 | Day | Task | Priority |
 |-----|------|----------|
-| Mon 1/20 | Claude API integration setup | High |
-| Mon 1/20 | TheRepo.tsx real AI responses | High |
-| Tue 1/21 | Claude RAG with project data | High |
+| ~~Mon 1/20~~ | ~~Claude API integration setup~~ | ✅ Done (1/16) |
+| ~~Mon 1/20~~ | ~~TheRepo.tsx real AI responses~~ | ✅ Done (1/16) |
+| ~~Tue 1/21~~ | ~~Claude RAG with project data~~ | ✅ Done (1/16) |
 | Tue 1/21 | PitchChatPanel.tsx AI integration | High |
 | Wed 1/22 | GreenLit topics from Supabase | Medium |
 | Wed 1/22 | MY_PITCHES from Supabase | Medium |
@@ -102,7 +102,7 @@ The UI exists but everything is mock data:
 | Component | File | Status |
 |-----------|------|--------|
 | Pitch submission form | `PitchSubmission.tsx` | ✅ UI done |
-| AI chat builder | `PitchChatPanel.tsx` | ⚠️ Pattern-matching only (no real AI) |
+| AI chat builder | `PitchChatPanel.tsx` | ⚠️ Needs RAG integration (Repository done) |
 | Pitch card (form) | `PitchCard.tsx` | ✅ UI done |
 | GreenLit topics | `PitchSubmission.tsx:49-90` | ❌ Hardcoded |
 | My Pitches list | `PitchSubmission.tsx:93-123` | ❌ Mock data |
@@ -251,7 +251,7 @@ Connection: `postgresql://postgres.bydkzxqmgsvsnjtafphj:[PASSWORD]@aws-1-us-east
 │                                                                     │
 │  Research Object becomes researchConfig.ts                          │
 │  • Appears on Portfolio (Work)                                      │
-│  • Appears on TheRepo                                               │
+│  • Appears on Repository                                               │
 │  • Has project dashboard with blocks                                │
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
@@ -345,7 +345,7 @@ When pitch is GreenLit:
 
 ---
 
-## Current Status (January 13, 2026)
+## Current Status (January 16, 2026)
 
 ### Completed
 - [x] Tech stack decision - Supabase approved
@@ -353,18 +353,30 @@ When pitch is GreenLit:
 - [x] Supabase Auth configuration
 - [x] RLS policies setup
 - [x] psql local connection established
+- [x] Claude API integration (Edge Function proxy)
+- [x] RAG system implemented (rag.ts)
+  - Haiku for intent analysis + relevance filtering
+  - Sonnet for answer synthesis with citations
+  - Section expansion (sections act as entry points to child blocks)
+  - 25 block search limit, 8 terms, 10 results per term
+- [x] source_ids populated for all projects (66-100% coverage)
+- [x] Citations use actual source IDs (match project page)
+- [x] Codebase cleanup (temp files, unused deps)
+- [x] @supabase/supabase-js installed
+- [x] Supabase client config created
+- [x] Frontend connected to Supabase (projects loading from DB)
+- [x] Cloudflare Pages deployment configured
+- [x] DNS mapped via Bluehost → repository.pflugerarchitects.com
 
-### In Progress
-- [ ] Install @supabase/supabase-js
-- [ ] Create Supabase client config
-- [ ] Documentation updates
+### Blocked
+- [ ] Azure SSO integration (waiting on Craig/Austin)
 
 ### Next Up
-- [ ] Connect frontend to Supabase Auth
-- [ ] Replace CSV loading with Supabase queries
-- [ ] Wire up pitch submission
-- [ ] Wire up collaboration form
-- [ ] Claude API integration
+- [ ] Wire up pitch submission to pitches table
+- [ ] Wire up collaboration form to collaboration_requests
+- [ ] PitchChatPanel.tsx AI integration
+- [ ] Set up Resend for email notifications
+- [ ] Wire up chat persistence
 
 ### Blocked By Other Decisions
 | Task | Blocked By |
@@ -406,4 +418,4 @@ When pitch is GreenLit:
 
 ---
 
-*Last updated: January 13, 2026*
+*Last updated: January 16, 2026*

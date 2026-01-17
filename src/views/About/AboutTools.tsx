@@ -55,7 +55,7 @@ const SOFTWARE: Tool[] = [
 
 const CUSTOM_TOOLS: CustomTool[] = [
   {
-    name: 'The Repo',
+    name: 'Repository',
     status: 'active',
     description: 'This platform. A centralized hub for research project management, visualization, and collaboration.',
     features: ['Project tracking', 'Interactive campus map', 'Research portfolio', 'Team collaboration']

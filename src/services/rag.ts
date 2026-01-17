@@ -31,7 +31,7 @@ export interface RAGResponse {
 export async function searchBlocks(
   query: string,
   projectId?: string,
-  limit: number = 10
+  limit: number = 25
 ): Promise<BlockMatch[]> {
   console.log('Searching for:', query);
 
@@ -63,12 +63,12 @@ export async function searchBlocks(
     // Search each term and collect unique results
     const allResults: Map<string, BlockMatch> = new Map();
 
-    for (const term of terms.slice(0, 5)) { // Limit to 5 terms
+    for (const term of terms.slice(0, 8)) { // Search up to 8 terms
       const { data: termData, error: termError } = await supabase
         .from('project_blocks')
         .select('id, project_id, block_type, summary, conclusions, source_ids, searchable_text')
         .ilike('searchable_text', `%${term}%`)
-        .limit(5);
+        .limit(10);
 
       if (!termError && termData) {
         console.log(`Term "${term}" found ${termData.length} results`);
@@ -260,9 +260,12 @@ export async function checkRelevance(
 ): Promise<{ relevant: boolean; relevantBlockIds: string[]; reasoning: string }> {
   const blocksContext = blocks.map(b => ({
     id: b.id,
+    block_type: b.block_type,
     summary: b.summary,
     conclusions: b.conclusions,
   }));
+
+  console.log('Blocks sent to Haiku for relevance:', blocksContext.map(b => `${b.id} (${b.block_type}): ${b.summary?.slice(0, 50) || 'no summary'}`));
 
   const prompt = `You are a research relevance checker. Given a user question and research block summaries, determine which blocks are relevant.
 
@@ -342,9 +345,8 @@ export async function synthesizeAnswer(
     source_ids: b.source_ids,
   }));
 
-  // Create numbered source map for citations
-  const numberedSources = sources.map((s, i) => ({
-    number: i + 1,
+  // Create source map using actual IDs (to match project page)
+  const sourceMap = sources.map(s => ({
     id: s.id,
     citation: formatCitation(s)
   }));
@@ -368,7 +370,7 @@ VOICE:
 - Reference earlier parts of the conversation if relevant
 
 STRUCTURE (flexible, not rigid):
-- Share one compelling insight from the research (cite with [1], [2])
+- Share one compelling insight from the research (cite using the source ID like [12], [13])
 - Mention the project naturally (${projectIds.join(', ')})
 - Connect to what they've shared about their project/interests
 - Keep it conversational - 2-4 sentences total
@@ -382,8 +384,8 @@ AVOID:
 Research Content:
 ${JSON.stringify(context, null, 2)}
 
-Source Numbers:
-${numberedSources.map(s => `[${s.number}] = source_id ${s.id}`).join('\n')}`;
+Available Sources (use these exact IDs when citing):
+${sourceMap.map(s => `[${s.id}] ${s.citation}`).join('\n')}`;
 
   return callClaude(prompt, 'sonnet');
 }
@@ -412,6 +414,77 @@ ${sourcesContext}
 Provide deeper analysis, identify patterns, suggest implications for design practice, or note areas needing further research. Cite sources where applicable.`;
 
   return callClaude(prompt, 'opus');
+}
+
+// Expand section blocks to include their child content blocks
+async function expandSectionBlocks(
+  blocks: BlockMatch[]
+): Promise<BlockMatch[]> {
+  const expandedBlocks: BlockMatch[] = [];
+  const seenIds = new Set<string>();
+
+  for (const block of blocks) {
+    // Skip if we've already added this block
+    if (seenIds.has(block.id)) continue;
+
+    // If it's a section block, fetch its child blocks
+    if (block.block_type === 'section') {
+      console.log(`Expanding section block: ${block.id}`);
+
+      // Get all blocks for this project ordered by block_order
+      const { data: allBlocks, error } = await supabase
+        .from('project_blocks')
+        .select('id, project_id, block_type, block_order, summary, conclusions, source_ids, searchable_text')
+        .eq('project_id', block.project_id)
+        .order('block_order', { ascending: true });
+
+      if (error || !allBlocks) {
+        console.error('Error fetching blocks for section expansion:', error);
+        continue;
+      }
+
+      // Find the section's block_order
+      const sectionBlock = allBlocks.find(b => b.id === block.id);
+      if (!sectionBlock) continue;
+
+      const sectionOrder = sectionBlock.block_order;
+
+      // Find the next section's block_order (or end of list)
+      const nextSection = allBlocks.find(
+        b => b.block_type === 'section' && b.block_order > sectionOrder
+      );
+      const nextSectionOrder = nextSection?.block_order ?? Infinity;
+
+      // Get all content blocks between this section and the next
+      const childBlocks = allBlocks.filter(
+        b => b.block_order > sectionOrder &&
+             b.block_order < nextSectionOrder &&
+             b.block_type !== 'section' &&
+             b.block_type !== 'sources' // Exclude sources blocks from synthesis
+      );
+
+      console.log(`Found ${childBlocks.length} child blocks for section ${block.id}`);
+
+      // Add child blocks (not the section itself)
+      for (const child of childBlocks) {
+        if (!seenIds.has(child.id)) {
+          seenIds.add(child.id);
+          expandedBlocks.push({
+            ...child,
+            conclusions: child.conclusions || [],
+            source_ids: child.source_ids || [],
+            relevance_rank: expandedBlocks.length + 1,
+          });
+        }
+      }
+    } else {
+      // Not a section - add the block directly
+      seenIds.add(block.id);
+      expandedBlocks.push(block);
+    }
+  }
+
+  return expandedBlocks;
 }
 
 // Main RAG function - smart routing approach
@@ -518,34 +591,27 @@ export async function queryRAG(
   // Filter to relevant blocks
   const relevantBlocks = blocks.filter(b => relevanceCheck.relevantBlockIds.includes(b.id));
 
+  // Expand section blocks to include their child content blocks
+  const expandedBlocks = await expandSectionBlocks(relevantBlocks);
+
   // Gather all source IDs
-  const allSourceIds = [...new Set(relevantBlocks.flatMap(b => b.source_ids))];
-  const projectIdForSources = projectId || relevantBlocks[0]?.project_id;
+  const allSourceIds = [...new Set(expandedBlocks.flatMap(b => b.source_ids))];
+  const projectIdForSources = projectId || expandedBlocks[0]?.project_id;
   const sources = await getSources(allSourceIds, projectIdForSources);
 
   // Step 4: Sonnet synthesizes answer
-  const rawAnswer = await synthesizeAnswer(query, relevantBlocks, sources, conversationHistory);
+  const rawAnswer = await synthesizeAnswer(query, expandedBlocks, sources, conversationHistory);
 
-  // Step 5: Extract cited sources and renumber (if any citations in response)
-  const citedNumbers = extractCitedNumbers(rawAnswer);
+  // Step 5: Extract cited source IDs from response (these are actual source IDs now)
+  const citedIds = extractCitedNumbers(rawAnswer);
 
-  // Renumber citations in the answer text
-  let answer = rawAnswer;
-  const renumberMap = new Map<number, number>();
-  citedNumbers.forEach((oldNum, idx) => renumberMap.set(oldNum, idx + 1));
+  // Filter to only sources that were actually cited
+  const citedSources = sources.filter(s => citedIds.includes(s.id));
 
-  // Replace each citation with its new number
-  answer = answer.replace(/\[(\d+)\]/g, (match, num) => {
-    const newNum = renumberMap.get(parseInt(num, 10));
-    return newNum ? `[${newNum}]` : match;
-  });
-
-  // Return all available sources (not just explicitly cited ones)
-  // This ensures users always see what research informed the response
   return {
-    answer,
-    sources: sources.length > 0 ? sources : [],
-    blocks_used: relevantBlocks.map(b => b.id),
+    answer: rawAnswer,
+    sources: citedSources,
+    blocks_used: expandedBlocks.map(b => b.id),
     model_used: 'sonnet',
   };
 }
