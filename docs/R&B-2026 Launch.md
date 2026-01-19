@@ -31,6 +31,58 @@ This document lists decisions that need to be made by stakeholders to move forwa
 | CW | Casey Wilkinson | Marketing Specialist|
 | BS | Brenda Swirczynski | Education Facilities Planner |
 
+---
+
+## Software & Infrastructure (CO, CM, LP + Board) Budget approving EOM Jan
+
+### Database Platform Options
+
+| Platform | Pros | Cons |
+|----------|------|------|
+| Cloudflare D1/R2 | Fast, cheap, serverless, already used elsewhere | New vendor approval |  | ~$5-20 | Username/account |
+| Bluehost (existing) | Already approved, MySQL/PHP | Legacy stack, no serverless, no CLI | | Already paying | using HB email and domain@pfluger |
+| Supabase | Modern, Postgres, real-time | New vendor approval | | Free tier / ~$25 | Username/account |
+| OpenAsset | Already have DAM | Not a database platform || Included in license | Username/account |
+| Local Egnyte drive | No approval needed | No web access, single point of failure Claude MCP, $11,154/year |
+| Azure SSO sign in | will cord with Crag on sign in
+
+### APIs & Services
+
+| API / Service | Purpose | Monthly Cost | Approval Needed |
+|---------------|---------|--------------|-----------------|
+*| Claude Max 5x | $100/mo, $1,200/yr per seat | Username/account | nick
+*| Claude Teams | Std: $30/mo, $360/yr. Premium: $150/mo, $1,800/yr. (1 Std + 2 Premium = $330/mo, $3,960/yr) | Username/account | 3 st, two ultimate
+*| Claude API - Opus 4.5 | ~1k msgs/mo (3K tk/msg), $35/mo, $420/yr | Username/account |
+*| Claude API - Sonnet 4.5 | ~2k msgs/mo (3K tk/msg), $42/mo, $504/yr | Username/account |
+*| Claude API - Haiku 4.5 | ~8k msgs/mo (3K tk/msg), $56/mo, $672/yr | Username/account |
+*| Mapbox API | Interactive maps | Free tier (50k loads/mo) | Username/account |
+*| GitHub | Code repository | Included / Free | Username/account |
+*| Climate Studio | Building performance simulation in lue of Safira Sketchup $2000/yr | ~$2,500/year | TBD - pending | going to try to pro rate and cancle safiri
+| Resend API | email automation API | Free Tier 3k emails/mo | Username/account |
+| Census API | Demographics / district data | Free | Username/account |
+| Vantage Point API | CRM / contact routing | Included in license | Username/account |
+
+### ArchVis APIs & Services
+
+| API / Service | Purpose | Yearly Cost | Approval Needed |
+|---------------|---------|-------------|-----------------|
+*| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
+*| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
+*| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
+*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
+*| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
+*| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
+*| Veo 3 Standard API | ~50 vids/mo (4-sec), $80/mo, $960/yr | TBD |  Told LP 1000
+*| CapCut Pro | Video editing | $240/yr ($20/mo) | TBD | 
+*| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
+*| Twinmotion | Real-time visualization | Free | team@pfluger | double check with Logan on account cost
+*| Adobe Substance | Model creation, texturing | reduced from $4700 to $1400 | Designers pfluger email | 
+*| Blender | 3D modeling | Free | — |
+*| Unreal Engine | Real-time engine | Free | team@pfluger |
+*| Figma Professional | UI/UX design & prototyping | 5 seats × $16/mo = $80/mo, $960/yr | Jackie's pfluger email |
+*| Apple Developer | App distribution Build to Apple Vision Pro | $99/yr | TBD | 
+|AI Bucket|
+|Bambu Labs | 3d printing |  apps@pfluger|free 
 
 
 ---
@@ -131,7 +183,6 @@ Done
 - aw create resend account | software@pflugerarchitects.com X-khxUcD.fjcWV9
 - new apple cloud account first: software last: pfluger, 01/01/1972 software@pflugerarchitects.com
 
-
  
 ### 1/9 11am-noon — R&B Blocks 3, 4 + Prime 1, 5
 **Messages**
@@ -193,7 +244,6 @@ With Chad M, there is a new BIM manager coming on board.
 - [*] LP, CB (Craig) - Get software/accounts set up
 - [x] LF (Lisa) - Coordinate on VP hours/coding (1/8 - sent project breakdowns, she emailed Matt)
 - [x] Craig/Austin - Email about software, CC Lauren and CO (1/8 - sent to Craig, checking with Austin 1/9)
-- [ ] Logan - Launch animation/marketing hype
 - [x] Pick launch date (avoid TASA Midwinter)
 
  ---
@@ -252,24 +302,6 @@ CW had TM send AW invite to school bond finder
 - Delivery method: email, demo, training?
 - TASA Mid Winter prep timeline
 
-
-### 01/15 - Meeting with school bond finder
-
-Alex.wickes@pflguerarchitects.com should have been set up. Password 43Bfjv-ad3.EQrP
-Are notifications for all of them or just the ones that updated
-CC not attend. CW, SW, TM attend. Amy Berd, director of client retention
-Api access, documentation, Costs, Limits
-Frequency  of data updates? Is every district updated every month?
-Data ethics, how they are getting the data, all public, private? Its all public data. They are using AI. 
-They harvest meeting minutes 
-A team is updating the information on the site, all sites or just us. Are others getting data faster?
-Whats the research team size?
-How do they get the school and district contacts? From the website
-Integration fee of $2500 to get into salsforce or salsforce or CRM, API not sure, no documentation.  No additional call fee. Dustin and Ben, and Chuck. 
-We are paying the whole country. To Texas the cost would drop down to regional price. 
-Updated 24-48hours AFTER a bond pass or fails, no updated during voting
-They follow 4 different types of bonds. 
-
  ---
 
 ### 01/15 - Project Prism (X25-RB10)
@@ -307,10 +339,7 @@ Let me know what works for their schedules this week or early next.
 - What districts are we targeting beyond LHISD?
 - How much development do you want in 2026?
 
----
-
 **Meeting Notes:**
-To tee up for LP after:
 pflugervill and delvalle, dripping springs, along with LHSID, Mannor may be a maybe, no burnet, also sheryland and burnet and mcallan. 
 JS wants to combine all the efforts. 
 we need to check with Blair on the level of detail, and resolution. 
@@ -330,6 +359,25 @@ Verm agreed to meeting on 2/4, they have not signed an NDA
 Need to mirage d1, DNA, mapbox
 
  ---
+
+### 01/15 - Meeting with school bond finder
+
+Alex.wickes@pflguerarchitects.com should have been set up. Password 43Bfjv-ad3.EQrP
+Are notifications for all of them or just the ones that updated
+CC not attend. CW, SW, TM attend. Amy Berd, director of client retention
+Api access, documentation, Costs, Limits
+Frequency  of data updates? Is every district updated every month?
+Data ethics, how they are getting the data, all public, private? Its all public data. They are using AI. 
+They harvest meeting minutes 
+A team is updating the information on the site, all sites or just us. Are others getting data faster?
+Whats the research team size?
+How do they get the school and district contacts? From the website
+Integration fee of $2500 to get into salsforce or salsforce or CRM, API not sure, no documentation.  No additional call fee. Dustin and Ben, and Chuck. 
+We are paying the whole country. To Texas the cost would drop down to regional price. 
+Updated 24-48hours AFTER a bond pass or fails, no updated during voting
+They follow 4 different types of bonds. 
+
+---
  
 ### TBD - Turf Melting Analysis (X25-RB11)
 **Messages**
@@ -419,61 +467,6 @@ This is the reality: even when research is approved, PMs push back to cut hours.
 
 ---
 
-## 2. Software & Infrastructure (CO, CM, LP + Board)
-
-**Decision Owner:** CO, CM, LP (board approval for new vendors/costs)
-**Decision:** Approve software stack, where data lives, and associated costs
-Budget will be approved by EOM Jan
-
-
-### Database Platform Options
-
-| Platform | Pros | Cons |
-|----------|------|------|
-| Cloudflare D1/R2 | Fast, cheap, serverless, already used elsewhere | New vendor approval |  | ~$5-20 | Username/account |
-| Bluehost (existing) | Already approved, MySQL/PHP | Legacy stack, no serverless, no CLI | | Already paying | using HB email and domain@pfluger |
-| Supabase | Modern, Postgres, real-time | New vendor approval | | Free tier / ~$25 | Username/account |
-| OpenAsset | Already have DAM | Not a database platform || Included in license | Username/account |
-| Local Egnyte drive | No approval needed | No web access, single point of failure Claude MCP, $11,154/year |
-| Azure SSO sign in | will cord with Crag on sign in
-
-### APIs & Services
-
-| API / Service | Purpose | Monthly Cost | Approval Needed |
-|---------------|---------|--------------|-----------------|
-*| Claude Max 5x | $100/mo, $1,200/yr per seat | Username/account | nick
-*| Claude Teams | Std: $30/mo, $360/yr. Premium: $150/mo, $1,800/yr. (1 Std + 2 Premium = $330/mo, $3,960/yr) | Username/account | 3 st, two ultimate
-*| Claude API - Opus 4.5 | ~1k msgs/mo (3K tk/msg), $35/mo, $420/yr | Username/account |
-*| Claude API - Sonnet 4.5 | ~2k msgs/mo (3K tk/msg), $42/mo, $504/yr | Username/account |
-*| Claude API - Haiku 4.5 | ~8k msgs/mo (3K tk/msg), $56/mo, $672/yr | Username/account |
-*| Mapbox API | Interactive maps | Free tier (50k loads/mo) | Username/account |
-*| GitHub | Code repository | Included / Free | Username/account |
-*| Climate Studio | Building performance simulation in lue of Safira Sketchup $2000/yr | ~$2,500/year | TBD - pending | going to try to pro rate and cancle safiri
-| Resend API | email automation API | Free Tier 3k emails/mo | Username/account |
-| Census API | Demographics / district data | Free | Username/account |
-| Vantage Point API | CRM / contact routing | Included in license | Username/account |
-
-### ArchVis APIs & Services
-
-| API / Service | Purpose | Yearly Cost | Approval Needed |
-|---------------|---------|-------------|-----------------|
-*| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
-*| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
-*| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
-*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
-*| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
-*| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
-*| Veo 3 Standard API | ~50 vids/mo (4-sec), $80/mo, $960/yr | TBD |  Told LP 1000
-*| CapCut Pro | Video editing | $240/yr ($20/mo) | TBD | 
-*| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
-*| Twinmotion | Real-time visualization | Free | team@pfluger | double check with Logan on account cost
-*| Adobe Substance | Model creation, texturing | reduced from $4700 to $1400 | Designers pfluger email | 
-*| Blender | 3D modeling | Free | — |
-*| Unreal Engine | Real-time engine | Free | team@pfluger |
-*| Figma Professional | UI/UX design & prototyping | 5 seats × $16/mo = $80/mo, $960/yr | Jackie's pfluger email |
-*| Apple Developer | App distribution Build to Apple Vision Pro | $99/yr | TBD | 
-|AI Bucket|
-|Bambu Labs | 3d printing |  apps@pfluger|free 
 
 ### Consequence of Delay
 
@@ -543,25 +536,9 @@ Two things need to happen:
 
 As of 1/4 there is a new VP job structure for overhead. But creating new project codes requires approval, and assigning staff requires going through the proper chain.
 
-### VP Code Structure
-
-| Code Type | Purpose | Where It Lives |
-|-----------|---------|----------------|
-| R&B Training | One-time onboarding allocation | Sub-code under R&B General (overhead) |
-| X26-RBxx Project Numbers | Track research participation hours | Individual project codes |
-
 ### Communication Chain for Staff Assignment
 
-**Original assumption:**
-```
-Leadership Decision (CO/JS)
-        ↓
-People Leaders (office leads, dept heads)
-        ↓
-Project Managers
-        ↓
-Staff assigned to R&B project numbers
-```
+
 
 **Actual (per 1/8 meeting) - The Paradox:**
 ```
@@ -577,10 +554,10 @@ Directors oversee that it happens
 **The problem:** The person with the idea is at the bottom. They must convince up the chain to get hours. Directors "control" hours but don't initiate research. Principals are client-facing but aren't researching. The worker has vision but no agency.
 
 **Action Items**
-AW Cordinated with LF, LF send email to Matt, AW to log all hours under Craft and Prduct.
+AW Cordinated with LF, LF sent email to Matt, AW to log all hours under Craft and Prduct.
 ---
 
-### Design Forum (NEW - per 1/8 meeting)
+### 2/15 Design Forum (NEW - per 1/8 meeting)
 
 **What:** Tony Schmitz (TS) is now leading design shareouts/forums. R&B will be part of the agenda.
 
@@ -647,29 +624,5 @@ It's not "how do we allocate training or research time?"
 It's: **Does R&B participation have a legitimate home in the timesheet, AND does anyone know about it?**
 
 If codes exist but no one knows, adoption fails. If people know but codes don't exist, they can't participate.
-
----
-
-## Summary: Critical Path
-
-```
-Research OT Policy (#1)
-        |
-        v
-Software & Infrastructure (#2)
-        |
-        +-----------------------+
-        |                       |
-        v                       v
-Public Launch (#3)      Internal Launch (#4)
-        |                       |
-        +-- VP + Staff (#5) ----+
-                |
-                v
-             LAUNCH
-```
-
-**Minimum viable launch:** Decision #3 (public only, no internal features)
-**Full launch:** All 5 decisions
 
 ---
