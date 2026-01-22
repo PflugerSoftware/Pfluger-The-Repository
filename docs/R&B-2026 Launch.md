@@ -8,7 +8,6 @@ This document lists decisions that need to be made by stakeholders to move forwa
 ---
 
 ## People
-
 | Abbrev | Name | Role |
 |--------|------|------|
 | CO | Christian Owens | Chief Design Officer (Board) |
