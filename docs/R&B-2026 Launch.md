@@ -1,6 +1,6 @@
 # Ezra Rollout: Decisions Needed
 
-**Target:** End of January 2026
+**Target:** End of January 2026 -> moved to End of Feb
 **Status:** Built and ready. Blocked on approvals.
 
 This document lists decisions that need to be made by stakeholders to move forward. Each item includes context, options, and consequences of delay.
@@ -18,10 +18,11 @@ This document lists decisions that need to be made by stakeholders to move forwa
 | CB | Craig Bogner | CIO/CTO (Innerium, outsourced) |
 | DY | David Yound  | Communications and Engagement Manager Board|
 
-| CM | Chad Martin | Architect Director |
+| CM | Chad Martin | Principal, Architect Director |
 | TS | Tony Schmitz | Principal, Process Performance Director |
 | JS | Josh Sawyer | Principal, Educational Planning Director |
 | TP | Tony Plascencia | Principal, Design Director | 
+ | AS | Ally Schnider | Principal, Interior Design Director
 
 | AW | Alex Wickes | Associate Design Performacne Leader | 
 | LS | Logan Steitle| Associalte Visualization + Immersive Designer|
@@ -625,3 +626,111 @@ It's: **Does R&B participation have a legitimate home in the timesheet, AND does
 If codes exist but no one knows, adoption fails. If people know but codes don't exist, they can't participate.
 
 ---
+
+##VANTAGE POINT API - DATA REQUIREMENTS##
+
+  1. EMPLOYEES
+
+  - employee_number
+  - first_name
+  - preferred_name
+  - last_name
+  - full_name
+  - job_title
+  - business_unit
+  - location (office)
+  - email
+
+  2. PROJECTS
+
+  Basic Info:
+  - project_number
+  - project_name
+  - client_id
+  - client_name
+  - office (assigned Pfluger office)
+  - project_address, city, state, zip
+  - description
+  - status
+  - start_date
+  - completion_date
+
+  Financial (by year):
+  - revenue_year
+  - total_contract (compensation)
+  - total_billed
+  - total_spent (labor costs)
+
+  Team:
+  - project_owner
+  - team_members (list of employees)
+  - team_member_roles
+
+  Schedule & Phases:
+  - project_phases (WBS2)
+  - phase_name
+  - phase_start_date
+  - phase_end_date
+  - phase_status
+  - tasks (WBS3)
+  - task_name
+  - task_start_date
+  - task_end_date
+  - task_status
+  - milestone_dates
+
+  3. CLIENTS
+
+  Client Properties:
+  - client_id
+  - client_name
+  - firm_number
+  - market
+  - priority_rank
+
+  Contacts (property of client):
+  - contact_nameFull
+  - contact_nameFirst
+  - contact_nameLast
+  - contact_namePreferred
+  - contact_title
+  - contact_department
+  - contact_email
+  - contact_business (phone)
+  - contact_mobile (phone)
+  - contact_home (phone)
+  - contact_decisionMaker (Y/N)
+  - contact_notes
+
+  Activities (property of client):
+  - subject
+  - activity_type
+  - start_date
+  - primary_contact
+  - contact
+  - owner (employee assigned)
+  - notes
+
+  ---
+  DOCUMENTATION REQUEST
+
+  We need complete API documentation, not just the incomplete online
+  reference.
+
+  Please provide:
+  1. Complete OpenAPI/Swagger specification file (.json or .yaml)
+  2. Full endpoint reference with all available fields for each object
+  3. Authentication guide (OAuth setup, credentials, tokens)
+  4. Example API calls for each of our data requirements above
+  5. Rate limits and pagination details for bulk data sync
+  6. Data sync best practices for nightly batch updates
+
+  The online documentation at https://vantagepointapi-prior.deltek.com is
+  incomplete and difficult to navigate. We need comprehensive technical
+  documentation for our integration.
+
+  ---
+  Questions:
+  1. Can the API provide all the data listed above?
+  2. What's the recommended approach for nightly batch sync to external
+  database?
