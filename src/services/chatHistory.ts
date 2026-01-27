@@ -68,12 +68,11 @@ export async function loadChatSessions(userId: string): Promise<ChatSession[]> {
  */
 export async function createChatSession(
   userId: string,
-  session: Omit<ChatSession, 'userId'>
+  session: Omit<ChatSession, 'userId' | 'id'>
 ): Promise<ChatSession | null> {
   const { data, error } = await supabase
     .from('repo_ai_sessions')
     .insert({
-      id: session.id,
       user_id: userId,
       title: session.title,
       messages: session.messages

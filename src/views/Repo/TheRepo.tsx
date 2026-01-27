@@ -106,28 +106,30 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate }) => {
     await deleteChatSession(sessionId);
   };
 
-  const createNewSession = (firstMessage: string): string => {
+  const createNewSession = async (firstMessage: string): Promise<string> => {
     if (!userUUID) {
       console.error('Cannot create session: user UUID not loaded');
       return '';
     }
 
-    const newSession: ChatSession = {
-      id: Date.now().toString(),
-      userId: userUUID,
-      title: firstMessage.slice(0, 40) + (firstMessage.length > 40 ? '...' : ''),
-      messages: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    // Add to local state
-    setChatSessions(prev => [newSession, ...prev]);
-    setActiveSessionId(newSession.id);
-    // Persist to Supabase (if authenticated)
+    // Persist to Supabase first to get the UUID
     if (isAuthenticated && userUUID) {
-      createChatSession(userUUID, newSession);
+      const createdSession = await createChatSession(userUUID, {
+        title: firstMessage.slice(0, 40) + (firstMessage.length > 40 ? '...' : ''),
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+
+      if (createdSession) {
+        // Add to local state with the UUID from Supabase
+        setChatSessions(prev => [createdSession, ...prev]);
+        setActiveSessionId(createdSession.id);
+        return createdSession.id;
+      }
     }
-    return newSession.id;
+
+    return '';
   };
 
   // Fallback for project list queries (doesn't need RAG)
@@ -184,7 +186,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate }) => {
 
     // Create new session if none active
     if (!activeSessionId) {
-      createNewSession(text);
+      await createNewSession(text);
     }
 
     const userMessage: ChatMessage = {

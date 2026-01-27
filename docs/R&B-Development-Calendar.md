@@ -2,7 +2,7 @@
 
 **Target Launch:** End of January 2026
 **Tech Stack:** Supabase (PostgreSQL + Auth) - Approved
-**Last Updated:** January 16, 2026
+**Last Updated:** January 27, 2026
 
 ---
 
@@ -11,16 +11,16 @@
 | Area | Status | Notes |
 |------|--------|-------|
 | Block System (21 types) | ✅ Done | All components working |
-| Project Dashboards (9) | ✅ Done | Configs complete |
-| Research Map | ✅ Done | Mapbox 3D |
+| Project Dashboards (8) | ✅ Done | Configs complete |
+| Research Map | ✅ Done | Mapbox 3D (pflugerarchitects account) |
 | Portfolio/Gallery | ✅ Done | Year grouping |
-| Pitch UI | ✅ Done | Form, chat panel |
-| Repository UI | ✅ Done | Chat interface |
+| Pitch UI | ✅ Done | Form, chat panel, auto-save |
+| Repository UI | ✅ Done | Chat interface with RAG |
 | Auth | ⚠️ Mock | Hardcoded creds (Azure SSO pending) |
 | Database Schema | ✅ Done | 17 tables in Supabase |
-| Frontend-DB Integration | ✅ Done | @supabase/supabase-js installed, connected |
-| AI Integration | ✅ Done | RAG: Haiku relevance + Sonnet synthesis + section expansion |
-| Persistence | ❌ None | State lost on refresh |
+| Frontend-DB Integration | ✅ Done | Full persistence via services |
+| AI Integration | ✅ Done | RAG + Pitch AI (Ezra) fully wired |
+| Persistence | ✅ Done | Pitches, chats, comments all persist |
 
 **Live at:** https://repository.pflugerarchitects.com (Cloudflare Pages, DNS via Bluehost)
 
@@ -37,58 +37,70 @@
 
 ---
 
-## Current: Week 2 (January 12-16)
+## Completed: Week 2 (January 12-16)
 
-### Monday 1/13 - Completed
 - [x] Set up psql on local machine
 - [x] Connected to Supabase via Session Pooler (IPv4)
 - [x] Verified all 17 tables accessible
-- [x] Updated documentation (README.md, this file)
-
-### Remaining This Week
-
-| Day | Task | Priority |
-|-----|------|----------|
-| ~~Mon 1/13~~ | ~~Install @supabase/supabase-js~~ | ✅ Done |
-| ~~Mon 1/13~~ | ~~Create Supabase client config~~ | ✅ Done |
-| Tue 1/14 | ~~Connect auth to Supabase Auth~~ | Skipped - using Azure SSO |
-| Tue 1/14 | Azure SSO integration | Blocked (Craig/Austin) |
-| ~~Wed 1/15~~ | ~~Load research_projects from Supabase~~ | ✅ Done |
-| Wed 1/15 | Connect pitch submission to pitches table | High |
-| Thu 1/16 | Connect collaboration form to collaboration_requests | High |
-| Thu 1/16 | Set up Resend for email notifications | Medium |
-| Fri 1/17 | Wire up chat persistence | Medium |
+- [x] Install @supabase/supabase-js
+- [x] Create Supabase client config
+- [x] Load research_projects from Supabase
+- [ ] Connect auth to Supabase Auth - Skipped (using Azure SSO)
+- [ ] Azure SSO integration - Blocked (Craig/Austin)
+- [ ] Connect collaboration form to collaboration_requests - Deferred
+- [ ] Set up Resend for email notifications - Deferred
 
 ---
 
-## Week 3: January 19-23
+## Completed: Week 3 (January 19-23)
 
-| Day | Task | Priority |
-|-----|------|----------|
-| ~~Mon 1/20~~ | ~~Claude API integration setup~~ | ✅ Done (1/16) |
-| ~~Mon 1/20~~ | ~~TheRepo.tsx real AI responses~~ | ✅ Done (1/16) |
-| ~~Tue 1/21~~ | ~~Claude RAG with project data~~ | ✅ Done (1/16) |
-| Tue 1/21 | PitchChatPanel.tsx AI integration | High |
-| Wed 1/22 | GreenLit topics from Supabase | Medium |
-| Wed 1/22 | MY_PITCHES from Supabase | Medium |
-| Thu 1/23 | Real hours tracking (Schedule.tsx) | Medium |
-| Thu 1/23 | Replace Unsplash placeholders | Medium |
-| Fri 1/24 | Integration testing | Critical |
-| Fri 1/24 | Bug fixes | Critical |
+- [x] Claude API integration setup (1/16)
+- [x] TheRepo.tsx real AI responses (1/16)
+- [x] Claude RAG with project data (1/16)
+- [x] Pitch system full database integration (1/20)
+  - pitches, pitch_ai_sessions, pitch_comments tables
+  - pitchService.ts with full CRUD
+  - PitchSubmission.tsx loads from Supabase
+  - PitchChatPanel.tsx AI integration with Ezra
+  - GreenLit pitches (status='greenlit', user_id=null)
+  - Auto-save on all pitch edits
+  - Comment system with user attribution
+- [x] repo_ai_sessions table (renamed from chat_sessions)
+- [x] chatHistory.ts service updated
+- [x] User accounts overhauled, testers added
+- [ ] Real hours tracking (Schedule.tsx) - Deferred
+- [ ] Replace Unsplash placeholders - Deferred
 
 ---
 
-## Week 4: January 27-30
+## Current: Week 4 (January 27-30)
+
+**Launch Target:** End of January 2026
+
+### Remaining Pre-Launch Tasks
+
+| Priority | Task | Status |
+|----------|------|--------|
+| Critical | Final QA testing | To Do |
+| Critical | Test pitch submission end-to-end | To Do |
+| Critical | Test Repository chat with all 8 projects | To Do |
+| Critical | Verify analytics tracking | To Do |
+| High | Update Mapbox account (if not done) | ✅ Done |
+| High | Test all navigation flows | To Do |
+| Medium | Replace Unsplash placeholders (if any) | To Do |
+| Medium | Collaboration form Supabase integration | Deferred |
+| Medium | Email notifications via Resend | Deferred |
+| Low | Azure SSO integration | Blocked (post-launch) |
+
+### Launch Week Schedule
 
 | Day | Task | Priority |
 |-----|------|----------|
-| Mon 1/27 | Final QA testing | Critical |
-| Mon 1/27 | Production deployment prep | Critical |
+| Mon 1/27 | QA testing and bug fixes | Critical |
 | Tue 1/28 | Stakeholder demo | Critical |
-| Tue 1/28 | Bug fixes from demo | High |
-| Wed 1/29 | Production deployment | Critical |
-| Thu 1/30 | **LAUNCH** | - |
-| Thu 1/30 | Monitor + hotfixes | Critical |
+| Wed 1/29 | Bug fixes from demo | High |
+| Thu 1/30 | Production deployment | Critical |
+| Thu 1/30 | **LAUNCH** + monitoring | Critical |
 
 ---
 
@@ -96,18 +108,20 @@
 
 ## Pitch System Workflow (Detailed)
 
-### Current State
-The UI exists but everything is mock data:
+### Current State (Updated Jan 27, 2026)
+
+**Fully integrated with Supabase:**
 
 | Component | File | Status |
 |-----------|------|--------|
-| Pitch submission form | `PitchSubmission.tsx` | ✅ UI done |
-| AI chat builder | `PitchChatPanel.tsx` | ⚠️ Needs RAG integration (Repository done) |
-| Pitch card (form) | `PitchCard.tsx` | ✅ UI done |
-| GreenLit topics | `PitchSubmission.tsx:49-90` | ❌ Hardcoded |
-| My Pitches list | `PitchSubmission.tsx:93-123` | ❌ Mock data |
-| Submit action | `PitchSubmission.tsx:215-235` | ❌ console.log + alert() |
-| Comment thread | `PitchSubmission.tsx:446-470` | ⚠️ UI only, no backend |
+| Pitch submission form | `PitchSubmission.tsx` | ✅ Full database integration |
+| AI chat builder (Ezra) | `PitchChatPanel.tsx` | ✅ AI + persistence working |
+| Pitch card (form) | `PitchCard.tsx` | ✅ Auto-save to database |
+| GreenLit topics | `pitchService.ts` | ✅ Loads from Supabase |
+| My Pitches list | `PitchSubmission.tsx` | ✅ Loads from Supabase |
+| Submit action | `PitchSubmission.tsx` | ✅ Creates pitch in database |
+| Comment thread | `PitchSubmission.tsx` | ✅ Persists to pitch_comments |
+| Chat persistence | `chatHistory.ts` | ✅ repo_ai_sessions table |
 
 ### Pitch Data Model (PitchCard.tsx:16-25)
 ```typescript
@@ -145,11 +159,11 @@ Connection: `postgresql://postgres.bydkzxqmgsvsnjtafphj:[PASSWORD]@aws-1-us-east
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
-| `users` | User accounts (Supabase Auth) | id (uuid), email, name, role, office |
-| `projects` | Research projects | id (X26-RB01), title, category, phase, office |
-| `research_projects` | Legacy map data | id, title, researcher, latitude, longitude |
-| `pitches` | Pitch submissions | id, title, research_idea, status, submitted_by |
-| `greenlit_topics` | Pre-approved ideas | id, title, description, category, suggested_scope |
+| `users` | User accounts | id (uuid), email, name, role, office (Austin/CC/Dallas) |
+| `projects` | Research projects | id (X25-RBxx), title, category, phase, office |
+| `research_projects` | Legacy map data (CSV) | id, title, researcher, latitude, longitude |
+| `pitches` | All pitch submissions | id (P-YYYY-XXX), user_id (uuid, null for greenlit), title, status, research_idea |
+| `project_blocks` | Dashboard content blocks | id, project_id, block_type, block_order, data (jsonb), summary, tags |
 
 #### Relationship Tables
 
@@ -166,12 +180,13 @@ Connection: `postgresql://postgres.bydkzxqmgsvsnjtafphj:[PASSWORD]@aws-1-us-east
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
-| `chat_sessions` | AI chat sessions | id, user_id, session_type, context_id |
-| `chat_messages` | Message history | id, session_id, role, content, metadata |
-| `pitch_comments` | Comments on pitches | id, pitch_id, author_id, content |
+| `repo_ai_sessions` | TheRepo RAG chat sessions | id (uuid), user_id (uuid), title, messages (jsonb) |
+| `pitch_ai_sessions` | Ezra pitch chat sessions | id (uuid), pitch_id (text), user_id (uuid), messages (jsonb) |
+| `pitch_comments` | Comments on pitches | id (uuid), pitch_id (text), user_id (uuid), message, created_at |
 | `collaboration_requests` | Public contact form | id, name, email, message, status |
 | `contacts` | Partner database | id, name, organization, contact_type |
 | `calendar_events` | Timeline events | id, title, event_type, event_date, project_id |
+| `user_page_views` | Analytics tracking | id (uuid), user_id (uuid), session_id, page_name, timestamp |
 
 #### Roles (users.role)
 
@@ -194,11 +209,19 @@ Connection: `postgresql://postgres.bydkzxqmgsvsnjtafphj:[PASSWORD]@aws-1-us-east
 
 ### Status Flows
 
-**GreenLit Topic:** `greenlit_available` → claim → `greenlit` → Project
+**GreenLit Pitch:**
+- Created with `status='greenlit'` and `user_id=null`
+- User claims pitch → `user_id` assigned
+- Shows in "My Pitches"
+- Eventually converts to Project
 
-**Custom Pitch:** `pending` → `greenlit` / `revise` / `rejected` → `converted`
+**Custom Pitch:**
+- Created with `status='pending'`
+- Review → `greenlit` / `revise` / `rejected`
+- If greenlit → converts to Project
 
-**Project:** `Pre-Research` → `Developmental` → `Completed`
+**Project:**
+- `Pre-Research` → `Developmental` → `Completed`
 
 ### Full Workflow: Pitch → Research → Live
 
@@ -306,14 +329,19 @@ When pitch is GreenLit:
 
 ### Pitch Workflow Implementation (Supabase)
 
-**Tables ready:** `pitches`, `pitch_comments`, `greenlit_topics`
+**Tables implemented:** `pitches`, `pitch_ai_sessions`, `pitch_comments`
 
-**Frontend tasks:**
-- [ ] Connect PitchSubmission.tsx to Supabase `pitches` table
-- [ ] Load greenlit_topics from Supabase (replace hardcoded)
-- [ ] Load user's pitches from Supabase (replace MY_PITCHES mock)
-- [ ] Wire up pitch_comments for comment threads
-- [ ] Implement pitch status transitions
+**Completed (Jan 20, 2026):**
+- [x] pitchService.ts with full CRUD operations
+- [x] PitchSubmission.tsx connected to Supabase
+- [x] GreenLit pitches (status='greenlit', user_id=null)
+- [x] Claim pitch functionality
+- [x] Load user's pitches from Supabase
+- [x] Auto-save all pitch edits
+- [x] pitch_comments for review threads
+- [x] PitchChatPanel.tsx saves Ezra conversations
+- [x] Pitch status transitions
+- [x] 5 seed pitches (P-2026-001 through P-2026-005)
 
 ### Resolved Questions
 
@@ -345,7 +373,7 @@ When pitch is GreenLit:
 
 ---
 
-## Current Status (January 16, 2026)
+## Current Status (January 27, 2026)
 
 ### Completed
 - [x] Tech stack decision - Supabase approved
@@ -361,30 +389,48 @@ When pitch is GreenLit:
   - 25 block search limit, 8 terms, 10 results per term
 - [x] source_ids populated for all projects (66-100% coverage)
 - [x] Citations use actual source IDs (match project page)
-- [x] Codebase cleanup (temp files, unused deps)
 - [x] @supabase/supabase-js installed
 - [x] Supabase client config created
 - [x] Frontend connected to Supabase (projects loading from DB)
+- [x] **Pitch System Full Integration (Jan 20)**
+  - pitchService.ts with full CRUD
+  - PitchSubmission.tsx database integration
+  - PitchChatPanel.tsx AI (Ezra) integration
+  - pitch_ai_sessions table for chat persistence
+  - pitch_comments table for review threads
+  - GreenLit pitch claiming workflow
+  - Auto-save on all edits
+- [x] **Chat Persistence**
+  - repo_ai_sessions table (renamed from chat_sessions)
+  - chatHistory.ts service
+  - TheRepo chat persists to database
+- [x] **Analytics Tracking**
+  - user_page_views table
+  - analytics.ts service
+- [x] User accounts overhauled, testers added
+- [x] Mapbox updated to pflugerarchitects account
 - [x] Cloudflare Pages deployment configured
 - [x] DNS mapped via Bluehost → repository.pflugerarchitects.com
 
-### Blocked
+### Blocked (Post-Launch)
 - [ ] Azure SSO integration (waiting on Craig/Austin)
 
-### Next Up
-- [ ] Wire up pitch submission to pitches table
-- [ ] Wire up collaboration form to collaboration_requests
-- [ ] PitchChatPanel.tsx AI integration
-- [ ] Set up Resend for email notifications
-- [ ] Wire up chat persistence
+### Pre-Launch QA (This Week)
+- [ ] End-to-end pitch submission testing
+- [ ] Repository chat testing (all 8 projects)
+- [ ] Navigation flow testing
+- [ ] Analytics verification
+- [ ] Bug fixes from testing
 
-### Blocked By Other Decisions
-| Task | Blocked By |
-|------|------------|
-| VP code integration | Decision #5 (LP, LF, JS) |
-| Staff assignment features | Decision #5 communication chain |
-| Public content | Decision #3 sign-off (CO, CC) |
-| Marketing pipeline | Decision #3 (CO, CC) |
+### Deferred to Post-Launch
+| Task | Status |
+|------|--------|
+| Azure SSO integration | Blocked (Craig/Austin) |
+| Collaboration form → Supabase | Deferred |
+| Email notifications (Resend) | Deferred |
+| VP code integration | Pending decisions (LP, LF, JS) |
+| Staff assignment features | Pending communication chain |
+| Marketing pipeline | Pending sign-off (CO, CC) |
 
 ---
 
@@ -418,4 +464,4 @@ When pitch is GreenLit:
 
 ---
 
-*Last updated: January 16, 2026*
+*Last updated: January 27, 2026*

@@ -519,7 +519,7 @@ export async function deletePitchComment(commentId: string): Promise<boolean> {
 export async function getUser(userId: string): Promise<User | null> {
   const { data, error } = await supabase
     .from('users')
-    .select('*')
+    .select('id, email, name, role, office, avatar_url')
     .eq('id', userId)
     .single();
 
@@ -544,7 +544,7 @@ export async function getUser(userId: string): Promise<User | null> {
 export async function getUserByEmail(email: string): Promise<User | null> {
   const { data, error } = await supabase
     .from('users')
-    .select('*')
+    .select('id, email, name, role, office, avatar_url')
     .eq('email', email)
     .single();
 
