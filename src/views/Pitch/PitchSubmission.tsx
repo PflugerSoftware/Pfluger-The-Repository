@@ -30,6 +30,7 @@ import {
   getPitchComments,
   addPitchComment,
   getUserByEmail,
+  savePitchAiSession,
   type Pitch,
   type PitchComment,
   type PitchStatus,
@@ -110,6 +111,7 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
   // Loading state
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Current user (from database)
   const [currentUser, setCurrentUser] = useState<DbUser | null>(null);
@@ -129,12 +131,14 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
   // Track if pitch is ready for final review
   const [isPitchComplete, setIsPitchComplete] = useState(false);
 
+  // Chat messages state (lifted from PitchChatPanel to survive unmount on "Continue editing")
+  const [chatMessages, setChatMessages] = useState<Array<{ id: string; role: 'user' | 'assistant'; content: string }>>([]);
+
   // Pitch data (for custom flow with Ezra)
   const [pitchData, setPitchData] = useState<PitchData>({
     researchIdea: '',
     alignment: '',
     projectName: '',
-    buildingOff: '',
     methodology: '',
     scopeTier: '',
     impact: '',
@@ -151,18 +155,24 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
       setIsLoading(true);
       try {
         // Get current user from database
+        console.log('Looking up user by email:', authUser.username);
         const user = await getUserByEmail(authUser.username);
+        console.log('Database user found:', user);
         setCurrentUser(user);
 
         if (user) {
           // Admin sees ALL pitches, Researcher sees only their own
           if (authUser.role === 'admin') {
             const allPitches = await getPitches();
+            console.log('Admin: loaded all pitches:', allPitches.length);
             setMyPitches(allPitches);
           } else {
             const mine = await getPitches({ userId: user.id });
+            console.log('Researcher: loaded my pitches:', mine.length, 'for user:', user.id);
             setMyPitches(mine);
           }
+        } else {
+          console.warn('No database user found for email:', authUser.username);
         }
 
         // Load available greenlit pitches (unclaimed)
@@ -194,11 +204,11 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
     setPitchPath('builder');
     setSelectedGreenlitPitch(null);
     setIsPitchComplete(false);
+    setChatMessages([]); // Reset chat for new pitch
     setPitchData({
       researchIdea: '',
       alignment: '',
       projectName: '',
-      buildingOff: '',
       methodology: '',
       scopeTier: '',
       impact: '',
@@ -253,12 +263,19 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
   };
 
   const handleSubmit = async () => {
-    if (!currentUser) return;
+    setSubmitError(null);
+
+    if (!currentUser) {
+      setSubmitError('Unable to submit: User not found in database. Please contact an administrator.');
+      console.error('Submit failed: currentUser is null. authUser:', authUser);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       // Generate a new pitch ID
       const newId = await generatePitchId();
+      console.log('Generated pitch ID:', newId);
 
       // Extract a title from the research idea
       const titleMatch = pitchData.researchIdea.match(/^[^.!?]+/);
@@ -267,6 +284,7 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
         : pitchData.researchIdea.slice(0, 60) + '...';
 
       // Create the pitch in database
+      console.log('Creating pitch for user:', currentUser.id, currentUser.email);
       const newPitch = await createPitch({
         id: newId,
         userId: currentUser.id,
@@ -275,7 +293,6 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
         status: 'pending',
         alignment: pitchData.alignment || undefined,
         projectName: pitchData.projectName || undefined,
-        buildingOff: pitchData.buildingOff || undefined,
         partner: pitchData.partners || undefined,
         methodology: pitchData.methodology || undefined,
         scopeTier: pitchData.scopeTier || undefined,
@@ -284,6 +301,20 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
       });
 
       if (newPitch) {
+        console.log('Pitch created successfully:', newPitch.id);
+
+        // Save the chat conversation to the database
+        if (chatMessages.length > 0) {
+          const dbMessages = chatMessages.map(m => ({
+            id: m.id,
+            role: m.role as 'user' | 'assistant',
+            content: m.content,
+            timestamp: new Date()
+          }));
+          await savePitchAiSession(newPitch.id, currentUser.id, dbMessages);
+          console.log('Chat messages saved for pitch:', newPitch.id);
+        }
+
         // Add to my pitches
         setMyPitches(prev => [newPitch, ...prev]);
 
@@ -293,11 +324,11 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
         setSelectedGreenlitPitch(null);
         setIsPitchComplete(false);
         setExpandedPitch(newPitch.id);
+        setChatMessages([]); // Reset chat after successful submission
         setPitchData({
           researchIdea: '',
           alignment: '',
           projectName: '',
-          buildingOff: '',
           methodology: '',
           scopeTier: '',
           impact: '',
@@ -305,9 +336,13 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
           timeline: '',
           partners: ''
         });
+      } else {
+        setSubmitError('Failed to create pitch. Please try again.');
+        console.error('createPitch returned null');
       }
     } catch (err) {
       console.error('Error submitting pitch:', err);
+      setSubmitError('An error occurred while submitting. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -336,9 +371,6 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
       }
       if (extracted.projectName) {
         updates.projectName = extracted.projectName;
-      }
-      if (extracted.buildingOff) {
-        updates.buildingOff = extracted.buildingOff;
       }
       if (extracted.partner) {
         updates.partners = extracted.partner;
@@ -665,13 +697,6 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
             </div>
           )}
 
-          {/* Building Off */}
-          {pitchData.buildingOff && (
-            <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Building Off</h3>
-              <p className="text-white text-sm">{pitchData.buildingOff}</p>
-            </div>
-          )}
 
           {/* Partner */}
           {pitchData.partners && (
@@ -700,18 +725,34 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
 
         {/* Actions */}
         <div className="p-6 border-t border-gray-800 space-y-3">
+          {submitError && (
+            <div className="p-3 rounded-lg bg-red-900/30 border border-red-800 text-red-400 text-sm">
+              {submitError}
+            </div>
+          )}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+            whileTap={!isSubmitting ? { scale: 0.98 } : {}}
             onClick={handleSubmit}
-            className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium bg-green-600 text-white hover:bg-green-500 transition-all"
+            disabled={isSubmitting}
+            className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium bg-green-600 text-white hover:bg-green-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Send className="w-4 h-4" />
-            Submit Pitch
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              <>
+                <Send className="w-4 h-4" />
+                Submit Pitch
+              </>
+            )}
           </motion.button>
           <button
             onClick={() => setIsPitchComplete(false)}
-            className="w-full text-center text-sm text-gray-500 hover:text-gray-300 transition-colors"
+            disabled={isSubmitting}
+            className="w-full text-center text-sm text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-50"
           >
             Continue editing
           </button>
@@ -742,7 +783,11 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
         <div className="flex gap-6">
           {/* Left: Chat Panel */}
           <div className="flex-1 min-w-0">
-            <PitchChatPanel onPitchUpdate={handlePitchUpdate} />
+            <PitchChatPanel
+              onPitchUpdate={handlePitchUpdate}
+              initialMessages={chatMessages}
+              onMessagesChange={setChatMessages}
+            />
           </div>
 
           {/* Right: Progress Sidebar */}
@@ -1108,24 +1153,6 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
                                       />
                                     ) : (
                                       <span className="text-white flex-1">{pitch.projectName}</span>
-                                    )}
-                                  </div>
-                                ) : null}
-
-                                {/* Building Off */}
-                                {isEditingPitch || pitch.buildingOff ? (
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-gray-400 min-w-[80px] shrink-0">Building Off:</span>
-                                    {isEditingPitch ? (
-                                      <input
-                                        type="text"
-                                        value={pitch.buildingOff || ''}
-                                        onChange={(e) => handleUpdatePitchField(pitch.id, 'buildingOff', e.target.value)}
-                                        placeholder="e.g., X25-RB01"
-                                        className="flex-1 bg-transparent text-white text-sm border-b border-gray-600 focus:outline-none focus:border-white pb-1"
-                                      />
-                                    ) : (
-                                      <span className="text-white flex-1">{pitch.buildingOff}</span>
                                     )}
                                   </div>
                                 ) : null}

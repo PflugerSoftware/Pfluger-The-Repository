@@ -16,9 +16,10 @@ interface PitchChatPanelProps {
   userId?: string;
   initialMessages?: ChatMessage[];
   onPitchUpdate?: (pitch: ExtractedPitch) => void;
+  onMessagesChange?: (messages: ChatMessage[]) => void;
 }
 
-export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate }: PitchChatPanelProps) {
+export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate, onMessagesChange }: PitchChatPanelProps) {
   const { projects } = useProjects();
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages || []);
@@ -53,6 +54,13 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Notify parent of message changes (for state lifting)
+  useEffect(() => {
+    if (onMessagesChange && messages.length > 0) {
+      onMessagesChange(messages);
+    }
+  }, [messages, onMessagesChange]);
 
   // Save messages to database when pitch is linked
   useEffect(() => {

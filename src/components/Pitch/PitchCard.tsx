@@ -17,7 +17,6 @@ export interface PitchData {
   researchIdea: string;
   alignment: 'current-project' | 'prospected-project' | 'thought-leadership' | '';
   projectName: string;
-  buildingOff: string;
   methodology: string;
   scopeTier: 'simple' | 'medium' | 'complex' | '';
   impact: string;

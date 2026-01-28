@@ -15,7 +15,6 @@ export interface Pitch {
   researchIdea: string;
   alignment: string | null;
   projectName: string | null;
-  buildingOff: string | null;
   partner: string | null;
   methodology: string | null;
   scopeTier: string | null;
@@ -73,7 +72,6 @@ interface PitchRow {
   research_idea: string;
   alignment: string | null;
   project_name: string | null;
-  building_off: string | null;
   partner: string | null;
   methodology: string | null;
   scope_tier: string | null;
@@ -122,7 +120,6 @@ function rowToPitch(row: PitchRow): Pitch {
     researchIdea: row.research_idea,
     alignment: row.alignment,
     projectName: row.project_name,
-    buildingOff: row.building_off,
     partner: row.partner,
     methodology: row.methodology,
     scopeTier: row.scope_tier,
@@ -231,7 +228,6 @@ export async function createPitch(pitch: {
   status?: PitchStatus;
   alignment?: string;
   projectName?: string;
-  buildingOff?: string;
   partner?: string;
   methodology?: string;
   scopeTier?: string;
@@ -248,7 +244,6 @@ export async function createPitch(pitch: {
       status: pitch.status || 'pending',
       alignment: pitch.alignment || null,
       project_name: pitch.projectName || null,
-      building_off: pitch.buildingOff || null,
       partner: pitch.partner || null,
       methodology: pitch.methodology || null,
       scope_tier: pitch.scopeTier || null,
@@ -259,7 +254,7 @@ export async function createPitch(pitch: {
     .single();
 
   if (error) {
-    console.error('Error creating pitch:', error);
+    console.error('Error creating pitch:', error.message, error.details, error.hint, error.code);
     return null;
   }
 
@@ -278,7 +273,6 @@ export async function updatePitch(
     researchIdea: string;
     alignment: string;
     projectName: string;
-    buildingOff: string;
     partner: string;
     methodology: string;
     scopeTier: string;
@@ -294,7 +288,6 @@ export async function updatePitch(
   if (updates.researchIdea !== undefined) dbUpdates.research_idea = updates.researchIdea;
   if (updates.alignment !== undefined) dbUpdates.alignment = updates.alignment;
   if (updates.projectName !== undefined) dbUpdates.project_name = updates.projectName;
-  if (updates.buildingOff !== undefined) dbUpdates.building_off = updates.buildingOff;
   if (updates.partner !== undefined) dbUpdates.partner = updates.partner;
   if (updates.methodology !== undefined) dbUpdates.methodology = updates.methodology;
   if (updates.scopeTier !== undefined) dbUpdates.scope_tier = updates.scopeTier;

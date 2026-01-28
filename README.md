@@ -8,6 +8,27 @@
 
 **What we built today:**
 
+### Pitch System Bug Fixes
+
+**Submit Button Fix:**
+- Added loading spinner and disabled state during submission
+- Added error message display if submission fails
+- Added console logging for debugging user/pitch issues
+- Fixed silent failure when `currentUser` is null
+
+**Continue Editing Fix:**
+- Lifted chat messages state from `PitchChatPanel` to parent `PitchSubmission`
+- Chat history now survives when toggling between chat and final review
+- Messages passed via `initialMessages` and `onMessagesChange` props
+
+**Chat Persistence:**
+- Chat conversations now saved to `pitch_ai_sessions` table when pitch is submitted
+- Links Ezra conversation to the pitch for future reference
+
+**Files Changed:**
+- `src/views/Pitch/PitchSubmission.tsx` - State lifting, error handling, chat persistence
+- `src/components/Pitch/PitchChatPanel.tsx` - Added `onMessagesChange` callback
+
 ### React Router Implementation
 
 **Full URL Routing:**
@@ -529,18 +550,47 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 |----------|----------|------|--------|
 | `software@pflugerarchitects.com` | `123456Softwares!` | Admin | See all pitches, manage statuses, full dashboard |
 | `user@pflugerarchitects.com` | `123456Softwares!` | Researcher | See only own pitches, submit new pitches, claim greenlit |
+| `nilen.varade@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
+| `monse.rios@pflugerarchitects.com` | `123456Softwares!` | Researcher | Dallas office |
+| `katherine.wiley@pflugerarchitects.com` | `123456Softwares!` | Researcher | Dallas office |
+| `leah.vandersanden@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
+| `agustin.salinas@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
+| `logan.steitle@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
+| `braden.haley@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
+| `christian.owens@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
+| `brenda.swirczynski@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
 | *(logged out)* | - | Viewer | Public content only (Campus, Explore, Connect, About) |
 
-**Database Setup Required:**
-Both users must exist in the Supabase `users` table for authentication to work. Add them with:
-```sql
--- Admin user
-INSERT INTO users (id, email, name, role, office) VALUES
-('00000000-0000-0000-0000-000000000001', 'software@pflugerarchitects.com', 'Pfluger Admin', 'admin', 'Austin');
+**Database Users Table (11 users):**
 
--- Researcher user
+All users must exist in the Supabase `users` table with matching emails. Current users:
+
+| UUID | Email | Name | Role | Office |
+|------|-------|------|------|--------|
+| `00000000-0000-0000-0000-000000000001` | software@pflugerarchitects.com | Dev User | admin | Austin |
+| `00000000-0000-0000-0000-000000000002` | user@pflugerarchitects.com | Pfluger Researcher | researcher | Austin |
+| `a1b2c3d4-e5f6-4789-a1b2-c3d4e5f67890` | nilen.varade@pflugerarchitects.com | Nilen Varade | researcher | Austin |
+| `a1b2c3d4-e5f6-7890-abcd-ef1234567890` | logan.steitle@pflugerarchitects.com | Logan Steitle | researcher | Austin |
+| `b2c3d4e5-f6a7-4890-b2c3-d4e5f6a78901` | monse.rios@pflugerarchitects.com | Monse Rios | researcher | Dallas |
+| `b2c3d4e5-f6a7-8901-bcde-f12345678901` | braden.haley@pflugerarchitects.com | Braden Haley | researcher | San Antonio |
+| `c3d4e5f6-a7b8-4901-c3d4-e5f6a7b89012` | katherine.wiley@pflugerarchitects.com | Katherine Wiley | researcher | Dallas |
+| `d4e5f6a7-b8c9-4012-d4e5-f6a7b8c90123` | leah.vandersanden@pflugerarchitects.com | Leah VanderSanden | researcher | San Antonio |
+| `e5f6a7b8-c9d0-4123-e5f6-a7b8c9d01234` | agustin.salinas@pflugerarchitects.com | Agustin Salinas | researcher | San Antonio |
+| `f1a2b3c4-d5e6-4f78-9a0b-c1d2e3f4a5b6` | christian.owens@pflugerarchitects.com | Christian Owens | researcher | Austin |
+| `f2b3c4d5-e6f7-4890-ab12-d3e4f5a6b7c8` | brenda.swirczynski@pflugerarchitects.com | Brenda Swirczynski | researcher | Austin |
+
+**How Authentication Works:**
+1. User logs in with email/password (validated against `AuthContext.tsx`)
+2. System looks up user by email in Supabase `users` table
+3. If found, user's UUID is used to assign/filter pitches
+4. If NOT found, user can log in but cannot submit pitches (will see error)
+
+**Adding New Users:**
+1. Add credentials to `VALID_USERS` array in `src/components/System/AuthContext.tsx`
+2. Insert matching row in Supabase `users` table:
+```sql
 INSERT INTO users (id, email, name, role, office) VALUES
-('00000000-0000-0000-0000-000000000002', 'user@pflugerarchitects.com', 'Pfluger Researcher', 'researcher', 'Austin');
+('your-uuid-here', 'email@pflugerarchitects.com', 'Full Name', 'researcher', 'Austin');
 ```
 
 **Current Implementation:**
@@ -929,11 +979,11 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | File | Issue | Status |
 |------|-------|--------|
 | `AuthContext.tsx` | Hardcoded credentials (email/password) | Not fixed - awaiting Azure SSO |
-| `users` table | Missing researcher test user | **ACTION REQUIRED** - Run SQL insert for `user@pflugerarchitects.com` |
 | `Collaborate.tsx` | Simulated form submission | Not fixed |
 | `Schedule.tsx` | Mock hours data | Not fixed |
 | `loadProjects.ts` | Unsplash placeholders | Not fixed |
 | `ImageCarousel.tsx` | Unsplash hero images | Not fixed |
+| ~~`users` table~~ | ~~Missing researcher test user~~ | ✅ FIXED - All 9 users in database |
 | ~~`PitchSubmission.tsx`~~ | ~~Hardcoded GreenLit topics~~ | ✅ FIXED - In database |
 | ~~`PitchSubmission.tsx`~~ | ~~Mock DEFAULT_PITCHES data~~ | ✅ FIXED - Loads from database |
 | ~~`PitchSubmission.tsx`~~ | ~~"submittedBy" hardcoded~~ | ✅ FIXED - Uses user context |

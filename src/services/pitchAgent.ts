@@ -28,7 +28,6 @@ export interface ExtractedPitch {
   methodology: string | null;
   projectConnection: string | null;
   projectName: string | null;
-  buildingOff: string | null;
   partner: string | null;
   successMetrics: string | null;
   timeline: string | null;
@@ -131,7 +130,6 @@ When scope is determined, add: [PITCH_UPDATE: scope="simple|medium|complex"]
 When methodology is chosen, add: [PITCH_UPDATE: methodology="the method"]
 When project connection is known, add: [PITCH_UPDATE: alignment="current-project|prospected-project|thought-leadership"]
 When project name mentioned (if project-related), add: [PITCH_UPDATE: projectName="project name or number"]
-When building off prior research, add: [PITCH_UPDATE: buildingOff="X25-RB01" or other project ID]
 When partner/organization mentioned, add: [PITCH_UPDATE: partner="organization or partner name"]
 When deliverable/impact is clear, add: [PITCH_UPDATE: impact="what this will produce"]
 When timeline discussed, add: [PITCH_UPDATE: timeline="the timeline"]
@@ -248,9 +246,6 @@ function parsePitchUpdates(response: string): Partial<ExtractedPitch> {
       case 'projectName':
         updates.projectName = value;
         break;
-      case 'buildingOff':
-        updates.buildingOff = value;
-        break;
       case 'partner':
         updates.partner = value;
         break;
@@ -312,7 +307,6 @@ function extractPitchData(messages: PitchMessage[]): ExtractedPitch {
     methodology: null,
     projectConnection: null,
     projectName: null,
-    buildingOff: null,
     partner: null,
     successMetrics: null,
     timeline: null,
