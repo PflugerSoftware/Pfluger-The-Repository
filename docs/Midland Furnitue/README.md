@@ -28,8 +28,18 @@ Analyzing feedback from a one-semester classroom furniture pilot across 4 classr
 ## Survey Structure
 
 ### Data Sources
-- **Student Survey**: `/docs/Midland Furnitue/MHS LHS FFE Classroom Pilot_Fall 2025_Student.xlsx`
-- **Teacher Survey**: `/docs/Midland Furnitue/MHS LHS FFE Classroom Pilot_Fall 2025_Teacher.xlsx`
+
+**Raw Data (xlsx):**
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Student.xlsx`
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Teacher.xlsx`
+
+**Exported CSVs (used for analysis):**
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Student-Questions.csv` - Survey questions
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Student-Responces.csv` - 321 student responses
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Teacher-Questions.csv` - Survey questions
+- `MHS LHS FFE Classroom Pilot_Fall 2025_Teacher-Responces.csv` - 7 teacher responses
+
+> **DATA NOTE:** The teacher survey had a typo - "Desk 4" was listed as "Desk 3" twice. This has been corrected in the source data, but the Insights document statistics have not yet been updated to reflect the corrected data. Statistics need to be re-verified before final presentation.
 
 ### Survey Design
 - **Students**: All 4 classrooms received the same student desks and chairs
@@ -110,19 +120,25 @@ Create interactive blocks for EZRA platform using existing components:
 - **Bar Chart Block** - Preference rankings
 - **Donut Chart Block** - Theme distribution
 
-### Step 4: Student Personas (Optional)
-Each row in the student survey represents one student's complete responses. We could create personas like:
-- "Height-Conscious Hannah" - shorter student who needs adjustable furniture
-- "Mobile Max" - frequently moves between group work and individual work
-- "Durability Dave" - notices quality and wear issues
+### Step 4: Student Personas
+Each row in the student survey represents one student's complete responses. Three personas were created:
+- **"Space-Seeking Sam"** (45%) - prioritizes larger desks and chairs with room to spread out
+- **"Mobile Max"** (30%) - values movement and flexibility, wants locking wheels
+- **"Height-Conscious Hannah"** (10%) - needs adjustable heights, shorter students
 
 ## Timeline & Deliverables
 
 ### Key Dates
-- **Meeting 1**: 2/3 at 3:30-4:30pm - Review themes
-- **Meeting 2**: 2/6 at 2:00-3:00pm - Review themes and charts
-- **Deadline**: Insights, themes, and graphics ready by 2/6
+- **Meeting 1**: 2/3 at 3:30pm - Review themes (complete)
+- **Meeting 2**: 2/6 (Thursday) at 2:00pm - Review updated insights with Wendy
+- **Internal Review**: 2/6 - Wendy presents to Interiors group
+- **Midland Call**: 2/7 (Friday) - Wendy presents to Midland
 - **Sample Rodeo Event**: May - Present findings to broader audience
+
+### To Do Before 2/6
+- [ ] Verify and re-check all statistics in Insights document
+- [ ] Update Insights with corrected teacher survey data
+- [ ] Create RB blocks for Repository public page (if time permits)
 
 ### Deliverables
 1. Theme taxonomy from qualitative responses
@@ -131,12 +147,17 @@ Each row in the student survey represents one student's complete responses. We c
 4. Shareable link to findings
 5. Insights document for furniture customization decisions
 
+**Current Output:**
+- `FurntureSurvey-Insights.md` - Full analysis with findings, themes, and recommendations
+- `X26-RB01 - Midland Furniture Pilot - Survey Analysis.docx` - Formatted report
+
 ## Resources
 
 ### Furniture Images
 `P:\Dallas\24-001 - Midland2NewHSproject\03 Design\10 Interiors\FFE\07 FFE Pilot Classrooms\Surveys\Resources\images`
 
-### RB Block Components
+### RB Block Components These will get revised
+
 Located in `/src/components/blocks/`:
 - SurveyRatingBlock.tsx
 - FeedbackSummaryBlock.tsx
@@ -164,72 +185,3 @@ Located in `/src/components/blocks/`:
 - Data is accessible and shareable via link
 
 ---
-
-## CONTINUING PROMPT (When Resuming Work)
-
-When you pick this project back up, here's where to start:
-
-### Context
-This is a furniture pilot survey analysis for Midland High School. Wendy Rosamond needs visual insights from student and teacher feedback on classroom furniture (chairs and desks) to inform customization decisions for the full school build-out. The analysis compares student vs. teacher perspectives and extracts themes from both quantitative ratings and qualitative open-ended responses.
-
-### Next Steps
-
-**1. Analyze the Survey Data**
-- Open and review both Excel files:
-  - `/docs/Midland Furnitue/MHS LHS FFE Classroom Pilot_Fall 2025_Student.xlsx`
-  - `/docs/Midland Furnitue/MHS LHS FFE Classroom Pilot_Fall 2025_Teacher.xlsx`
-- Understand the structure: columns, question types, response formats
-- Note which questions are quantitative (ratings, choices) vs. qualitative (open-ended text)
-
-**2. Extract Themes from Qualitative Responses**
-- Identify all open-ended question columns (complaints, suggestions, what's missing, etc.)
-- Run AI-assisted theme extraction on text responses
-- Use the theme categories outlined above as starting points (size, mobility, height, materials, durability)
-- Quantify theme prevalence (count how many responses mention each theme)
-- Tag each response with relevant themes
-
-**3. Build Comparative Analysis**
-- Compare student vs. teacher responses on the same questions
-- Identify alignments and conflicts between perspectives
-- Highlight where student preferences differ from teacher preferences
-- Consider WHO uses the furniture (students sit, teachers rearrange)
-
-**4. Calculate Key Metrics**
-- Participation numbers (how many students, how many teachers)
-- Response rates
-- Preference rankings (which chair/desk was most popular)
-- Rating distributions for quantitative questions
-
-**5. Create Visual Graphics (RB Blocks)**
-Start building components using existing block templates in `/src/components/blocks/`:
-- **StatGridBlock** - Participation metrics (# students, # teachers, response rate)
-- **BarChartBlock** - Furniture preference rankings (Chair 1 vs 2 vs 3 vs 4)
-- **SurveyRatingBlock** - Rating distributions for quantitative questions
-- **FeedbackSummaryBlock** - Theme visualization with counts
-- **ComparisonTableBlock** - Student vs. Teacher perspective comparison
-- **QuotesBlock** - Representative quotes for each theme
-- **KeyFindingsBlock** - Top 3-5 actionable insights
-- **DonutChartBlock** - Theme distribution breakdown
-
-**6. Optional: Student Personas**
-If time allows, create 3-4 student personas from survey data:
-- Each row in student Excel = one student's complete responses
-- Look for patterns in responses to create archetypal users
-- Give them names and characteristics based on their feedback patterns
-- Examples: "Height-Conscious Hannah", "Mobile Max", "Durability Dave"
-
-### Files to Work With
-- Survey data: `/docs/Midland Furnitue/*.xlsx`
-- Transcript reference: `/docs/Midland Furnitue/Call with Wendy Rosamond.vtt`
-- Furniture images: `P:\Dallas\24-001 - Midland2NewHSproject\03 Design\10 Interiors\FFE\07 FFE Pilot Classrooms\Surveys\Resources\images`
-- Block components: `/src/components/blocks/*.tsx`
-
-### Key Questions to Answer
-- Which furniture pieces were most preferred by students? By teachers?
-- What themes emerge from complaints and suggestions?
-- Where do student and teacher perspectives align? Where do they conflict?
-- What design changes should be made based on feedback?
-- What features are missing that users want?
-
-### Deliverable Format
-Create a new research project entry in EZRA (similar to other X25-RB## projects) with blocks presenting the findings. Make it shareable via link so Wendy can present to stakeholders at the Sample Rodeo event in May.
