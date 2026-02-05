@@ -83,6 +83,12 @@ const VALID_USERS = [
     password: '123456Softwares!',
     name: 'Brenda Swirczynski',
     role: 'researcher' as const
+  },
+  {
+    username: 'samantha.goosen@pflugerarchitects.com',
+    password: '123456Softwares!',
+    name: 'Samantha Goosen',
+    role: 'researcher' as const
   }
 ];
 
