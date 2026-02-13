@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { supabase } from '../../config/supabase';
 
 interface User {
   username: string;
   name: string;
-  role: 'admin' | 'researcher';
+  role: 'admin' | 'researcher' | 'contributor' | 'viewer';
 }
 
 interface AuthContextType {
@@ -15,82 +16,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hardcoded credentials for now (will migrate to Azure SSO)
-// Two-tier system: Admin (sees all pitches) vs Researcher (sees only their own)
-const VALID_USERS = [
-  {
-    username: 'software@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Pfluger Admin',
-    role: 'admin' as const
-  },
-  {
-    username: 'user@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Pfluger Researcher',
-    role: 'researcher' as const
-  },
-  {
-    username: 'nilen.varade@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Nilen Varade',
-    role: 'researcher' as const
-  },
-  {
-    username: 'monse.rios@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Monse Rios',
-    role: 'researcher' as const
-  },
-  {
-    username: 'katherine.wiley@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Katherine Wiley',
-    role: 'researcher' as const
-  },
-  {
-    username: 'leah.vandersanden@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Leah VanderSanden',
-    role: 'researcher' as const
-  },
-  {
-    username: 'agustin.salinas@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Agustin Salinas',
-    role: 'researcher' as const
-  },
-  {
-    username: 'logan.steitle@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Logan Steitle',
-    role: 'researcher' as const
-  },
-  {
-    username: 'braden.haley@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Braden Haley',
-    role: 'researcher' as const
-  },
-  {
-    username: 'christian.owens@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Christian Owens',
-    role: 'researcher' as const
-  },
-  {
-    username: 'brenda.swirczynski@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Brenda Swirczynski',
-    role: 'researcher' as const
-  },
-  {
-    username: 'samantha.goosen@pflugerarchitects.com',
-    password: '123456Softwares!',
-    name: 'Samantha Goosen',
-    role: 'researcher' as const
-  }
-];
+// Shared password for all users (will migrate to Azure SSO)
+const SHARED_PASSWORD = '123456Softwares!';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -107,34 +34,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // Check credentials against valid users
-    const validUser = VALID_USERS.find(
-      u => u.username === username && u.password === password
-    );
-
-    if (validUser) {
-      const userData: User = {
-        username: validUser.username,
-        name: validUser.name,
-        role: validUser.role
-      };
-
-      setIsAuthenticated(true);
-      setUser(userData);
-
-      // Save to localStorage
-      localStorage.setItem('ezra-auth', JSON.stringify({
-        isAuthenticated: true,
-        user: userData
-      }));
-
-      return true;
+    // Check password
+    if (password !== SHARED_PASSWORD) {
+      return false;
     }
 
-    return false;
+    // Look up user in database
+    const { data, error } = await supabase
+      .from('users')
+      .select('email, name, role')
+      .eq('email', username)
+      .single();
+
+    if (error || !data) {
+      return false;
+    }
+
+    const userData: User = {
+      username: data.email,
+      name: data.name,
+      role: data.role as User['role']
+    };
+
+    setIsAuthenticated(true);
+    setUser(userData);
+
+    // Save to localStorage
+    localStorage.setItem('ezra-auth', JSON.stringify({
+      isAuthenticated: true,
+      user: userData
+    }));
+
+    return true;
   };
 
   const logout = () => {

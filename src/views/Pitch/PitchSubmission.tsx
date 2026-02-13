@@ -14,7 +14,9 @@ import {
   User,
   Calendar,
   Target,
-  Loader2
+  Loader2,
+  X,
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '../../components/System/AuthContext';
 import { type PitchData } from '../../components/Pitch/PitchCard';
@@ -31,6 +33,10 @@ import {
   addPitchComment,
   getUserByEmail,
   savePitchAiSession,
+  getUsers,
+  getPitchCollaborators,
+  addPitchCollaborator,
+  removePitchCollaborator,
   type Pitch,
   type PitchComment,
   type PitchStatus,
@@ -125,6 +131,10 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
   const [pitchComments, setPitchComments] = useState<PitchComment[]>([]);
   const [commentInput, setCommentInput] = useState('');
 
+  // Collaborators
+  const [allUsers, setAllUsers] = useState<DbUser[]>([]);
+  const [pitchCollaborators, setPitchCollaborators] = useState<DbUser[]>([]);
+
   // Edit mode for pitch review
   const [isEditingPitch, setIsEditingPitch] = useState(false);
 
@@ -146,6 +156,15 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
     timeline: '',
     partners: ''
   });
+
+  // Generate initials from user name (matches TopNavbar pattern)
+  const getInitials = (name: string) => {
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
 
   // Load data on mount or when auth user changes
   useEffect(() => {
@@ -178,6 +197,10 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
         // Load available greenlit pitches (unclaimed)
         const available = await getPitches({ status: 'greenlit', availableOnly: true });
         setAvailableGreenlit(available);
+
+        // Load all users for collaborator picker
+        const users = await getUsers();
+        setAllUsers(users);
       } catch (err) {
         console.error('Error loading pitch data:', err);
       } finally {
@@ -187,17 +210,22 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
     loadData();
   }, [authUser]);
 
-  // Load comments when expanded pitch changes
+  // Load comments and collaborators when expanded pitch changes
   useEffect(() => {
-    async function loadComments() {
+    async function loadPitchDetails() {
       if (expandedPitch) {
-        const comments = await getPitchComments(expandedPitch);
+        const [comments, collaborators] = await Promise.all([
+          getPitchComments(expandedPitch),
+          getPitchCollaborators(expandedPitch)
+        ]);
         setPitchComments(comments);
+        setPitchCollaborators(collaborators);
       } else {
         setPitchComments([]);
+        setPitchCollaborators([]);
       }
     }
-    loadComments();
+    loadPitchDetails();
   }, [expandedPitch]);
 
   const handleStartCustom = () => {
@@ -445,6 +473,25 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
       setPitchComments(prev => [...prev, newComment]);
     }
     setCommentInput('');
+  };
+
+  // Handler to add a collaborator to a pitch
+  const handleAddCollaborator = async (pitchId: string, userId: string) => {
+    const success = await addPitchCollaborator(pitchId, userId);
+    if (success) {
+      const user = allUsers.find(u => u.id === userId);
+      if (user) {
+        setPitchCollaborators(prev => [...prev, user]);
+      }
+    }
+  };
+
+  // Handler to remove a collaborator from a pitch
+  const handleRemoveCollaborator = async (pitchId: string, userId: string) => {
+    const success = await removePitchCollaborator(pitchId, userId);
+    if (success) {
+      setPitchCollaborators(prev => prev.filter(c => c.id !== userId));
+    }
   };
 
   // Render initial choice screen
@@ -1053,6 +1100,71 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
                               >
                                 {isEditingPitch ? <Check className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
                               </button>
+                            </div>
+                          </div>
+
+                          {/* Collaborators */}
+                          <div className="px-5 pt-4">
+                            <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">
+                              Collaborators
+                            </label>
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Owner avatar */}
+                              {pitch.userName && (
+                                <div className="flex items-center gap-1.5" title={`${pitch.userName} (owner)`}>
+                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold ring-2 ring-gray-900">
+                                    {getInitials(pitch.userName)}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Collaborator avatars */}
+                              {pitchCollaborators.map(collab => (
+                                <div key={collab.id} className="flex items-center gap-1" title={collab.name}>
+                                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-sky-500 to-cyan-600 flex items-center justify-center text-white text-xs font-semibold">
+                                    {getInitials(collab.name)}
+                                  </div>
+                                  {isEditingPitch && (
+                                    <button
+                                      onClick={() => handleRemoveCollaborator(pitch.id, collab.id)}
+                                      className="w-4 h-4 rounded-full bg-red-900/50 flex items-center justify-center text-red-400 hover:bg-red-800 transition-colors"
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+
+                              {/* Add collaborator dropdown in edit mode */}
+                              {isEditingPitch && (
+                                <div className="relative">
+                                  <select
+                                    value=""
+                                    onChange={(e) => {
+                                      if (e.target.value) {
+                                        handleAddCollaborator(pitch.id, e.target.value);
+                                      }
+                                    }}
+                                    className="appearance-none bg-gray-800 text-gray-400 text-xs pl-2 pr-6 py-1.5 rounded-lg border border-gray-700 hover:border-gray-600 focus:outline-none focus:border-sky-500 cursor-pointer"
+                                  >
+                                    <option value="">+ Add</option>
+                                    {allUsers
+                                      .filter(u =>
+                                        u.id !== pitch.userId &&
+                                        !pitchCollaborators.some(c => c.id === u.id)
+                                      )
+                                      .map(u => (
+                                        <option key={u.id} value={u.id}>{u.name}</option>
+                                      ))
+                                    }
+                                  </select>
+                                  <UserPlus className="w-3 h-3 text-gray-500 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                </div>
+                              )}
+
+                              {!isEditingPitch && pitchCollaborators.length === 0 && !pitch.userName && (
+                                <span className="text-xs text-gray-600">No collaborators</span>
+                              )}
                             </div>
                           </div>
 

@@ -165,6 +165,7 @@ function rowToComment(row: PitchCommentRow): PitchComment {
 
 /**
  * Get all pitches (optionally filter by status or user)
+ * When userId is provided, also includes pitches where the user is a collaborator.
  */
 export async function getPitches(options?: {
   userId?: string;
@@ -196,7 +197,36 @@ export async function getPitches(options?: {
     return [];
   }
 
-  return (data || []).map(rowToPitch);
+  let pitches = (data || []).map(rowToPitch);
+
+  // If filtering by userId (non-admin), also fetch pitches where user is a collaborator
+  if (options?.userId && !options?.status && !options?.availableOnly) {
+    const { data: collabRows, error: collabError } = await supabase
+      .from('pitch_collaborators')
+      .select('pitch_id')
+      .eq('user_id', options.userId);
+
+    if (!collabError && collabRows && collabRows.length > 0) {
+      const collabPitchIds = collabRows.map((r: { pitch_id: string }) => r.pitch_id);
+      // Exclude any we already have from the owned query
+      const ownedIds = new Set(pitches.map(p => p.id));
+      const missingIds = collabPitchIds.filter((id: string) => !ownedIds.has(id));
+
+      if (missingIds.length > 0) {
+        const { data: collabPitches, error: collabPitchError } = await supabase
+          .from('pitches')
+          .select(`*, users (name)`)
+          .in('id', missingIds)
+          .order('created_at', { ascending: false });
+
+        if (!collabPitchError && collabPitches) {
+          pitches = [...pitches, ...collabPitches.map(rowToPitch)];
+        }
+      }
+    }
+  }
+
+  return pitches;
 }
 
 /**
@@ -503,8 +533,104 @@ export async function deletePitchComment(commentId: string): Promise<boolean> {
 }
 
 // ============================================
+// Pitch Collaborators
+// ============================================
+
+/**
+ * Get all collaborators for a pitch
+ */
+export async function getPitchCollaborators(pitchId: string): Promise<User[]> {
+  const { data, error } = await supabase
+    .from('pitch_collaborators')
+    .select(`
+      user_id,
+      users (id, email, name, role, office, avatar_url)
+    `)
+    .eq('pitch_id', pitchId);
+
+  if (error) {
+    console.error('Error loading pitch collaborators:', error);
+    return [];
+  }
+
+  // Supabase infers users as array through junction table, but it's always a single object per row
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data || [])
+    .filter((row: any) => row.users)
+    .map((row: any) => {
+      const u = Array.isArray(row.users) ? row.users[0] : row.users;
+      return {
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        role: u.role,
+        office: u.office,
+        avatarUrl: u.avatar_url
+      };
+    });
+}
+
+/**
+ * Add a collaborator to a pitch
+ */
+export async function addPitchCollaborator(pitchId: string, userId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('pitch_collaborators')
+    .insert({ pitch_id: pitchId, user_id: userId });
+
+  if (error) {
+    console.error('Error adding pitch collaborator:', error);
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Remove a collaborator from a pitch
+ */
+export async function removePitchCollaborator(pitchId: string, userId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('pitch_collaborators')
+    .delete()
+    .eq('pitch_id', pitchId)
+    .eq('user_id', userId);
+
+  if (error) {
+    console.error('Error removing pitch collaborator:', error);
+    return false;
+  }
+
+  return true;
+}
+
+// ============================================
 // Users
 // ============================================
+
+/**
+ * Get all users (for collaborator picker)
+ */
+export async function getUsers(): Promise<User[]> {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, email, name, role, office, avatar_url')
+    .order('name');
+
+  if (error) {
+    console.error('Error loading users:', error);
+    return [];
+  }
+
+  return (data || []).map((row: { id: string; email: string; name: string; role: string; office: string | null; avatar_url: string | null }) => ({
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    role: row.role,
+    office: row.office,
+    avatarUrl: row.avatar_url
+  }));
+}
 
 /**
  * Get user by ID
