@@ -84,6 +84,41 @@ This document lists decisions that need to be made by stakeholders to move forwa
 |AI Bucket|
 |Bambu Labs | 3d printing |  apps@pfluger|free 
 
+### Claude Users Standard $25, Premium $125
+
+**Current Users** 
+(Claude Code Alex Wickes, Logan Steitle) | software@pflugerarchitects.com | Standard,  upgrade to premium 
+Lauren Cloud | Lauren.Cloud@pflugerarchitects.com | Standard
+Nilen Varade | Nilen.Varade@pflugerarchitects.com | Standard
+Katherine Wiley | Katherine.Wiley@pflugerarchitects.com | Standard
+Taraneh Kalati | Taraneh.Kalati@pflugerarchitects.com | Standard
+
+
+Samantha Goosen | Samantha.Goosen@pflugerarchitects.com | None
+Casey Wilkinson | Casey.wilkinson@pflugerarchitects.com | None
+Chris Hickey | Chris.Hickey@pflugerarchitects.com | None
+Jonathan Bryer | jonathan.bryer@pflugerarchitects.com | None
+Monse Rios | monse.rios@pflugerarchitects.com | None
+Agustin Salinas | Agustin.Salinas@pflugerarchitects.com | None
+Tim Estrada | tim.estrada@pflugerarchitects.com | None
+
+
+Tony Plascencia | Tony.plascencia@pflugerarchitects.com | None
+Tony Schmitz | Tony.Schmitz@pflugerarchitects.com | None
+Kipp Schecht | Kipp.Schecht@pflugerarchitects.com | None
+Cameron Richards | Cameron.richards@pflugerarchitects.com | None
+Hunter Bradshaw | Hunter.Bradshaw@pflugerarchitects.com | None
+Braden Haley | braden.haley@pflugerarchitects.com | None
+Leah Van Der Sanden | leah.vandersanden@pflugerarchitects.com | None
+Jeremy Barragan | Jeremy.barragan@pflugerarchitects.com | None
+Wendy Rosamond | Wendy.Rosamond@pflugerarchitects.com | None
+
+William Webb | William.Webb@pflugerarchitects.com | Standard (Unassigned)
+Zhun Jiao | Zhun.Jiao@pflugerarchitects.com | None
+
+
+
+
 
 ---
 ## Application Action Items
