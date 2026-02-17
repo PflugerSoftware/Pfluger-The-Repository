@@ -176,7 +176,7 @@ export async function getPitches(options?: {
     .from('pitches')
     .select(`
       *,
-      users (name)
+      users!pitches_user_id_fkey (name)
     `)
     .order('created_at', { ascending: false });
 
@@ -215,7 +215,7 @@ export async function getPitches(options?: {
       if (missingIds.length > 0) {
         const { data: collabPitches, error: collabPitchError } = await supabase
           .from('pitches')
-          .select(`*, users (name)`)
+          .select(`*, users!pitches_user_id_fkey (name)`)
           .in('id', missingIds)
           .order('created_at', { ascending: false });
 
