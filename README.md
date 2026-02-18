@@ -559,6 +559,8 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 | `braden.haley@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
 | `christian.owens@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
 | `brenda.swirczynski@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
+| `wendy.rosamond@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
+| `allie.schneider@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
 | *(logged out)* | - | Viewer | Public content only (Campus, Explore, Connect, About) |
 
 **Database Users Table (11 users):**
@@ -578,6 +580,9 @@ All users must exist in the Supabase `users` table with matching emails. Current
 | `e5f6a7b8-c9d0-4123-e5f6-a7b8c9d01234` | agustin.salinas@pflugerarchitects.com | Agustin Salinas | researcher | San Antonio |
 | `f1a2b3c4-d5e6-4f78-9a0b-c1d2e3f4a5b6` | christian.owens@pflugerarchitects.com | Christian Owens | researcher | Austin |
 | `f2b3c4d5-e6f7-4890-ab12-d3e4f5a6b7c8` | brenda.swirczynski@pflugerarchitects.com | Brenda Swirczynski | researcher | Austin |
+| `904f7e9e-9d35-4528-8f65-07dc1b09bc39` | wendy.rosamond@pflugerarchitects.com | Wendy Rosamond | researcher | Austin |
+| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
+| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
 
 **How Authentication Works:**
 1. User logs in with email/password (validated against `AuthContext.tsx`)

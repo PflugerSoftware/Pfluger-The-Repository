@@ -152,7 +152,53 @@ INSERT INTO project_blocks (id, project_id, block_type, block_order, data) VALUE
 
 ---
 
-## Step 3: Block Type Reference
+## Step 3: Add RAG Fields to Blocks
+
+After inserting blocks, add RAG fields so Ezra can search and cite them. Run a separate UPDATE file for each project.
+
+Skip pure section headers (`block_type = 'section'`) — they have no searchable content worth indexing.
+
+### RAG Fields
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `summary` | text | 1-2 sentence description used by Ezra for relevance checking |
+| `tags` | text[] | Searchable topic tags |
+| `searchable_text` | text | Full flattened text content of the block for full-text search |
+| `conclusions` | text[] | Key takeaways Ezra can cite directly in responses |
+
+### Format
+
+Use `$$...$$` dollar-quoting for `summary` and `searchable_text`. Use PostgreSQL array literal `'{"tag1","tag2"}'` for `tags` and `conclusions`. Make sure conclusion strings don't contain inner double quotes.
+
+```sql
+UPDATE project_blocks SET
+  summary = $$Short description of what this block contains.$$,
+  tags = '{"tag1","tag2","tag3"}',
+  searchable_text = $$Full flattened text content of the block. Numbers, labels, descriptions — all in readable prose. No JSON.$$,
+  conclusions = '{"Key takeaway with a number: 46.6% preferred Chair 3","Key takeaway 2"}'
+WHERE id = 'x26-rb01-stat-grid';
+```
+
+### Field Guidelines
+
+- **summary**: What is this block about? 1-2 sentences. Used to decide relevance before full content is read.
+- **tags**: Include the project ID, category, and key themes. E.g. `'{"FFE","furniture pilot","Midland ISD","comfort","chairs"}'`
+- **searchable_text**: Flatten everything in the block's `data` JSON into readable prose. Include all labels, values, descriptions, and specs. No JSON syntax.
+- **conclusions**: Direct statements Ezra can surface. Be specific. Include numbers. Each string should stand alone as a citable fact.
+
+### Workflow
+
+Save the RAG update SQL as a separate file alongside the blocks SQL:
+```
+docs/[Project Folder]/[project-id]-rag-updates.sql
+```
+
+Run it in the Supabase SQL editor after blocks are inserted. "No rows returned" is the success message for UPDATE statements.
+
+---
+
+## Block Type Reference
 
 ### `section`
 Section divider with large title. Use to break up the dashboard into named parts.

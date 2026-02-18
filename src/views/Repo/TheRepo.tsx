@@ -315,9 +315,9 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
                 exit={{ opacity: 0, y: -20 }}
                 className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full"
               >
-                <h1 className="text-4xl font-bold text-white mb-3">Repository</h1>
+                <h1 className="text-4xl font-bold text-white mb-3">Ezra</h1>
                 <p className="text-gray-400 text-center mb-12">
-                  Let's explore
+                  Your research assistant
                 </p>
 
                 {/* Quick prompts */}
@@ -351,7 +351,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                      placeholder="Ask anything..."
+                      placeholder="Ask Ezra..."
                       className="flex-1 bg-card border border-card text-white placeholder-gray-500 rounded-full px-6 py-4 focus:outline-none focus:border-gray-600 transition-colors"
                     />
                     <button
@@ -374,8 +374,8 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
               >
                 {/* Header */}
                 <div className="shrink-0 pb-6">
-                  <h1 className="text-2xl font-bold text-white">Repository</h1>
-                  <p className="text-sm text-gray-500">Research assistant</p>
+                  <h1 className="text-2xl font-bold text-white">Ezra</h1>
+                  <p className="text-sm text-gray-500">Your research assistant</p>
                 </div>
 
                 {/* Messages */}

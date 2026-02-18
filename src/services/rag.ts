@@ -98,11 +98,8 @@ export async function searchBlocks(
   }));
 }
 
-// Get sources by IDs - looks up from the sources block, not a separate table
-export async function getSources(sourceIds: number[], projectId: string): Promise<Source[]> {
-  if (!sourceIds.length) return [];
-
-  // Get the sources block for this project
+// Get all sources from a project's sources block
+export async function getAllSources(projectId: string): Promise<Source[]> {
   const { data: sourcesBlock, error } = await supabase
     .from('project_blocks')
     .select('data')
@@ -115,7 +112,6 @@ export async function getSources(sourceIds: number[], projectId: string): Promis
     return [];
   }
 
-  // Filter to requested source IDs
   const allSources = sourcesBlock.data.sources as Array<{
     id: number;
     title: string;
@@ -123,15 +119,20 @@ export async function getSources(sourceIds: number[], projectId: string): Promis
     url: string | null;
   }>;
 
-  return allSources
-    .filter(s => sourceIds.includes(s.id))
-    .map(s => ({
-      id: s.id,
-      project_id: projectId,
-      title: s.title,
-      author: s.author,
-      url: s.url,
-    }));
+  return allSources.map(s => ({
+    id: s.id,
+    project_id: projectId,
+    title: s.title,
+    author: s.author,
+    url: s.url,
+  }));
+}
+
+// Get sources by IDs - looks up from the sources block, not a separate table
+export async function getSources(sourceIds: number[], projectId: string): Promise<Source[]> {
+  if (!sourceIds.length) return [];
+  const all = await getAllSources(projectId);
+  return all.filter(s => sourceIds.includes(s.id));
 }
 
 // Format sources for citation
@@ -595,10 +596,15 @@ export async function queryRAG(
   // Expand section blocks to include their child content blocks
   const expandedBlocks = await expandSectionBlocks(relevantBlocks);
 
-  // Gather all source IDs
+  // Gather all source IDs from blocks
   const allSourceIds = [...new Set(expandedBlocks.flatMap(b => b.source_ids))];
   const projectIdForSources = projectId || expandedBlocks[0]?.project_id;
-  const sources = await getSources(allSourceIds, projectIdForSources);
+  // If source_ids aren't populated on blocks, fall back to loading all sources for the project
+  const sources = projectIdForSources
+    ? allSourceIds.length > 0
+      ? await getSources(allSourceIds, projectIdForSources)
+      : await getAllSources(projectIdForSources)
+    : [];
 
   // Step 4: Sonnet synthesizes answer
   const rawAnswer = await synthesizeAnswer(query, expandedBlocks, sources, conversationHistory);
