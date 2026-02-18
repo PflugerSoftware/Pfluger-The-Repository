@@ -1,8 +1,9 @@
 # EZRA Development Calendar
 
-**Target Launch:** End of January 2026
+**Launched:** February 7, 2026 (soft launch to Midland ISD stakeholders)
+**Next Milestone:** March 2026 (broader internal launch)
 **Tech Stack:** Supabase (PostgreSQL + Auth) - Approved
-**Last Updated:** January 27, 2026
+**Last Updated:** February 18, 2026
 
 ---
 
@@ -11,12 +12,13 @@
 | Area | Status | Notes |
 |------|--------|-------|
 | Block System (21 types) | ✅ Done | All components working |
-| Project Dashboards (8) | ✅ Done | Configs complete |
+| Project Dashboards (9) | ✅ Done | X26-RB01 added Feb 2026 |
 | Research Map | ✅ Done | Mapbox 3D (pflugerarchitects account) |
 | Portfolio/Gallery | ✅ Done | Year grouping |
 | Pitch UI | ✅ Done | Form, chat panel, auto-save |
-| Repository UI | ✅ Done | Chat interface with RAG |
-| Auth | ⚠️ Mock | Hardcoded creds (Azure SSO pending) |
+| Repository UI (Ezra) | ✅ Done | Chat interface with RAG, renamed to Ezra |
+| RAG Source Citations | ✅ Done | Fixed Feb 18 - sources now display on all responses |
+| Auth | ⚠️ Mock | Shared password, per-user passwords next |
 | Database Schema | ✅ Done | 17 tables in Supabase |
 | Frontend-DB Integration | ✅ Done | Full persistence via services |
 | AI Integration | ✅ Done | RAG + Pitch AI (Ezra) fully wired |
@@ -73,34 +75,36 @@
 
 ---
 
-## Current: Week 4 (January 27-30)
+## Completed: Week 4 (January 27-30)
 
-**Launch Target:** End of January 2026
+- [x] Final QA testing
+- [x] Pitch submission end-to-end testing
+- [x] Repository chat tested across projects
+- [x] Analytics tracking verified
+- [x] Navigation flow testing
+- [x] Stakeholder demo (Jan 28)
+- [x] Bug fixes from demo
+- [ ] Replace Unsplash placeholders - Deferred
+- [ ] Collaboration form Supabase integration - Deferred
+- [ ] Email notifications via Resend - Deferred
+- [ ] Azure SSO integration - Blocked (post-launch)
 
-### Remaining Pre-Launch Tasks
+---
 
-| Priority | Task | Status |
-|----------|------|--------|
-| Critical | Final QA testing | To Do |
-| Critical | Test pitch submission end-to-end | To Do |
-| Critical | Test Repository chat with all 8 projects | To Do |
-| Critical | Verify analytics tracking | To Do |
-| High | Update Mapbox account (if not done) | ✅ Done |
-| High | Test all navigation flows | To Do |
-| Medium | Replace Unsplash placeholders (if any) | To Do |
-| Medium | Collaboration form Supabase integration | Deferred |
-| Medium | Email notifications via Resend | Deferred |
-| Low | Azure SSO integration | Blocked (post-launch) |
+## Completed: February 2026
 
-### Launch Week Schedule
-
-| Day | Task | Priority |
-|-----|------|----------|
-| Mon 1/27 | QA testing and bug fixes | Critical |
-| Tue 1/28 | Stakeholder demo | Critical |
-| Wed 1/29 | Bug fixes from demo | High |
-| Thu 1/30 | Production deployment | Critical |
-| Thu 1/30 | **LAUNCH** + monitoring | Critical |
+- [x] Soft launched to Midland ISD stakeholders (Feb 7)
+- [x] X26-RB01 Midland Furniture Pilot project added
+  - 15 content blocks built and deployed
+  - RAG fields (summary, tags, searchable_text, conclusions) added for all 12 content blocks
+  - Fixed Ezra source citations not displaying (getAllSources fallback in rag.ts)
+- [x] Renamed Repository chat interface to "Ezra: Your research assistant"
+- [x] 6 new users added (Wendy Rosamond, Allie Schneider, Josh Sawyer, David Young, Brenda Swirczynski, Samantha Goosen, Emily Perna, Tim Estrada)
+- [x] User table cleanup - removed test user, fixed duplicate Brenda entry, lowercased all emails
+- [x] Dallas added as valid office in projects check constraint
+- [x] Slug support added for shareable project URLs (/explore/MidlandFFE)
+- [x] Added RAG field documentation to Adding-a-New-Project.md
+- [x] Development Calendar updated with Feb analytics
 
 ---
 
@@ -428,141 +432,81 @@ When pitch is GreenLit:
 - BH: Would also be nice to have hyperlinks for the precedent studies that are cited for projects in the research campus.
 - BH: Love the idea of having green-lit / pre-approved research prompts! This might make it less intimidating for more people to start researching/writing
 
-### Prelaunch Analytics
+### Analytics (Updated February 18, 2026)
 
-**Summary:** 4 active users out of 9 total testers | 27 total page views | 4 sessions | 28 minutes total time
+**Summary:** 7 active users | 172 real page views | Jan 21 - Feb 18, 2026
+*(174 additional views from dev/admin account excluded)*
 
----
+**Top Pages (all users):**
 
-#### Braden Haley (braden.haley@pflugerarchitects.com)
+| Page | Views |
+|------|-------|
+| explore | 71 |
+| home | 66 |
+| repository | 41 |
+| pitch | 33 |
+| campus | 16 |
+| explore-X25-RB05 | 10 |
+| explore-X25-RB01 | 9 |
+| explore-X25-RB13 | 8 |
 
-**Summary:**
-- Total Page Views: 6
-- Sessions: 1
-- Total Time Spent: 13m
-- Average Session Duration: 13m
-- Office: San Antonio
-- Role: researcher
+**Per-User Summary:**
 
-**Most Visited Pages:**
-- home: 1 visit
-- map: 1 visit
-- portfolio: 1 visit
-- the-repo: 1 visit
-- pitch-new: 1 visit
+| User | Office | Views | Sessions | First Seen | Last Seen |
+|------|--------|-------|----------|------------|-----------|
+| Monse Rios | Dallas | 61 | 2 | Feb 13 | Feb 13 |
+| Nilen Varade | Austin | 46 | 19 | Jan 28 | Feb 18 |
+| Katherine Wiley | Dallas | 25 | 1 | Jan 28 | Jan 28 |
+| Samantha Goosen | Dallas | 18 | 4 | Feb 5 | Feb 13 |
+| Agustin Salinas | San Antonio | 10 | 1 | Jan 22 | Jan 22 |
+| Logan Steitle | Austin | 6 | 1 | Jan 21 | Jan 21 |
+| Braden Haley | San Antonio | 6 | 1 | Jan 22 | Jan 22 |
 
-**Travel History:**
+**Notes:**
+- Monse Rios: 61 views across 2 sessions on Feb 13 - likely a demo or deep exploration session
+- Nilen Varade: most consistent user, 19 sessions over 3 weeks
+- Dallas office has the highest engagement overall (3 active users)
+- Explore and Home dominate traffic, Repository at #3 is a good sign for Ezra adoption
 
-Session 1:
-  1. home (6:28:07 PM) →
-  2. map (6:28:14 PM) →
-  3. portfolio (6:34:37 PM) →
-  4. the-repo (6:35:26 PM) →
-  5. pitch-new (6:38:22 PM) →
-  6. collaborate (6:40:27 PM)
+**Time on site:** ~17 hours total across 7 users (up from 28 minutes in January beta). Note: two long sessions from Nilen Varade are likely idle tabs, so real engaged time is closer to 3-4 hours. Still a strong jump for a platform in early access.
 
----
+_Last updated: February 18, 2026 | Run `node scripts/fetchAnalytics.mjs` to refresh_
 
-#### Agustin Salinas (agustin.salinas@pflugerarchitects.com)
 
-**Summary:**
-- Total Page Views: 10
-- Sessions: 1
-- Total Time Spent: 11m
-- Average Session Duration: 11m
-- Office: San Antonio
-- Role: researcher
 
-**Most Visited Pages:**
-- home: 3 visits
-- portfolio: 1 visit
-- the-repo: 1 visit
-- schedule: 1 visit
-- contacts: 1 visit
+## Current Priorities (February 2026)
 
-**Travel History:**
+**Status:** Launched. Now in active use with external stakeholders (Midland ISD).
 
-Session 1:
-  1. home (8:56:24 AM) →
-  2. portfolio (8:57:41 AM) →
-  3. the-repo (9:01:35 AM) →
-  4. schedule (9:02:32 AM) →
-  5. contacts (9:02:40 AM) →
-  6. collaborate (9:03:07 AM) →
-  7. pitch-new (9:03:15 AM) →
-  8. home (9:05:30 AM) →
-  9. about (9:05:44 AM) →
-  10. home (9:06:29 AM)
+| Priority | Task | Notes |
+|----------|------|-------|
+| High | **Verify research content** | Review all project blocks for accuracy before broader distribution. Focus on data, conclusions, and citations. |
+| High | **Image audit** | Check all projects for missing images, broken Supabase Storage links, and Unsplash placeholders that need real photography. |
+| High | **Per-user passwords** | Replace shared `123456Softwares!` with individual passwords per user. Interim fix before Azure SSO. Requires adding a `password_hash` column or similar to the `users` table. |
+| High | **Executive analytics** | Build pitch and Ezra usage metrics for leadership reporting. See below. |
 
----
+### Executive Analytics — What to Track
 
-#### Dev User (software@pflugerarchitects.com)
+The goal is to show time savings vs the old manual pitch process (estimated hours annually per person).
 
-**Summary:**
-- Total Page Views: 5
-- Sessions: 1
-- Total Time Spent: 3m
-- Average Session Duration: 3m
-- Office: Austin
-- Role: admin
+**Pitch metrics** (from `pitches` table):
+- Total pitches submitted
+- Average time from created_at to submitted (time-to-pitch)
+- Pitches by status (pending, greenlit, revise, rejected)
 
-**Most Visited Pages:**
-- pitch: 2 visits
-- the-repo: 2 visits
-- home: 1 visit
+**Ezra pitch usage** (from `pitch_ai_sessions` table):
+- Number of pitch sessions
+- Average messages per session (prompt count)
+- Estimated session duration (first to last message timestamp in messages array)
 
-**Travel History:**
+**Ezra research usage** (from `repo_ai_sessions` table):
+- Number of research chat sessions
+- Average prompts per session
+- Unique users engaging with Ezra
 
-Session 1:
-  1. home (3:51:15 PM) →
-  2. pitch (3:51:20 PM) →
-  3. the-repo (3:53:15 PM) →
-  4. pitch (3:53:26 PM) →
-  5. the-repo (3:53:27 PM)
+**The headline metric:** Average time to complete a pitch with Ezra vs. estimated hours under the old system. If average pitch session is 8-12 minutes, that's the ROI story for executives.
 
 ---
-
-#### Logan Steitle (logan.steitle@pflugerarchitects.com)
-
-**Summary:**
-- Total Page Views: 6
-- Sessions: 1
-- Total Time Spent: 1m
-- Average Session Duration: 1m
-- Office: Austin
-- Role: researcher
-
-**Most Visited Pages:**
-- map: 2 visits
-- home: 1 visit
-- collaborate: 1 visit
-- pitch: 1 visit
-- portfolio: 1 visit
-
-**Travel History:**
-
-Session 1:
-  1. home (3:31:44 PM) →
-  2. collaborate (3:31:48 PM) →
-  3. pitch (3:31:49 PM) →
-  4. map (3:31:51 PM) →
-  5. portfolio (3:31:51 PM) →
-  6. map (3:31:53 PM)
-
----
-
-**Users with no activity yet:**
-- Katherine Wiley (katherine.wiley@pflugerarchitects.com)
-- Leah VanderSanden (leah.vandersanden@pflugerarchitects.com)
-- Monse Rios (monse.rios@pflugerarchitects.com)
-- Nilen Varade (nilen.varade@pflugerarchitects.com)
-- Pfluger Researcher (user@pflugerarchitects.com)
-
----
-
-_Last updated: January 28, 2026 | Run `node scripts/fetchAnalytics.mjs` to refresh analytics_
-
-
 
 ### Deferred to Post-Launch
 | Task | Status |
