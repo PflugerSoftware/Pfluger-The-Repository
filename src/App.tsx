@@ -26,20 +26,36 @@ import AboutTools from './views/About/AboutTools';
 import AboutSources from './views/About/AboutSources';
 import { ProjectDashboard, DynamicProjectDashboard } from './views/projects';
 import { showcaseConfig } from './data/projects/X00-block-showcase/project/showcaseConfig';
+import { resolveProjectIdentifier } from './services/projects';
 
 // Project overlay wrapper component
 function ProjectOverlay() {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId: identifier } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const [resolvedId, setResolvedId] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(true);
+
+  useEffect(() => {
+    if (!identifier) {
+      navigate('/');
+      return;
+    }
+    resolveProjectIdentifier(identifier).then(id => {
+      if (id) {
+        setResolvedId(id);
+      } else {
+        navigate('/');
+      }
+      setResolving(false);
+    });
+  }, [identifier, navigate]);
 
   const handleClose = () => {
-    navigate(-1); // Go back to previous page
+    navigate(-1);
   };
 
-  if (!projectId) {
-    navigate('/');
-    return null;
-  }
+  if (resolving) return null;
+  if (!resolvedId) return null;
 
   return (
     <AnimatePresence>
@@ -63,10 +79,10 @@ function ProjectOverlay() {
           className="fixed inset-0 z-50 overflow-hidden"
         >
           <div className="h-full bg-background/80 backdrop-blur-xl overflow-y-auto">
-            {projectId === 'X00-DEMO' ? (
+            {resolvedId === 'X00-DEMO' ? (
               <ProjectDashboard config={showcaseConfig} onBack={handleClose} />
             ) : (
-              <DynamicProjectDashboard projectId={projectId} onBack={handleClose} />
+              <DynamicProjectDashboard projectId={resolvedId} onBack={handleClose} />
             )}
           </div>
         </motion.div>

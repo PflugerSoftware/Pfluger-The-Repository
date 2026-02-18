@@ -105,7 +105,7 @@ All project researcher names updated to reflect actual team members in `src/serv
 
 **Kept:**
 - `X00-block-showcase` - Demo project for showcasing block types
-- `research_projects.csv` - Still used for Campus map view
+- ~~`research_projects.csv`~~ - Removed, all projects load from Supabase `projects` table
 
 ---
 
@@ -709,6 +709,9 @@ Project dashboards use a composable block system. Blocks are stored in the Supab
 
 ### Creating a Project Dashboard
 
+See `docs/Adding-a-New-Project.md` for the full guide including database schema, all 21 block type JSON schemas, and a complete SQL template.
+
+**Quick steps:**
 1. Add project metadata to `src/services/projects.ts` in `PROJECT_METADATA`
 2. Insert blocks into Supabase `project_blocks` table with:
    - `id`: Unique block ID (e.g., "section-overview")
@@ -746,22 +749,14 @@ View all blocks in action: Open the X00-DEMO project from the Portfolio page.
 - **X25-RB13** - Modulizer Part 3 (Design concept survey analysis)
   - Researchers: Agustin Salinas, Alex Wickes, Leah VanderSanden
 
+### 2026
+- **X26-RB01** - Midland Furniture Pilot (Classroom FFE survey analysis)
+  - Researchers: Wendy Rosamond, Alexander Wickes
+  - Office: Dallas
+
 ## Data Management
 
-Research projects are stored in `/public/data/research_projects.csv`:
-
-| Field | Description |
-|-------|-------------|
-| `id` | Project identifier (e.g., X25-RB01) |
-| `title` | Project name |
-| `researcher` | Lead researchers (comma-separated) |
-| `category` | Research category |
-| `phase` | Pre-Research, Developmental, or Completed |
-| `description` | Project summary |
-| `latitude` / `longitude` | Map coordinates |
-| `partners` | Collaborating organizations (pipe-separated) |
-| `startDate` / `completionDate` | Project timeline |
-| `office` | Office location (Austin, Corpus Christi, etc.) |
+All project data lives in the Supabase `projects` table. The CSV file has been removed. See `docs/Adding-a-New-Project.md` for the full schema and SQL templates for adding new projects.
 
 ## Theme & Design
 
@@ -938,7 +933,7 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | `contact_projects` | Many-to-many contacts/projects |
 | `collaboration_requests` | Public contact form submissions |
 | `calendar_events` | Project timeline events |
-| `project_blocks` | Dashboard block content (182 blocks) |
+| `project_blocks` | Dashboard block content (197 blocks across 9 projects) |
 | `project_partners` | Many-to-many projects/partners |
 | `project_researchers` | Many-to-many projects/users |
 | `project_sources` | Project citations |

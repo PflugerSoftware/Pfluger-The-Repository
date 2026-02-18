@@ -83,6 +83,16 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
     totalHours: 40,
     accentColor: '#00A9E0',
   },
+  'X26-RB01': {
+    id: 'X26-RB01',
+    title: 'Midland Furniture Pilot',
+    code: 'X26-RB01',
+    subtitle: 'Classroom FFE Survey Analysis',
+    category: 'campus-life',
+    researcher: 'Wendy Rosamond, Alexander Wickes',
+    totalHours: 20,
+    accentColor: '#B5BD00',
+  },
 };
 
 // Database block row type
@@ -135,6 +145,28 @@ export async function getProjectConfig(projectId: string): Promise<ProjectConfig
     ...metadata,
     blocks: blocks.map(dbBlockToConfig),
   };
+}
+
+// Resolve a URL identifier (project ID or slug) to a project ID
+// Returns the project ID if found, null if not found
+export async function resolveProjectIdentifier(identifier: string): Promise<string | null> {
+  // Fast path: check if it's a known project ID
+  if (identifier in PROJECT_METADATA) {
+    return identifier;
+  }
+
+  // Slow path: query Supabase for a matching slug
+  const { data, error } = await supabase
+    .from('projects')
+    .select('id')
+    .eq('slug', identifier)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data.id;
 }
 
 // Get all available project IDs

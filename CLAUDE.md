@@ -57,29 +57,22 @@ Authentication is managed through `AuthContext.tsx`:
 
 ### Data Architecture
 
-**CSV-Based Data (Current Implementation):**
-- All project data in `/public/data/research_projects.csv`
-- Loaded via `loadProjects.ts` using PapaParse
+**Supabase-Based Data:**
+- All project data lives in the Supabase `projects` table
+- Loaded via `loadProjects.ts` querying Supabase directly
 - Global state managed through `ProjectsContext`
-- Real-time updates via React Context
-
-**CSV Structure:**
-```csv
-id,title,researcher,category,phase,description,latitude,longitude,partners,startDate,completionDate
-X25-RB01,Sanctuary Spaces,"Katherine Wiley, Braden Haley, Alex Wickes",psychology,Completed,...
-```
+- `is_confidential = true` projects are excluded from public views
 
 **Data Models:**
 - `ResearchProject` interface (src/data/loadProjects.ts)
 - `id`: Unique identifier (format: X25-RBxx)
 - `title`: Project name
-- `researcher`: Comma-separated researchers
+- `researcher`: From `PROJECT_METADATA` in `src/services/projects.ts`
 - `category`: Research category (psychology, sustainability, etc.)
 - `phase`: Pre-Research | Developmental | Completed
 - `description`: Project summary
-- `position`: [latitude, longitude] tuple
-- `partners`: Pipe-separated organizations
-- `startDate` / `completionDate`: Date strings
+- `position`: [latitude, longitude] tuple from Supabase
+- `startDate` / `completionDate`: Date strings from Supabase
 
 ### Component Organization
 
@@ -100,7 +93,7 @@ X25-RB01,Sanctuary Spaces,"Katherine Wiley, Braden Haley, Alex Wickes",psycholog
 - `ProjectsContext.tsx` - Research projects state provider
 
 **Data/** - Data loading
-- `loadProjects.ts` - CSV parser and data transformer
+- `loadProjects.ts` - Supabase project loader
 
 ### Key Design Patterns
 
@@ -167,15 +160,11 @@ src/
 │   ├── PitchSubmission.tsx              # Internal pitch
 │   └── Analytics.tsx                    # Internal metrics
 ├── data/
-│   └── loadProjects.ts                  # CSV loader
+│   └── loadProjects.ts                  # Supabase project loader
 ├── context/
 │   └── ProjectsContext.tsx              # Global project state
 └── styles/
     └── index.css                        # Global styles
-
-public/
-└── data/
-    └── research_projects.csv            # Project data
 
 tailwind.config.js                       # Pfluger brand colors
 vite.config.ts                           # Vite configuration
@@ -277,14 +266,9 @@ When implementing features:
 - Mark public-only items with `hideWhenAuth: true`
 - Check auth state before rendering sensitive data
 
-### CSV Data Updates
+### Project Data Updates
 
-To add/modify research projects:
-1. Edit `/public/data/research_projects.csv`
-2. Follow existing format (pipe-separated for arrays)
-3. Ensure latitude/longitude are valid coordinates
-4. Use existing category values
-5. Phase must be: Pre-Research, Developmental, or Completed
+To add/modify research projects, update the Supabase `projects` table directly. See `docs/Adding-a-New-Project.md` for the full guide including schema, valid field values, and SQL templates.
 
 ### Future Enhancements (Planned)
 

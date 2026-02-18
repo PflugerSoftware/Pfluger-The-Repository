@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useProjects } from '../../context/ProjectsContext';
 
-const PROJECTS_WITH_DASHBOARDS = ['X24-RB01', 'X25-RB01', 'X25-RB02', 'X25-RB03', 'X25-RB05', 'X25-RB06', 'X25-RB08', 'X25-RB13', 'X00-DEMO'];
+const PROJECTS_WITH_DASHBOARDS = ['X24-RB01', 'X25-RB01', 'X25-RB02', 'X25-RB03', 'X25-RB05', 'X25-RB06', 'X25-RB08', 'X25-RB13', 'X26-RB01', 'X00-DEMO'];
 
 interface PortfolioProps {
   onOpenProjectDashboard?: (projectId: string) => void;
@@ -36,7 +36,11 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
 
     return sortedYears.map(year => ({
       year,
-      projects: grouped[year]
+      projects: grouped[year].sort((a, b) => {
+        const numA = parseInt(a.id.replace(/\D/g, '').slice(-2));
+        const numB = parseInt(b.id.replace(/\D/g, '').slice(-2));
+        return numB - numA;
+      })
     }));
   }, [projects]);
 

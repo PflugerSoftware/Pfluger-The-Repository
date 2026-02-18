@@ -66,20 +66,27 @@ This document lists decisions that need to be made by stakeholders to move forwa
 
 | API / Service | Purpose | Yearly Cost | Approval Needed |
 |---------------|---------|-------------|-----------------|
-*| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
+
+Lic we have now after budget approval
+*| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | TBD |
+*| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
+*| CapCut Pro | Video editing | $240/yr ($20/mo) | TBD | 
+*| Figma Professional | UI/UX design & prototyping | 5 seats × $16/mo = $80/mo, $960/yr | Jackie's pfluger email |
+*| Twinmotion | Real-time visualization | Free | team@pfluger | double check with Logan on account cost
+*| Unreal Engine | Real-time engine | Free | team@pfluger |
+*| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
+
+*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
+
+
+Lic we still have to get after budget approval, didnt get to respect the budget
 *| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
 *| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
-*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
-*| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
 *| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
 *| Veo 3 Standard API | ~50 vids/mo (4-sec), $80/mo, $960/yr | TBD |  Told LP 1000
-*| CapCut Pro | Video editing | $240/yr ($20/mo) | TBD | 
-*| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
-*| Twinmotion | Real-time visualization | Free | team@pfluger | double check with Logan on account cost
+
 *| Adobe Substance | Model creation, texturing | reduced from $4700 to $1400 | Designers pfluger email | 
 *| Blender | 3D modeling | Free | — |
-*| Unreal Engine | Real-time engine | Free | team@pfluger |
-*| Figma Professional | UI/UX design & prototyping | 5 seats × $16/mo = $80/mo, $960/yr | Jackie's pfluger email |
 *| Apple Developer | App distribution Build to Apple Vision Pro | $99/yr | TBD | 
 |AI Bucket|
 |Bambu Labs | 3d printing |  apps@pfluger|free 

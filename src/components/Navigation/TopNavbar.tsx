@@ -24,9 +24,9 @@ interface TopNavbarProps {
 // Work items organized by year
 const WORK_BY_YEAR = [
   {
-    year: '2024',
+    year: '2026',
     projects: [
-      { id: 'X24-RB01', title: 'Immersive Learning' }
+      { id: 'X26-RB01', title: 'Midland Furniture Pilot' }
     ]
   },
   {
@@ -39,6 +39,12 @@ const WORK_BY_YEAR = [
       { id: 'X25-RB06', title: 'Timberlyne Study' },
       { id: 'X25-RB08', title: 'Modulizer Part 1' },
       { id: 'X25-RB13', title: 'Modulizer Part 3' }
+    ]
+  },
+  {
+    year: '2024',
+    projects: [
+      { id: 'X24-RB01', title: 'Immersive Learning' }
     ]
   },
 ];
@@ -288,7 +294,11 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                           >
                             <p className="text-sm text-gray-400 mb-1">{yearGroup.year}</p>
                             <div className="space-y-0.5 pl-3 border-l border-gray-700">
-                              {yearGroup.projects.map((project) => (
+                              {[...yearGroup.projects].sort((a, b) => {
+                                const numA = parseInt(a.id.replace(/\D/g, '').slice(-2));
+                                const numB = parseInt(b.id.replace(/\D/g, '').slice(-2));
+                                return numA - numB;
+                              }).map((project) => (
                                 <Link
                                   key={project.id}
                                   to={`/explore/${project.id}`}
