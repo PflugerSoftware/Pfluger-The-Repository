@@ -546,43 +546,52 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 
 **Test Accounts:**
 
-| Username | Password | Role | Access |
-|----------|----------|------|--------|
-| `software@pflugerarchitects.com` | `123456Softwares!` | Admin | See all pitches, manage statuses, full dashboard |
-| `user@pflugerarchitects.com` | `123456Softwares!` | Researcher | See only own pitches, submit new pitches, claim greenlit |
-| `nilen.varade@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| `monse.rios@pflugerarchitects.com` | `123456Softwares!` | Researcher | Dallas office |
-| `katherine.wiley@pflugerarchitects.com` | `123456Softwares!` | Researcher | Dallas office |
-| `leah.vandersanden@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
-| `agustin.salinas@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
-| `logan.steitle@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| `braden.haley@pflugerarchitects.com` | `123456Softwares!` | Researcher | San Antonio office |
-| `christian.owens@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| `brenda.swirczynski@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| `wendy.rosamond@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| `allie.schneider@pflugerarchitects.com` | `123456Softwares!` | Researcher | Austin office |
-| *(logged out)* | - | Viewer | Public content only (Campus, Explore, Connect, About) |
+All users share the password `123456Softwares!`
 
-**Database Users Table (11 users):**
+| Email | Role | Office |
+|-------|------|--------|
+| `software@pflugerarchitects.com` | Admin | Austin |
+| `nilen.varade@pflugerarchitects.com` | Researcher | Austin |
+| `logan.steitle@pflugerarchitects.com` | Researcher | Austin |
+| `christian.owens@pflugerarchitects.com` | Researcher | Austin |
+| `allie.schneider@pflugerarchitects.com` | Researcher | Austin |
+| `wendy.rosamond@pflugerarchitects.com` | Researcher | Austin |
+| `josh.sawyer@pflugerarchitects.com` | Researcher | Austin |
+| `monse.rios@pflugerarchitects.com` | Researcher | Dallas |
+| `katherine.wiley@pflugerarchitects.com` | Researcher | Dallas |
+| `samantha.goosen@pflugerarchitects.com` | Researcher | Dallas |
+| `emily.perna@pflugerarchitects.com` | Researcher | Dallas |
+| `tim.estrada@pflugerarchitects.com` | Researcher | Dallas |
+| `david.young@pflugerarchitects.com` | Researcher | Dallas |
+| `brenda.swirczynski@pflugerarchitects.com` | Researcher | Dallas |
+| `braden.haley@pflugerarchitects.com` | Researcher | San Antonio |
+| `leah.vandersanden@pflugerarchitects.com` | Researcher | San Antonio |
+| `agustin.salinas@pflugerarchitects.com` | Researcher | San Antonio |
+| *(logged out)* | Viewer | Public content only |
+
+**Database Users Table (17 users):**
 
 All users must exist in the Supabase `users` table with matching emails. Current users:
 
 | UUID | Email | Name | Role | Office |
 |------|-------|------|------|--------|
 | `00000000-0000-0000-0000-000000000001` | software@pflugerarchitects.com | Dev User | admin | Austin |
-| `00000000-0000-0000-0000-000000000002` | user@pflugerarchitects.com | Pfluger Researcher | researcher | Austin |
 | `a1b2c3d4-e5f6-4789-a1b2-c3d4e5f67890` | nilen.varade@pflugerarchitects.com | Nilen Varade | researcher | Austin |
 | `a1b2c3d4-e5f6-7890-abcd-ef1234567890` | logan.steitle@pflugerarchitects.com | Logan Steitle | researcher | Austin |
+| `f1a2b3c4-d5e6-4f78-9a0b-c1d2e3f4a5b6` | christian.owens@pflugerarchitects.com | Christian Owens | researcher | Austin |
+| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
+| `904f7e9e-9d35-4528-8f65-07dc1b09bc39` | wendy.rosamond@pflugerarchitects.com | Wendy Rosamond | researcher | Austin |
+| `6808aad5-41fe-4b5c-bc00-7f34a6e32249` | josh.sawyer@pflugerarchitects.com | Josh Sawyer | researcher | Austin |
 | `b2c3d4e5-f6a7-4890-b2c3-d4e5f6a78901` | monse.rios@pflugerarchitects.com | Monse Rios | researcher | Dallas |
-| `b2c3d4e5-f6a7-8901-bcde-f12345678901` | braden.haley@pflugerarchitects.com | Braden Haley | researcher | San Antonio |
 | `c3d4e5f6-a7b8-4901-c3d4-e5f6a7b89012` | katherine.wiley@pflugerarchitects.com | Katherine Wiley | researcher | Dallas |
+| `a2b3c4d5-e6f7-4901-ab23-d4e5f6a7b8c9` | samantha.goosen@pflugerarchitects.com | Samantha Goosen | researcher | Dallas |
+| `a3b4c5d6-e7f8-4a9b-c0d1-e2f3a4b5c6d7` | emily.perna@pflugerarchitects.com | Emily Perna | researcher | Dallas |
+| `b4c5d6e7-f8a9-4b0c-d1e2-f3a4b5c6d7e8` | tim.estrada@pflugerarchitects.com | Tim Estrada | researcher | Dallas |
+| `25e11631-0561-4302-a25d-591e8c2d1d79` | david.young@pflugerarchitects.com | David Young | researcher | Dallas |
+| `ad94057f-ded9-46b0-aac2-45774dd9fab9` | brenda.swirczynski@pflugerarchitects.com | Brenda Swirczynski | researcher | Dallas |
+| `b2c3d4e5-f6a7-8901-bcde-f12345678901` | braden.haley@pflugerarchitects.com | Braden Haley | researcher | San Antonio |
 | `d4e5f6a7-b8c9-4012-d4e5-f6a7b8c90123` | leah.vandersanden@pflugerarchitects.com | Leah VanderSanden | researcher | San Antonio |
 | `e5f6a7b8-c9d0-4123-e5f6-a7b8c9d01234` | agustin.salinas@pflugerarchitects.com | Agustin Salinas | researcher | San Antonio |
-| `f1a2b3c4-d5e6-4f78-9a0b-c1d2e3f4a5b6` | christian.owens@pflugerarchitects.com | Christian Owens | researcher | Austin |
-| `f2b3c4d5-e6f7-4890-ab12-d3e4f5a6b7c8` | brenda.swirczynski@pflugerarchitects.com | Brenda Swirczynski | researcher | Austin |
-| `904f7e9e-9d35-4528-8f65-07dc1b09bc39` | wendy.rosamond@pflugerarchitects.com | Wendy Rosamond | researcher | Austin |
-| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
-| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
 
 **How Authentication Works:**
 1. User logs in with email/password (validated against `AuthContext.tsx`)
