@@ -39,19 +39,19 @@ This document lists decisions that need to be made by stakeholders to move forwa
 
 | Platform | Pros | Cons |
 |----------|------|------|
-| Cloudflare D1/R2 | Fast, cheap, serverless, already used elsewhere | New vendor approval |  | ~$5-20 | Username/account |
+| Cloudflare D1/R2 | Fast, cheap, serverless, already used elsewhere | New vendor approval |  | ~$5-20/mo | Username/account |
 | Bluehost (existing) | Already approved, MySQL/PHP | Legacy stack, no serverless, no CLI | | Already paying | using HB email and domain@pfluger |
-| Supabase | Modern, Postgres, real-time | New vendor approval | | Free tier / ~$25 | Username/account |
+| Supabase | Modern, Postgres, real-time | New vendor approval | Free tier / ~$25/mo | Username/account |
 | OpenAsset | Already have DAM | Not a database platform || Included in license | Username/account |
-| Local Egnyte drive | No approval needed | No web access, single point of failure Claude MCP, $11,154/year |
-| Azure SSO sign in | [*] 2/4 sent requirements doc to Crag, awaiting timeline estimate
+| Local Egnyte drive | No approval needed | No web access, single point of failure Claude MCP, $11,154/year | no need
+| Azure SSO sign in | [*] 2/4 sent requirements doc to Crag, awaiting timeline estimate. 4k for GCS
 
 ### APIs & Services
 
 | API / Service | Purpose | Monthly Cost | Approval Needed |
 |---------------|---------|--------------|-----------------|
 *| Claude Max 5x | $100/mo, $1,200/yr per seat | Username/account | nick
-*| Claude Teams | Std: $30/mo, $360/yr. Premium: $150/mo, $1,800/yr. (1 Std + 2 Premium = $330/mo, $3,960/yr) | Username/account | 3 st, two ultimate
+*| Claude Teams | Std: $30/mo, $360/yr. Premium: $150/mo, $1,800/yr. (1 Std + 2 Premium = $330/mo, $3,960/yr) | Username/account | 3 st, two ultimate. we are now at $25/$125 a seat. we only have 5 std seats
 *| Claude API - Opus 4.5 | ~1k msgs/mo (3K tk/msg), $35/mo, $420/yr | Username/account |
 *| Claude API - Sonnet 4.5 | ~2k msgs/mo (3K tk/msg), $42/mo, $504/yr | Username/account |
 *| Claude API - Haiku 4.5 | ~8k msgs/mo (3K tk/msg), $56/mo, $672/yr | Username/account |
@@ -67,6 +67,7 @@ This document lists decisions that need to be made by stakeholders to move forwa
 | API / Service | Purpose | Yearly Cost | Approval Needed |
 |---------------|---------|-------------|-----------------|
 
+<<<<<<< Updated upstream
 Lic we have now after budget approval
 *| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | TBD |
 *| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
@@ -82,6 +83,14 @@ Lic we have now after budget approval
 Lic we still have to get after budget approval, didnt get to respect the budget
 *| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
 *| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
+=======
+4148 4600 0869 7949 07/28 485 Lauren Paver
+*| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
+*| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
+*| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
+*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: *10k img, 5 vid, $249/mo, $2,988/yr | TBD | went with the $249
+*| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
+>>>>>>> Stashed changes
 *| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
 *| Veo 3 Standard API | ~50 vids/mo (4-sec), $80/mo, $960/yr | TBD |  Told LP 1000
 
@@ -89,7 +98,7 @@ Lic we still have to get after budget approval, didnt get to respect the budget
 *| Blender | 3D modeling | Free | — |
 *| Apple Developer | App distribution Build to Apple Vision Pro | $99/yr | TBD | 
 |AI Bucket|
-|Bambu Labs | 3d printing |  apps@pfluger|free 
+|Bambu Labs | 3d printing |  apps@pfluger | free 
 
 ### Claude Users Standard $25, Premium $125
 
@@ -99,7 +108,7 @@ Lauren Cloud | Lauren.Cloud@pflugerarchitects.com | Standard
 Nilen Varade | Nilen.Varade@pflugerarchitects.com | Standard
 Katherine Wiley | Katherine.Wiley@pflugerarchitects.com | Standard
 Taraneh Kalati | Taraneh.Kalati@pflugerarchitects.com | Standard
-
+William Webb | William.Webb@pflugerarchitects.com | Standard (Unassigned)
 
 Samantha Goosen | Samantha.Goosen@pflugerarchitects.com | None
 Casey Wilkinson | Casey.wilkinson@pflugerarchitects.com | None
@@ -109,7 +118,7 @@ Monse Rios | monse.rios@pflugerarchitects.com | None
 Agustin Salinas | Agustin.Salinas@pflugerarchitects.com | None
 Tim Estrada | tim.estrada@pflugerarchitects.com | None
 
-
+Zhun Jiao | Zhun.Jiao@pflugerarchitects.com | None
 Tony Plascencia | Tony.plascencia@pflugerarchitects.com | None
 Tony Schmitz | Tony.Schmitz@pflugerarchitects.com | None
 Kipp Schecht | Kipp.Schecht@pflugerarchitects.com | None
@@ -119,13 +128,6 @@ Braden Haley | braden.haley@pflugerarchitects.com | None
 Leah Van Der Sanden | leah.vandersanden@pflugerarchitects.com | None
 Jeremy Barragan | Jeremy.barragan@pflugerarchitects.com | None
 Wendy Rosamond | Wendy.Rosamond@pflugerarchitects.com | None
-
-William Webb | William.Webb@pflugerarchitects.com | Standard (Unassigned)
-Zhun Jiao | Zhun.Jiao@pflugerarchitects.com | None
-
-
-
-
 
 ---
 ## Application Action Items
