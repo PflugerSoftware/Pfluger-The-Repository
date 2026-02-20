@@ -75,7 +75,7 @@ const NAV_SECTIONS: NavSection[] = [
     path: '/pitch',
     subItems: [
       { label: "Let's Pitch!", path: '/pitch' },
-      { label: 'My Pitches', path: '/pitch/mypitches' }
+      { label: 'Review Pitches', path: '/pitch/mypitches' }
     ]
   },
   {

@@ -31,7 +31,7 @@ function getCategoryImage(category: string): string {
 export async function loadProjects(): Promise<ResearchProject[]> {
   const { data, error } = await supabase
     .from('projects')
-    .select('id, title, description, category, phase, latitude, longitude, start_date, completion_date, office')
+    .select('id, title, description, category, phase, latitude, longitude, start_date, completion_date, office, image_url')
     .eq('is_confidential', false)
     .order('start_date', { ascending: false });
 
@@ -53,7 +53,7 @@ export async function loadProjects(): Promise<ResearchProject[]> {
       position: [parseFloat(row.latitude), parseFloat(row.longitude)] as [number, number],
       startDate: row.start_date || undefined,
       completionDate: row.completion_date || undefined,
-      image: getCategoryImage(row.category),
+      image: row.image_url || getCategoryImage(row.category),
       office: row.office || undefined,
     };
   });
