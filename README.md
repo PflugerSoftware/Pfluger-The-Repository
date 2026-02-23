@@ -654,7 +654,7 @@ src/
 │       ├── ProjectDashboard.tsx        # Project detail overlay
 │       └── DynamicProjectDashboard.tsx # Database-driven project loader
 ├── data/
-│   ├── loadProjects.ts             # CSV data loader (for map view)
+│   ├── loadProjects.ts             # Supabase project loader
 │   └── projects/
 │       └── X00-block-showcase/     # Block demo project (only remaining static config)
 ├── config/
@@ -677,9 +677,7 @@ supabase/
     ├── claude/index.ts             # Claude API proxy
     └── web-search/index.ts         # Web search fallback
 public/
-├── _redirects                      # Cloudflare Pages SPA routing config
-└── data/
-    └── research_projects.csv       # Research project data (for map view)
+└── _redirects                      # Cloudflare Pages SPA routing config
 ```
 
 ## Block System
@@ -692,8 +690,8 @@ Project dashboards use a composable block system. Blocks are stored in the Supab
 - `DynamicProjectDashboard` fetches blocks on demand with loading state
 - Images served from Supabase Storage bucket
 
-**Database Stats (as of Jan 2026):**
-- 182 blocks across 8 projects
+**Database Stats (as of Feb 2026):**
+- 204 blocks across 9 projects
 - RAG-searchable with summary, tags, and searchable_text fields
 
 ### Available Blocks (21 types)
@@ -865,11 +863,13 @@ Each category has a dedicated color:
   - Web search fallback via Supabase Edge Function
   - Files: `src/services/rag.ts`, `supabase/functions/claude/`, `supabase/functions/web-search/`
 
-- [ ] **Asset Management**
-  - Replace Unsplash placeholder images with real project photos
-  - Files affected: `ImageCarousel.tsx`, `loadProjects.ts`, project configs
-  - Set up Cloudflare R2 or similar for image hosting
-  - Add image upload for project managers
+- [x] **Asset Management** - PARTIALLY COMPLETE (Feb 2026)
+  - [x] Replaced Unsplash placeholders with Supabase Storage images for 8 projects
+  - [x] Hero carousel uses real project renders
+  - [x] Explore cards use project `image_url` from Supabase
+  - [x] All image gallery blocks updated to correct bucket paths
+  - [ ] Remaining: X00-DEMO, X25-RB09, X25-RB10, X25-RB11, X26-RB01 still use Unsplash fallback
+  - [ ] Add image upload for project managers
 
 - [ ] **OpenAsset Integration**
   - Connect to Pfluger's OpenAsset DAM
@@ -947,7 +947,7 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | `contact_projects` | Many-to-many contacts/projects |
 | `collaboration_requests` | Public contact form submissions |
 | `calendar_events` | Project timeline events |
-| `project_blocks` | Dashboard block content (197 blocks across 9 projects) |
+| `project_blocks` | Dashboard block content (204 blocks across 9 projects) |
 | `project_partners` | Many-to-many projects/partners |
 | `project_researchers` | Many-to-many projects/users |
 | `project_sources` | Project citations |
@@ -990,8 +990,8 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | `AuthContext.tsx` | Hardcoded credentials (email/password) | Not fixed - awaiting Azure SSO |
 | `Collaborate.tsx` | Simulated form submission | Not fixed |
 | `Schedule.tsx` | Mock hours data | Not fixed |
-| `loadProjects.ts` | Unsplash placeholders | Not fixed |
-| `ImageCarousel.tsx` | Unsplash hero images | Not fixed |
+| ~~`loadProjects.ts`~~ | ~~Unsplash placeholders~~ | ✅ FIXED - 8 projects use Supabase Storage images |
+| ~~`ImageCarousel.tsx`~~ | ~~Unsplash hero images~~ | ✅ FIXED - Uses project renders from bucket |
 | ~~`users` table~~ | ~~Missing researcher test user~~ | ✅ FIXED - All 9 users in database |
 | ~~`PitchSubmission.tsx`~~ | ~~Hardcoded GreenLit topics~~ | ✅ FIXED - In database |
 | ~~`PitchSubmission.tsx`~~ | ~~Mock DEFAULT_PITCHES data~~ | ✅ FIXED - Loads from database |
