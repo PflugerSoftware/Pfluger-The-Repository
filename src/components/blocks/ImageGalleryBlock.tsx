@@ -36,7 +36,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
 
   return (
     <>
-      <div className={`grid ${gridCols[columns]} gap-1 w-full`}>
+      <div className={`grid ${gridCols[columns]} w-full`}>
         {images.map((image, index) => (
           <motion.div
             key={index}
@@ -46,7 +46,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
             className="group cursor-pointer"
             onClick={() => openLightbox(index)}
           >
-            <div className="relative overflow-hidden bg-black aspect-[4/3]">
+            <div className="relative overflow-hidden bg-black aspect-[4/3] border border-[#1a1a1a]">
               <img
                 src={getStorageUrl(image.src)}
                 alt={image.alt}

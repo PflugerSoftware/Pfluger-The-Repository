@@ -1,27 +1,29 @@
 import { motion } from 'framer-motion';
 
 // Images with labels - linked to project dashboards
+const STORAGE_BASE = 'https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object/public/Repository%20Bucket/projects';
+
 const IMAGES = [
   {
-    url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80',
+    url: `${STORAGE_BASE}/X25RB05/x25rb05-render-main.png`,
     alt: 'Mass Timber Research',
     label: 'mass timber',
     projectId: 'X25-RB05'
   },
   {
-    url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=80',
+    url: `${STORAGE_BASE}/X24RB01/x24rb01-tmclark-ocean.jpeg`,
     alt: 'Immersive Learning Research',
     label: 'immersive learning',
     projectId: 'X24-RB01'
   },
   {
-    url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1920&q=80',
+    url: `${STORAGE_BASE}/X25RB01/x25rb01-shape-hidden_lake.jpg`,
     alt: 'Sanctuary Spaces Research',
     label: 'sanctuary spaces',
     projectId: 'X25-RB01'
   },
   {
-    url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1920&q=80',
+    url: `${STORAGE_BASE}/X25RB08/x25rb08_render-main.png`,
     alt: 'Modulizer Part 1 Research',
     label: 'modulizer part 1',
     projectId: 'X25-RB08'
@@ -41,12 +43,13 @@ export function ImageCarousel({ onOpenProject }: ImageCarouselProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1, duration: 0.5 }}
-          className="relative w-full h-[60vh] overflow-hidden"
+          className="group relative w-full h-[60vh] overflow-hidden cursor-pointer"
+          onClick={() => onOpenProject?.(image.projectId)}
         >
           <img
             src={image.url}
             alt={image.alt}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
           />
           {/* Bold label in bottom left */}
           <div className="absolute bottom-4 left-4">
@@ -55,15 +58,6 @@ export function ImageCarousel({ onOpenProject }: ImageCarouselProps) {
             </h3>
           </div>
 
-          {/* Learn more button in bottom right */}
-          <div className="absolute bottom-4 right-4">
-            <button
-              onClick={() => onOpenProject?.(image.projectId)}
-              className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-100 transition-all duration-300"
-            >
-              explore
-            </button>
-          </div>
         </motion.div>
       ))}
     </div>
