@@ -3,6 +3,16 @@ import type { ProjectConfig, BlockConfig, BlockType } from '../components/blocks
 
 // Project metadata - small static config (blocks come from database)
 const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
+  'X00-DEMO': {
+    id: 'X00-DEMO',
+    title: 'Block Showcase',
+    code: 'X00-DEMO',
+    subtitle: 'Component Library & Demo',
+    category: 'documentation',
+    researcher: 'Alexander Wickes',
+    totalHours: 0,
+    accentColor: '#00A9E0',
+  },
   'X24-RB01': {
     id: 'X24-RB01',
     title: 'Immersive Learning',

@@ -188,6 +188,7 @@ Empty lines create spacing between elements.`,
         ],
         total: 100,
         centerLabel: 'Total Budget',
+        unit: 'currency',
       },
     },
 
@@ -703,6 +704,72 @@ Images can be clicked for lightbox view.`,
           { id: 2, title: 'Block System Architecture', author: 'Development Team', url: '#' },
           { id: 3, title: 'Component Library Reference', author: 'UI Team' },
         ],
+      },
+    },
+
+    // ===== PRESENTATION: PLATFORM HIGHLIGHTS =====
+    {
+      type: 'section',
+      id: 'section-platform-highlights',
+      data: { title: 'The Repository: Platform Highlights' },
+    },
+    {
+      type: 'quotes',
+      id: 'platform-quotes',
+      data: {
+        quotes: [
+          {
+            text: 'The Repository is our team\'s first internal product, built from scratch to manage, showcase, and scale our research. Every project, every pitch, every insight lives here.',
+            author: 'R&B Team',
+          },
+          {
+            text: 'Ezra, our AI research assistant, can search across all project data and answer questions grounded in actual findings, not general knowledge.',
+            author: 'Platform Feature',
+          },
+        ],
+        columns: 2,
+      },
+    },
+    {
+      type: 'donut-chart',
+      id: 'platform-page-views',
+      title: 'Page Views by Section',
+      data: {
+        segments: [
+          { label: 'Explore', value: 97, color: '#00A9E0' },
+          { label: 'Home', value: 82, color: '#67823A' },
+          { label: 'Repository Hub', value: 47, color: '#F2A900' },
+          { label: 'Pitch', value: 41, color: '#B5BD00' },
+          { label: 'Project Pages', value: 88, color: '#9A3324' },
+          { label: 'Campus Map', value: 20, color: '#003C71' },
+          { label: 'Other', value: 68, color: '#707372' },
+        ],
+        total: 443,
+        centerLabel: 'Total Views',
+      },
+    },
+    {
+      type: 'stat-grid',
+      id: 'platform-engagement',
+      title: 'User Engagement',
+      data: {
+        stats: [
+          { label: 'Active Users', value: '8', detail: 'Excluding dev accounts' },
+          { label: 'Total Screen Time', value: '108 min', detail: 'Across 16 sessions' },
+        ],
+        columns: 2,
+      },
+    },
+    {
+      type: 'stat-grid',
+      id: 'platform-stats',
+      title: 'Platform at a Glance',
+      data: {
+        stats: [
+          { label: 'Research Projects', value: '13', detail: '204 content blocks' },
+          { label: 'AI Conversations', value: '21', detail: '18 Ezra + 3 pitch sessions' },
+        ],
+        columns: 2,
       },
     },
   ],

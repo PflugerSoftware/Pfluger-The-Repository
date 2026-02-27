@@ -19,8 +19,9 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
   const [hoveredSlice, setHoveredSlice] = useState<number | null>(null);
   const [arcs, setArcs] = useState<ArcData[]>([]);
 
-  const { segments, total: providedTotal, centerLabel } = data;
+  const { segments, total: providedTotal, centerLabel, unit } = data;
   const total = providedTotal ?? segments.reduce((sum, s) => sum + s.value, 0);
+  const isCurrency = unit === 'currency';
 
   const width = 400;
   const height = 400;
@@ -53,12 +54,15 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
     })));
   }, [segments, radius, innerRadius]);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(value);
+  const formatValue = (value: number) => {
+    if (isCurrency) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }).format(value);
+    }
+    return value.toLocaleString('en-US');
   };
 
   const formatPercent = (value: number) => {
@@ -109,7 +113,7 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
               {hoveredSlice !== null ? (
                 <>
                   <p className="text-2xl font-bold text-white">
-                    {formatCurrency(arcs[hoveredSlice]?.value)}
+                    {formatValue(arcs[hoveredSlice]?.value)}
                   </p>
                   <p className="text-sm text-gray-400">
                     {formatPercent(arcs[hoveredSlice]?.value)}
@@ -118,7 +122,7 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
               ) : (
                 <>
                   <p className="text-2xl font-bold text-white">
-                    {formatCurrency(total)}
+                    {formatValue(total)}
                   </p>
                   <p className="text-sm text-gray-400">{centerLabel || 'Total'}</p>
                 </>
@@ -153,7 +157,7 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
             <div>
               <p className="font-medium text-white text-sm">{arc.label}</p>
               <p className="text-gray-400 text-sm">
-                {formatCurrency(arc.value)} ({formatPercent(arc.value)})
+                {formatValue(arc.value)} ({formatPercent(arc.value)})
               </p>
             </div>
           </motion.div>

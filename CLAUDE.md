@@ -27,7 +27,30 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Deploy to Cloudflare Pages
+wrangler pages deploy dist --project-name=pfluger-the-repo
 ```
+
+### Deployment
+
+- **Host:** Cloudflare Pages
+- **Project name:** `pfluger-the-repo`
+- **Production URL:** `repository.pflugerarchitects.com`
+- **Preview URL pattern:** `<hash>.pfluger-the-repo-67g.pages.dev`
+- **Deploy via CLI:** `wrangler pages deploy dist --project-name=pfluger-the-repo`
+- **Requires:** `wrangler` CLI authenticated (`wrangler login` if needed)
+- **No auto-deploy on push.** Deploys are manual via CLI after `npm run build`.
+
+### Database Access
+
+- **Database:** Supabase PostgreSQL
+- **Project ref:** `bydkzxqmgsvsnjtafphj`
+- **psql connection:** Uses `DATABASE_URL` from `.env.local` (session pooler)
+- **CLI path:** `/opt/homebrew/opt/libpq/bin/psql`
+- **Storage bucket:** `Repository Bucket` (public, files listed via `storage.objects` table)
+- **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/web-search/`
+- **Env vars (in `.env.local`, gitignored):** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `DATABASE_URL`, `VITE_ANTHROPIC_API_KEY`, `VITE_OPENASSET_BASE_URL`, `VITE_OPENASSET_TOKEN_ID`, `VITE_OPENASSET_TOKEN_STRING`
 
 ## Application Architecture
 
@@ -49,11 +72,16 @@ The Repository operates in two modes controlled by authentication state:
 ### Authentication Flow
 
 Authentication is managed through `AuthContext.tsx`:
-- Hardcoded credentials (development): `apps@pflugerarchitects.com` / `123456`
+- Shared password for all users: `123456Softwares!`
+- Username is any email from the `users` table (e.g., `josh.sawyer@pflugerarchitects.com`)
+- Login checks password, then looks up the email in `users` table for name and role
+- Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
+- 17 users across Austin, San Antonio, and Dallas offices
 - State persisted to localStorage
 - Login modal appears when clicking "Team Sign In" button
 - Upon login, internal views appear in navigation
 - "Collaborate" view hides when authenticated
+- Will migrate to Azure SSO in the future
 
 ### Data Architecture
 
@@ -258,7 +286,8 @@ secondary: {
 
 To test both modes:
 1. **Public Mode**: Visit app without logging in
-2. **Internal Mode**: Click "Team Sign In" → Use `apps@pflugerarchitects.com` / `123456`
+2. **Internal Mode**: Click "Team Sign In" → Use any email from the `users` table + shared password `123456Softwares!`
+3. **Admin Mode**: Use `software@pflugerarchitects.com` + shared password
 
 When implementing features:
 - Use `useAuth()` hook to check `isAuthenticated`

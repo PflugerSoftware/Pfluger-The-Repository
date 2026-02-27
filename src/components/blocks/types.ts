@@ -110,6 +110,7 @@ export interface DonutChartData {
   segments: { label: string; value: number; color: string }[];
   total?: number;
   centerLabel?: string;
+  unit?: 'currency' | 'number';
 }
 
 export interface ComparisonRow {
