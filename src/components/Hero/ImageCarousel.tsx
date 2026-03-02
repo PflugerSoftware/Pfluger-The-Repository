@@ -7,7 +7,7 @@ const IMAGES = [
   {
     url: `${STORAGE_BASE}/X26RB01/x26rb01-Render-Main.png`,
     alt: 'Midland Furniture Pilot Research',
-    label: 'mass timber',
+    label: 'midland ffe pilot',
     projectId: 'X26-RB01'
   },
   {
@@ -25,7 +25,7 @@ const IMAGES = [
   {
     url: `${STORAGE_BASE}/X25RB06/x25rb06_render-main.jpg`,
     alt: 'Timberlyne Study Research',
-    label: 'modulizer part 1',
+    label: 'mass timber',
     projectId: 'X25-RB06'
   }
 ];
