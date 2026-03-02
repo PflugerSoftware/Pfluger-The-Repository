@@ -5,10 +5,10 @@ const STORAGE_BASE = 'https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object
 
 const IMAGES = [
   {
-    url: `${STORAGE_BASE}/X25RB05/x25rb05-render-main.png`,
-    alt: 'Mass Timber Research',
+    url: `${STORAGE_BASE}/X26RB01/x26rb01-Render-Main.png`,
+    alt: 'Midland Furniture Pilot Research',
     label: 'mass timber',
-    projectId: 'X25-RB05'
+    projectId: 'X26-RB01'
   },
   {
     url: `${STORAGE_BASE}/X24RB01/x24rb01-tmclark-ocean.jpeg`,
@@ -23,10 +23,10 @@ const IMAGES = [
     projectId: 'X25-RB01'
   },
   {
-    url: `${STORAGE_BASE}/X25RB08/x25rb08_render-main.png`,
-    alt: 'Modulizer Part 1 Research',
+    url: `${STORAGE_BASE}/X25RB06/x25rb06_render-main.jpg`,
+    alt: 'Timberlyne Study Research',
     label: 'modulizer part 1',
-    projectId: 'X25-RB08'
+    projectId: 'X25-RB06'
   }
 ];
 
