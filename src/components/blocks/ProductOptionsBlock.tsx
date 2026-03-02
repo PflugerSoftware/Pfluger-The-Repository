@@ -38,11 +38,13 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
         {/* Product image */}
         {image && (
           <div className="mb-4 flex justify-center">
-            <img
-              src={getStorageUrl(image)}
-              alt={name}
-              className="w-28 h-28 object-cover rounded-2xl"
-            />
+            <div className="w-64 h-64 rounded-2xl bg-white flex items-center justify-center p-4">
+              <img
+                src={getStorageUrl(image)}
+                alt={name}
+                className="max-w-full max-h-full object-contain"
+              />
+            </div>
           </div>
         )}
 
@@ -72,26 +74,28 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
           ))}
         </div>
 
-        {/* Price display - range or selected */}
-        <div className="mb-2">
-          {selectedOption ? (
-            <p className="text-sm">
-              <span className="font-semibold text-white">{formatPrice(selectedOption.price)}</span>
-            </p>
-          ) : (
-            <p className="text-sm text-gray-300">
-              {minPrice === maxPrice ? (
-                <span className="font-medium">{formatPrice(minPrice)}</span>
-              ) : (
-                <>
-                  From <span className="font-medium">{formatPrice(minPrice)}</span>
-                  {' to '}
-                  <span className="font-medium">{formatPrice(maxPrice)}</span>
-                </>
-              )}
-            </p>
-          )}
-        </div>
+        {/* Price display - range or selected (hidden when price is 0) */}
+        {(selectedOption ? selectedOption.price > 0 : maxPrice > 0) && (
+          <div className="mb-2">
+            {selectedOption ? (
+              <p className="text-sm">
+                <span className="font-semibold text-white">{formatPrice(selectedOption.price)}</span>
+              </p>
+            ) : (
+              <p className="text-sm text-gray-300">
+                {minPrice === maxPrice ? (
+                  <span className="font-medium">{formatPrice(minPrice)}</span>
+                ) : (
+                  <>
+                    From <span className="font-medium">{formatPrice(minPrice)}</span>
+                    {' to '}
+                    <span className="font-medium">{formatPrice(maxPrice)}</span>
+                  </>
+                )}
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Selected option specs */}
         {selectedOption && selectedOption.specs && selectedOption.specs.length > 0 && (
@@ -150,9 +154,11 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
                       />
                       <span className="text-sm font-medium text-white">{option.name}</span>
                     </div>
-                    <span className="text-sm font-semibold" style={{ color: option.color }}>
-                      {formatPrice(option.price)}
-                    </span>
+                    {option.price > 0 && (
+                      <span className="text-sm font-semibold" style={{ color: option.color }}>
+                        {formatPrice(option.price)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Specs */}
