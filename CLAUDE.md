@@ -10,11 +10,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - React 18 with TypeScript
 - Vite build system
 - Tailwind CSS v3 with Pfluger brand colors
+- Supabase (PostgreSQL + Storage + Edge Functions)
 - Mapbox GL JS for 3D interactive mapping
 - Recharts for data visualization
 - Framer Motion for animations
 - Radix UI for accessible components
-- PapaParse for CSV parsing
 
 ## Development Commands
 
@@ -46,11 +46,10 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 
 - **Database:** Supabase PostgreSQL
 - **Project ref:** `bydkzxqmgsvsnjtafphj`
-- **psql connection:** Uses `DATABASE_URL` from `.env.local` (session pooler)
-- **CLI path:** `/opt/homebrew/opt/libpq/bin/psql`
+- **psql connection:** Uses `DATABASE_URL` from `.env` (session pooler)
 - **Storage bucket:** `Repository Bucket` (public, files listed via `storage.objects` table)
 - **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/web-search/`
-- **Env vars (in `.env.local`, gitignored):** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `DATABASE_URL`, `VITE_ANTHROPIC_API_KEY`, `VITE_OPENASSET_BASE_URL`, `VITE_OPENASSET_TOKEN_ID`, `VITE_OPENASSET_TOKEN_STRING`
+- **Env vars (in `.env`, gitignored):** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `DATABASE_URL`, `VITE_ANTHROPIC_API_KEY`, `VITE_OPENASSET_BASE_URL`, `VITE_OPENASSET_TOKEN_ID`, `VITE_OPENASSET_TOKEN_STRING`
 
 ## Application Architecture
 
@@ -87,13 +86,14 @@ Authentication is managed through `AuthContext.tsx`:
 
 **Supabase-Based Data:**
 - All project data lives in the Supabase `projects` table
-- Loaded via `loadProjects.ts` querying Supabase directly
+- Project dashboard content lives in the `project_blocks` table (see Block System below)
+- Loaded via `loadProjects.ts` (project list) and `services/projects.ts` (block configs)
 - Global state managed through `ProjectsContext`
 - `is_confidential = true` projects are excluded from public views
 
 **Data Models:**
 - `ResearchProject` interface (src/data/loadProjects.ts)
-- `id`: Unique identifier (format: X25-RBxx)
+- `id`: Unique identifier (format: X[YY]-RB[NN], e.g. X26-RB01)
 - `title`: Project name
 - `researcher`: From `PROJECT_METADATA` in `src/services/projects.ts`
 - `category`: Research category (psychology, sustainability, etc.)
@@ -101,6 +101,34 @@ Authentication is managed through `AuthContext.tsx`:
 - `description`: Project summary
 - `position`: [latitude, longitude] tuple from Supabase
 - `startDate` / `completionDate`: Date strings from Supabase
+- `image_url`: Optional card thumbnail (Supabase Storage URL)
+- `slug`: Optional short URL identifier (e.g. `MidlandFFE`)
+
+### Block System
+
+Project dashboards are built from composable blocks stored in the `project_blocks` Supabase table. Each block has a `block_type`, `block_order`, and `data` (JSONB).
+
+**How it works:**
+1. `services/projects.ts` — `getProjectConfig()` fetches blocks from Supabase and merges with `PROJECT_METADATA`
+2. `components/blocks/BlockRenderer.tsx` — routes each block type to its component
+3. `components/blocks/types.ts` — TypeScript interfaces for all block types and data shapes
+4. `views/projects/DynamicProjectDashboard.tsx` — loads config and renders `ProjectDashboard`
+
+**Available block types (21):**
+`section`, `stat-grid`, `bar-chart`, `donut-chart`, `line-chart`, `comparison-table`, `image-gallery`, `text-content`, `timeline`, `key-findings`, `sources`, `tool-comparison`, `case-study-card`, `workflow-steps`, `scenario-bar-chart`, `cost-builder`, `survey-rating`, `feedback-summary`, `quotes`, `activity-rings`, `product-options`
+
+**Block data is DB-only** — no block content lives in code. To add/modify blocks, update the `project_blocks` table in Supabase. See `docs/R&B-Adding-a-New-Project.md` for the full guide including all block type JSON schemas.
+
+**RAG fields** on blocks (`summary`, `tags`, `searchable_text`, `conclusions`) power Ezra's AI search.
+
+### Supabase Storage
+
+- **Bucket:** `Repository Bucket` (public)
+- **Base URL:** `https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object/public/Repository%20Bucket`
+- **Project images:** stored under `projects/[ProjectID]/` (e.g. `projects/X26RB01/x26rb01-chair-1.png`)
+- **Naming convention:** `[project-prefix]-[descriptive-name].[ext]` (lowercase, hyphens)
+- **Config:** `src/config/storage.ts` — `getStorageUrl()` transforms local paths to Supabase URLs
+- **Usage:** Block data can reference images as full URLs (pass-through) or local paths (transformed by `getStorageUrl`)
 
 ### Component Organization
 
@@ -158,14 +186,13 @@ const visibleNavigation = [
 ];
 ```
 
-**CSV Data Loading:**
+**Project Loading:**
 ```typescript
-// Projects loaded on mount via Context
+// Project list loaded on mount via Context
 const { projects, loading } = useProjects();
 
-// Data transformation in loadProjects.ts
-partners: row.partners.split('|').filter(p => p.trim())
-position: [parseFloat(row.latitude), parseFloat(row.longitude)]
+// Project dashboard config (blocks from Supabase)
+const config = await getProjectConfig('X26-RB01');
 ```
 
 ### Important File Paths
@@ -179,16 +206,32 @@ src/
 │   │   ├── ThemeManager.tsx             # Theme colors & utilities
 │   │   ├── AuthContext.tsx              # Auth state
 │   │   └── LoginModal.tsx               # Login UI
+│   ├── blocks/                          # Block system components
+│   │   ├── types.ts                     # All block type interfaces
+│   │   ├── BlockRenderer.tsx            # Routes block_type → component
+│   │   ├── ProductOptionsBlock.tsx      # Product showcase cards
+│   │   ├── ImageGalleryBlock.tsx        # Image grid with lightbox
+│   │   ├── FeedbackSummaryBlock.tsx     # Positive/negative themes
+│   │   └── ...                          # 17 more block components
 │   └── ui/                              # Radix UI primitives
 ├── views/
-│   ├── ResearchMap.tsx                  # Main map view
-│   ├── Portfolio.tsx                    # Gallery
-│   ├── Collaborate.tsx                  # Contact form
+│   ├── Campus/ResearchMap.tsx           # Main map view
+│   ├── Explore/Portfolio.tsx            # Gallery of projects
+│   ├── Contact/Collaborate.tsx          # Contact form
 │   ├── Dashboard.tsx                    # Internal hub
-│   ├── PitchSubmission.tsx              # Internal pitch
-│   └── Analytics.tsx                    # Internal metrics
+│   ├── Pitch/PitchSubmission.tsx        # Internal pitch
+│   ├── Analytics.tsx                    # Internal metrics
+│   └── projects/
+│       ├── ProjectDashboard.tsx         # Block-based project view
+│       └── DynamicProjectDashboard.tsx  # Loads config from Supabase
+├── services/
+│   └── projects.ts                      # PROJECT_METADATA + block loader
+├── config/
+│   ├── supabase.ts                      # Supabase client
+│   ├── storage.ts                       # getStorageUrl() helper
+│   └── mapbox.ts                        # Mapbox access token
 ├── data/
-│   └── loadProjects.ts                  # Supabase project loader
+│   └── loadProjects.ts                  # Supabase project list loader
 ├── context/
 │   └── ProjectsContext.tsx              # Global project state
 └── styles/
@@ -297,7 +340,7 @@ When implementing features:
 
 ### Project Data Updates
 
-To add/modify research projects, update the Supabase `projects` table directly. See `docs/Adding-a-New-Project.md` for the full guide including schema, valid field values, and SQL templates.
+To add/modify research projects, update the Supabase `projects` and `project_blocks` tables. See `docs/R&B-Adding-a-New-Project.md` for the full guide including schema, all 21 block type JSON schemas, valid field values, RAG fields, and SQL templates.
 
 ### Future Enhancements (Planned)
 
@@ -307,17 +350,14 @@ To add/modify research projects, update the Supabase `projects` table directly. 
    - "Show All Connections" toggle
    - Color-coded relationship types
 
-2. **Backend Integration**
-   - Replace CSV with API calls
-   - Database storage for projects
-   - Real authentication system
-   - Admin panel for project management
-
-3. **Advanced Analytics**
+2. **Advanced Analytics**
    - Research impact metrics
    - Publication tracking
    - Collaboration network graphs
    - Time-series visualizations
+
+3. **Azure SSO**
+   - Replace hardcoded auth with Azure SSO integration
 
 ## Development Guidelines
 
@@ -348,9 +388,8 @@ To add/modify research projects, update the Supabase `projects` table directly. 
 
 ## Known Limitations
 
-- Authentication is hardcoded (development only)
-- No persistence - all data in CSV
-- No file upload functionality
+- Authentication is hardcoded (development only — Azure SSO planned)
+- No file upload functionality in-app (images uploaded directly to Supabase Storage)
 - Export features not implemented
 - Project connections are currently hardcoded arrays (being reimplemented)
 
