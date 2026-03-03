@@ -6,9 +6,9 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.local' });
 
-const OPENASSET_BASE_URL = process.env.VITE_OPENASSET_BASE_URL;
-const OPENASSET_TOKEN_ID = process.env.VITE_OPENASSET_TOKEN_ID;
-const OPENASSET_TOKEN_STRING = process.env.VITE_OPENASSET_TOKEN_STRING;
+const OPENASSET_BASE_URL = process.env.OPENASSET_BASE_URL;
+const OPENASSET_TOKEN_ID = process.env.OPENASSET_TOKEN_ID;
+const OPENASSET_TOKEN_STRING = process.env.OPENASSET_TOKEN_STRING;
 
 const authHeader = `OATU ${OPENASSET_TOKEN_ID}:${OPENASSET_TOKEN_STRING}`;
 

@@ -19,12 +19,12 @@ export default function Login({ onSuccess }: LoginProps) {
     setError('');
     setIsLoading(true);
 
-    const success = await login(username, password);
+    const result = await login(username, password);
 
-    if (success) {
+    if (result.success) {
       onSuccess();
     } else {
-      setError('Invalid username or password');
+      setError(result.error || 'Invalid email or password');
     }
 
     setIsLoading(false);
@@ -52,15 +52,15 @@ export default function Login({ onSuccess }: LoginProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1.5">
-                Username
+                Email
               </label>
               <input
                 id="username"
-                type="text"
+                type="email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-2.5 bg-background border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                placeholder="Enter username"
+                placeholder="Enter your email"
                 required
                 autoComplete="username"
               />

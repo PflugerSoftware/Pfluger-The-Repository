@@ -1,6 +1,7 @@
-// Supabase Storage configuration
+// Supabase Storage configuration - derived from VITE_SUPABASE_URL
 
-export const STORAGE_BASE_URL = 'https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object/public/Repository%20Bucket';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+export const STORAGE_BASE_URL = `${supabaseUrl}/storage/v1/object/public/Repository%20Bucket`;
 
 // Transform local image path to Supabase Storage URL
 // e.g., '/images/projects/X25RB00-immersive/tmclark-ocean.jpeg'

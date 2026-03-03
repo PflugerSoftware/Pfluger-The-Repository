@@ -27,6 +27,11 @@ export interface RAGResponse {
   model_used: 'haiku' | 'sonnet' | 'opus';
 }
 
+// Escape ILIKE special characters to prevent wildcard injection
+function escapeIlike(s: string): string {
+  return s.replace(/[%_\\]/g, '\\$&');
+}
+
 // Search for relevant blocks using full-text search
 export async function searchBlocks(
   query: string,
@@ -67,7 +72,7 @@ export async function searchBlocks(
       const { data: termData, error: termError } = await supabase
         .from('project_blocks')
         .select('id, project_id, block_type, summary, conclusions, source_ids, searchable_text')
-        .ilike('searchable_text', `%${term}%`)
+        .ilike('searchable_text', `%${escapeIlike(term)}%`)
         .limit(10);
 
       if (!termError && termData) {

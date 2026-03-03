@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
+import { STORAGE_BASE_URL } from '../../config/storage';
 
 // Images with labels - linked to project dashboards
-const STORAGE_BASE = 'https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object/public/Repository%20Bucket/projects';
+const STORAGE_BASE = `${STORAGE_BASE_URL}/projects`;
 
 const IMAGES = [
   {

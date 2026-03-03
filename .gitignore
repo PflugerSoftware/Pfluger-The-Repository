@@ -26,3 +26,6 @@ dist-ssr
 
 # Claude temp files
 tmpclaude-*
+
+# Supabase CLI temp files
+supabase/.temp/

@@ -8,7 +8,7 @@
  * Features: 3D buildings, terrain, custom markers, dark themes
  */
 
-export const MAPBOX_TOKEN = 'pk.eyJ1IjoicGZsdWdlcmFyY2hpdGVjdHMiLCJhIjoiY21rNzRoMWg1MHpydDNmcHR4eG44ZXhibSJ9.7yynmzS4bjy2hbFB8xo5HQ';
+export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
 /**
  * Mapbox style URLs for different themes

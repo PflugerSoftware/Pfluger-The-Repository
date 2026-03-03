@@ -13,7 +13,6 @@ import {
   type ChatSession,
   type ChatMessage
 } from '../../services/chatHistory';
-import { getUserByEmail } from '../../services/pitchService';
 import { MessageContent } from '../../components/MessageContent';
 
 interface TheRepoProps {
@@ -37,24 +36,17 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
-  const [userUUID, setUserUUID] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Load user UUID and chat sessions from Supabase on mount
+  // User ID comes directly from auth context
+  const userUUID = user?.id || null;
+
+  // Load chat sessions from Supabase on mount
   useEffect(() => {
-    if (isAuthenticated && user?.username) {
+    if (isAuthenticated && userUUID) {
       setIsLoadingSessions(true);
-      // First get the user's UUID from their email
-      getUserByEmail(user.username)
-        .then(dbUser => {
-          if (dbUser) {
-            setUserUUID(dbUser.id);
-            // Then load their chat sessions using the UUID
-            return loadChatSessions(dbUser.id);
-          }
-          return [];
-        })
+      loadChatSessions(userUUID)
         .then(sessions => {
           setChatSessions(sessions);
         })
@@ -62,7 +54,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
           setIsLoadingSessions(false);
         });
     }
-  }, [isAuthenticated, user?.username]);
+  }, [isAuthenticated, userUUID]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

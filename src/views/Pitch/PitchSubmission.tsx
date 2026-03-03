@@ -31,7 +31,7 @@ import {
   generatePitchId,
   getPitchComments,
   addPitchComment,
-  getUserByEmail,
+  getUser,
   savePitchAiSession,
   getUsers,
   getPitchCollaborators,
@@ -177,10 +177,8 @@ const PitchSubmission: React.FC<PitchSubmissionProps> = ({ initialViewMode = 'ne
 
       setIsLoading(true);
       try {
-        // Get current user from database
-        console.log('Looking up user by email:', authUser.username);
-        const user = await getUserByEmail(authUser.username);
-        console.log('Database user found:', user);
+        // Get current user profile from database (uses auth user ID directly)
+        const user = await getUser(authUser.id);
         setCurrentUser(user);
 
         if (user) {

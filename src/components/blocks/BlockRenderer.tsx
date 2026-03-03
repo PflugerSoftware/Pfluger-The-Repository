@@ -1,24 +1,31 @@
+import { lazy, Suspense } from 'react';
 import type { BlockConfig, StatGridData, BarChartData, KeyFindingsData, ComparisonTableData, TimelineData, TextContentData, SectionData, ImageGalleryData, SourcesData, ToolComparisonData, CaseStudyCardData, WorkflowStepsData, DonutChartData, ScenarioBarChartData, CostBuilderData, SurveyRatingData, FeedbackSummaryData, QuotesData, ActivityRingsData, ProductOptionsData } from './types';
-import { StatGridBlock } from './StatGridBlock';
-import { BarChartBlock } from './BarChartBlock';
-import { KeyFindingsBlock } from './KeyFindingsBlock';
-import { ComparisonTableBlock } from './ComparisonTableBlock';
-import { TimelineBlock } from './TimelineBlock';
-import { TextContentBlock } from './TextContentBlock';
-import { SectionBlock } from './SectionBlock';
-import { ImageGalleryBlock } from './ImageGalleryBlock';
-import { SourcesBlock } from './SourcesBlock';
-import { ToolComparisonBlock } from './ToolComparisonBlock';
-import { CaseStudyCardBlock } from './CaseStudyCardBlock';
-import { WorkflowStepsBlock } from './WorkflowStepsBlock';
-import { DonutChartBlock } from './DonutChartBlock';
-import { ScenarioBarChartBlock } from './ScenarioBarChartBlock';
-import { CostBuilderBlock } from './CostBuilderBlock';
-import { SurveyRatingBlock } from './SurveyRatingBlock';
-import { FeedbackSummaryBlock } from './FeedbackSummaryBlock';
-import { QuotesBlock } from './QuotesBlock';
-import { ActivityRingsBlock } from './ActivityRingsBlock';
-import { ProductOptionsBlock } from './ProductOptionsBlock';
+
+// Lazy load all block components - each project dashboard only loads what it uses
+const StatGridBlock = lazy(() => import('./StatGridBlock').then(m => ({ default: m.StatGridBlock })));
+const BarChartBlock = lazy(() => import('./BarChartBlock').then(m => ({ default: m.BarChartBlock })));
+const KeyFindingsBlock = lazy(() => import('./KeyFindingsBlock').then(m => ({ default: m.KeyFindingsBlock })));
+const ComparisonTableBlock = lazy(() => import('./ComparisonTableBlock').then(m => ({ default: m.ComparisonTableBlock })));
+const TimelineBlock = lazy(() => import('./TimelineBlock').then(m => ({ default: m.TimelineBlock })));
+const TextContentBlock = lazy(() => import('./TextContentBlock').then(m => ({ default: m.TextContentBlock })));
+const SectionBlock = lazy(() => import('./SectionBlock').then(m => ({ default: m.SectionBlock })));
+const ImageGalleryBlock = lazy(() => import('./ImageGalleryBlock').then(m => ({ default: m.ImageGalleryBlock })));
+const SourcesBlock = lazy(() => import('./SourcesBlock').then(m => ({ default: m.SourcesBlock })));
+const ToolComparisonBlock = lazy(() => import('./ToolComparisonBlock').then(m => ({ default: m.ToolComparisonBlock })));
+const CaseStudyCardBlock = lazy(() => import('./CaseStudyCardBlock').then(m => ({ default: m.CaseStudyCardBlock })));
+const WorkflowStepsBlock = lazy(() => import('./WorkflowStepsBlock').then(m => ({ default: m.WorkflowStepsBlock })));
+const DonutChartBlock = lazy(() => import('./DonutChartBlock').then(m => ({ default: m.DonutChartBlock })));
+const ScenarioBarChartBlock = lazy(() => import('./ScenarioBarChartBlock').then(m => ({ default: m.ScenarioBarChartBlock })));
+const CostBuilderBlock = lazy(() => import('./CostBuilderBlock').then(m => ({ default: m.CostBuilderBlock })));
+const SurveyRatingBlock = lazy(() => import('./SurveyRatingBlock').then(m => ({ default: m.SurveyRatingBlock })));
+const FeedbackSummaryBlock = lazy(() => import('./FeedbackSummaryBlock').then(m => ({ default: m.FeedbackSummaryBlock })));
+const QuotesBlock = lazy(() => import('./QuotesBlock').then(m => ({ default: m.QuotesBlock })));
+const ActivityRingsBlock = lazy(() => import('./ActivityRingsBlock').then(m => ({ default: m.ActivityRingsBlock })));
+const ProductOptionsBlock = lazy(() => import('./ProductOptionsBlock').then(m => ({ default: m.ProductOptionsBlock })));
+
+const BlockFallback = () => (
+  <div className="h-24 bg-card/50 rounded-xl animate-pulse" />
+);
 
 interface BlockRendererProps {
   block: BlockConfig;
@@ -80,7 +87,11 @@ export function BlockRenderer({ block }: BlockRendererProps) {
 
   // Section and image-gallery blocks don't need wrapper (handled by parent)
   if (type === 'section' || type === 'image-gallery') {
-    return renderBlock();
+    return (
+      <Suspense fallback={<BlockFallback />}>
+        {renderBlock()}
+      </Suspense>
+    );
   }
 
   return (
@@ -91,7 +102,9 @@ export function BlockRenderer({ block }: BlockRendererProps) {
           {description && <p className="text-gray-500">{description}</p>}
         </div>
       )}
-      {renderBlock()}
+      <Suspense fallback={<BlockFallback />}>
+        {renderBlock()}
+      </Suspense>
     </div>
   );
 }

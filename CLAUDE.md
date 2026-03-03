@@ -49,7 +49,9 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 - **psql connection:** Uses `DATABASE_URL` from `.env` (session pooler)
 - **Storage bucket:** `Repository Bucket` (public, files listed via `storage.objects` table)
 - **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/web-search/`
-- **Env vars (in `.env`, gitignored):** `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `DATABASE_URL`, `VITE_ANTHROPIC_API_KEY`, `VITE_OPENASSET_BASE_URL`, `VITE_OPENASSET_TOKEN_ID`, `VITE_OPENASSET_TOKEN_STRING`
+- **Env vars (in `.env.local`, gitignored):**
+  - Client-side (VITE_ prefix): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_MAPBOX_TOKEN`
+  - Server-side only (no VITE_ prefix): `DATABASE_URL`, `ANTHROPIC_API_KEY`, `OPENASSET_BASE_URL`, `OPENASSET_TOKEN_ID`, `OPENASSET_TOKEN_STRING`, `SUPABASE_SERVICE_ROLE_KEY`
 
 ## Application Architecture
 
@@ -70,16 +72,20 @@ The Repository operates in two modes controlled by authentication state:
 
 ### Authentication Flow
 
-Authentication is managed through `AuthContext.tsx`:
-- Shared password for all users: `123456Softwares!`
-- Username is any email from the `users` table (e.g., `josh.sawyer@pflugerarchitects.com`)
-- Login checks password, then looks up the email in `users` table for name and role
+Authentication uses **Supabase Auth** (server-side JWT sessions), managed through `AuthContext.tsx`:
+- Users sign in with email + password via `supabase.auth.signInWithPassword()`
+- Supabase Auth handles password hashing, JWT issuance, and session management
+- Session persisted via Supabase (httpOnly cookies/localStorage managed by the SDK)
+- Access tokens auto-refresh (~1hr access token, ~7 days refresh token)
+- On login, user profile (name, role, office) fetched from `users` table
+- `auth.uid()` in Supabase matches `users.id` (same UUID), enabling RLS policies
 - Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
 - 17 users across Austin, San Antonio, and Dallas offices
-- State persisted to localStorage
-- Login modal appears when clicking "Team Sign In" button
+- Login page at `/login`, accessed via "Team Sign In" button
 - Upon login, internal views appear in navigation
-- "Collaborate" view hides when authenticated
+- RLS policies enforce access: public tables readable by anyone, internal tables require auth
+- Migration script: `scripts/migrate-to-supabase-auth.ts` (requires `SUPABASE_SERVICE_ROLE_KEY`)
+- RLS policies: `scripts/apply-rls-policies.sql`
 - Will migrate to Azure SSO in the future
 
 ### Data Architecture
@@ -179,11 +185,11 @@ Each category has dedicated color and Lucide icon:
 
 **Authentication Pattern:**
 ```typescript
-// In App.tsx
-const visibleNavigation = [
-  ...publicNavigation.filter(item => !item.hideWhenAuth || !isAuthenticated),
-  ...(isAuthenticated ? internalNavigation : [])
-];
+// AuthContext provides user with id, username, name, role
+const { user, isAuthenticated, login, logout } = useAuth();
+// user.id is the Supabase Auth UUID (same as users.id in the DB)
+// Protected routes use <ProtectedRoute> wrapper
+// Supabase client auto-includes JWT in all requests when logged in
 ```
 
 **Project Loading:**
@@ -329,14 +335,17 @@ secondary: {
 
 To test both modes:
 1. **Public Mode**: Visit app without logging in
-2. **Internal Mode**: Click "Team Sign In" → Use any email from the `users` table + shared password `123456Softwares!`
-3. **Admin Mode**: Use `software@pflugerarchitects.com` + shared password
+2. **Internal Mode**: Click "Team Sign In" at `/login`, use any email from the `users` table + password `123456Softwares!`
+3. **Admin Mode**: Use `software@pflugerarchitects.com` + same password
+
+Authentication is handled by Supabase Auth. The Supabase JS client automatically includes the JWT in all requests when a session exists. RLS policies on all tables enforce access control server-side.
 
 When implementing features:
-- Use `useAuth()` hook to check `isAuthenticated`
-- Mark internal-only nav items with `requiresAuth: true`
-- Mark public-only items with `hideWhenAuth: true`
-- Check auth state before rendering sensitive data
+- Use `useAuth()` hook to check `isAuthenticated` and get `user` (with `id`, `username`, `name`, `role`)
+- `user.id` is the Supabase Auth UUID, same as `users.id` in the database
+- Use `<ProtectedRoute>` wrapper for auth-required routes
+- RLS policies enforce data access server-side. No need for client-side data filtering for security.
+- Edge functions should verify the JWT from the `Authorization` header for authenticated endpoints
 
 ### Project Data Updates
 
@@ -388,7 +397,8 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 
 ## Known Limitations
 
-- Authentication is hardcoded (development only — Azure SSO planned)
+- Authentication uses Supabase Auth with shared password (Azure SSO migration planned)
+- Edge functions do not yet verify JWT (auth check planned for post-migration)
 - No file upload functionality in-app (images uploaded directly to Supabase Storage)
 - Export features not implemented
 - Project connections are currently hardcoded arrays (being reimplemented)

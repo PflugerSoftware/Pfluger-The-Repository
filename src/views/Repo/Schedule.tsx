@@ -2,7 +2,12 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flag, FileText, Presentation, CheckCircle, Play, Users, Calendar, BarChart3, GanttChart } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import * as d3 from 'd3';
+import { select, pointer } from 'd3-selection';
+import { stack, stackOrderNone, stackOffsetNone, area, curveMonotoneX, type SeriesPoint } from 'd3-shape';
+import { scalePoint, scaleLinear } from 'd3-scale';
+import { easeCubicOut } from 'd3-ease';
+import { axisLeft } from 'd3-axis';
+import 'd3-transition';
 import { useProjects } from '../../context/ProjectsContext';
 
 // ============================================
@@ -172,9 +177,9 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
     const margin = { top: 20, right: 10, bottom: 20, left: 40 };
 
     // Clear previous
-    d3.select(svgRef.current).selectAll('*').remove();
+    select(svgRef.current).selectAll('*').remove();
 
-    const svg = d3.select(svgRef.current)
+    const svg = select(svgRef.current)
       .attr('width', width)
       .attr('height', height);
 
@@ -188,38 +193,38 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
     const keys = projectBars.map(p => p.id.replace('X25-', ''));
 
     // Stack the data
-    const stack = d3.stack<typeof HOURS_DATA[0]>()
+    const stackLayout = stack<typeof HOURS_DATA[0]>()
       .keys(keys)
-      .order(d3.stackOrderNone)
-      .offset(d3.stackOffsetNone);
+      .order(stackOrderNone)
+      .offset(stackOffsetNone);
 
-    const stackedData = stack(data);
+    const stackedData = stackLayout(data);
 
     // Scales
-    const x = d3.scalePoint<string>()
+    const x = scalePoint<string>()
       .domain(data.map(d => d.month))
       .range([0, innerWidth])
       .padding(0);
 
     // Use fixed maxY for consistent scale across filters
-    const y = d3.scaleLinear()
+    const y = scaleLinear()
       .domain([0, maxY])
       .nice()
       .range([innerHeight, 0]);
 
     // Area generator with smooth interpolation
-    const area = d3.area<d3.SeriesPoint<typeof HOURS_DATA[0]>>()
+    const areaGen = area<SeriesPoint<typeof HOURS_DATA[0]>>()
       .x(d => x(d.data.month) || 0)
       .y0(d => y(d[0]))
       .y1(d => y(d[1]))
-      .curve(d3.curveMonotoneX);
+      .curve(curveMonotoneX);
 
     // Flat area (for animation start)
-    const areaFlat = d3.area<d3.SeriesPoint<typeof HOURS_DATA[0]>>()
+    const areaFlat = area<SeriesPoint<typeof HOURS_DATA[0]>>()
       .x(d => x(d.data.month) || 0)
       .y0(innerHeight)
       .y1(innerHeight)
-      .curve(d3.curveMonotoneX);
+      .curve(curveMonotoneX);
 
     // Draw areas with grow-up animation
     g.selectAll('.layer')
@@ -239,13 +244,13 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
       .attr('stroke-width', 1.5)
       .transition()
       .duration(800)
-      .ease(d3.easeCubicOut)
-      .attr('d', area);
+      .ease(easeCubicOut)
+      .attr('d', areaGen);
 
     // Y Axis with hour values
     g.append('g')
       .attr('class', 'y-axis')
-      .call(d3.axisLeft(y).ticks(5).tickSize(-innerWidth))
+      .call(axisLeft(y).ticks(5).tickSize(-innerWidth))
       .call(g => g.select('.domain').remove())
       .call(g => g.selectAll('.tick line').attr('stroke', '#333').attr('stroke-dasharray', '2,2'))
       .call(g => g.selectAll('.tick text').attr('fill', '#888').attr('font-size', '10px'));
@@ -263,7 +268,7 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
     const hoverDots = g.append('g').attr('class', 'hover-dots');
 
     // Tooltip
-    const tooltip = d3.select(tooltipRef.current);
+    const tooltip = select(tooltipRef.current);
 
     // Invisible rect for mouse events
     g.append('rect')
@@ -271,7 +276,7 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
       .attr('height', innerHeight)
       .attr('fill', 'transparent')
       .on('mousemove', function(event) {
-        const [mouseX] = d3.pointer(event);
+        const [mouseX] = pointer(event);
 
         // Find closest month
         const months = data.map(d => d.month);

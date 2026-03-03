@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Calendar, BarChart3, ExternalLink, MapPin } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { useProjects } from '../../context/ProjectsContext';
 import type { ResearchProject } from '../../data/loadProjects';
 import { useTheme } from '../../components/System/ThemeManager';

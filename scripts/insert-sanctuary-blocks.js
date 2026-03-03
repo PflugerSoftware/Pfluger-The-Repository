@@ -1,7 +1,8 @@
+import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(
-  'https://bydkzxqmgsvsnjtafphj.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5ZGt6eHFtZ3N2c25qdGFmcGhqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc5NzgxODgsImV4cCI6MjA4MzU1NDE4OH0.ICQySbd-qUY7Li2G10lIUMZ_LybIwTc-UPU060o1oS8'
+  process.env.VITE_SUPABASE_URL,
+  process.env.VITE_SUPABASE_ANON_KEY
 );
 
 const baseUrl = 'https://bydkzxqmgsvsnjtafphj.supabase.co/storage/v1/object/public/Repository%20Bucket/projects/X25RB01-sanctuary';

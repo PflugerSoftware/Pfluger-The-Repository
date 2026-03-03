@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import * as d3 from 'd3';
+import { pie, arc, type PieArcDatum } from 'd3-shape';
 import type { DonutChartData } from './types';
 
 interface DonutChartBlockProps {
@@ -29,22 +29,22 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
   const innerRadius = radius * 0.6;
 
   useEffect(() => {
-    const pie = d3.pie<{ label: string; value: number; color: string }>()
+    const pieLayout = pie<{ label: string; value: number; color: string }>()
       .value(d => d.value)
       .sort(null)
       .padAngle(0.02);
 
-    const arcGenerator = d3.arc<d3.PieArcDatum<{ label: string; value: number; color: string }>>()
+    const arcGenerator = arc<PieArcDatum<{ label: string; value: number; color: string }>>()
       .innerRadius(innerRadius)
       .outerRadius(radius)
       .cornerRadius(4);
 
-    const arcHover = d3.arc<d3.PieArcDatum<{ label: string; value: number; color: string }>>()
+    const arcHover = arc<PieArcDatum<{ label: string; value: number; color: string }>>()
       .innerRadius(innerRadius)
       .outerRadius(radius + 10)
       .cornerRadius(4);
 
-    const pieData = pie(segments);
+    const pieData = pieLayout(segments);
     setArcs(pieData.map((d, i) => ({
       path: arcGenerator(d) || '',
       hoverPath: arcHover(d) || '',

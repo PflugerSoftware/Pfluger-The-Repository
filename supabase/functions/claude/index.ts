@@ -3,23 +3,85 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+const ALLOWED_ORIGINS = [
+  'https://repository.pflugerarchitects.com',
+  'http://localhost:5173',
+];
+
+const ALLOWED_MODELS = [
+  'claude-3-5-haiku-20241022',
+  'claude-haiku-4-5-20251001',
+  'claude-sonnet-4-5-20250929',
+  'claude-opus-4-5-20251101',
+];
+
+const MAX_TOKENS_CAP = 4096;
+const MAX_PROMPT_LENGTH = 50000;
+
+function getCorsHeaders(req: Request) {
+  const origin = req.headers.get('Origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
+}
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const { model, prompt, max_tokens } = await req.json();
+    const body = await req.json();
+    const { model, system, prompt, max_tokens } = body;
+
+    // Input validation
+    const resolvedModel = model || 'claude-3-5-haiku-20241022';
+    if (!ALLOWED_MODELS.includes(resolvedModel)) {
+      return new Response(
+        JSON.stringify({ error: `Invalid model. Allowed: ${ALLOWED_MODELS.join(', ')}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!prompt || typeof prompt !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'prompt is required and must be a string' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (prompt.length > MAX_PROMPT_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `prompt exceeds maximum length of ${MAX_PROMPT_LENGTH} characters` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const resolvedMaxTokens = Math.min(
+      typeof max_tokens === 'number' ? max_tokens : 1000,
+      MAX_TOKENS_CAP
+    );
 
     const anthropicKey = Deno.env.get('ANTHROPIC_API_KEY');
     if (!anthropicKey) {
       throw new Error('ANTHROPIC_API_KEY not configured');
+    }
+
+    // Build request with proper system/user separation
+    const anthropicBody: Record<string, unknown> = {
+      model: resolvedModel,
+      max_tokens: resolvedMaxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    };
+
+    // Use the dedicated system parameter if provided
+    if (system && typeof system === 'string') {
+      anthropicBody.system = system;
     }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -29,11 +91,7 @@ serve(async (req) => {
         'x-api-key': anthropicKey,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify({
-        model: model || 'claude-3-5-haiku-20241022',
-        max_tokens: max_tokens || 1000,
-        messages: [{ role: 'user', content: prompt }],
-      }),
+      body: JSON.stringify(anthropicBody),
     });
 
     if (!response.ok) {

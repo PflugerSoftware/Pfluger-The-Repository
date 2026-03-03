@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
@@ -8,25 +8,29 @@ import { AuthProvider, useAuth } from './components/System/AuthContext';
 import { ProtectedRoute } from './components/Router/ProtectedRoute';
 import { TopNavbar } from './components/Navigation/TopNavbar';
 import { logPageView } from './services/analytics';
-import { getUserByEmail } from './services/pitchService';
+import { resolveProjectIdentifier } from './services/projects';
 
+// Eagerly loaded (small, always needed)
 import Home from './views/Home';
 import Login from './views/Login';
-import TheRepo from './views/Repo/TheRepo';
-import Schedule from './views/Repo/Schedule';
-import Contacts from './views/Repo/Contacts';
-import ResearchMap from './views/Campus/ResearchMap';
-import Portfolio from './views/Explore/Portfolio';
-import PitchSubmission from './views/Pitch/PitchSubmission';
-import Collaborate from './views/Contact/Collaborate';
-import AboutRB from './views/About/AboutRB';
-import AboutProcess from './views/About/AboutProcess';
-import AboutAI from './views/About/AboutAI';
-import AboutTools from './views/About/AboutTools';
-import AboutSources from './views/About/AboutSources';
+
+// Lazy loaded views (only loaded when route is visited)
+const TheRepo = lazy(() => import('./views/Repo/TheRepo'));
+const Schedule = lazy(() => import('./views/Repo/Schedule'));
+const Contacts = lazy(() => import('./views/Repo/Contacts'));
+const ResearchMap = lazy(() => import('./views/Campus/ResearchMap'));
+const Portfolio = lazy(() => import('./views/Explore/Portfolio'));
+const PitchSubmission = lazy(() => import('./views/Pitch/PitchSubmission'));
+const Collaborate = lazy(() => import('./views/Contact/Collaborate'));
+const AboutRB = lazy(() => import('./views/About/AboutRB'));
+const AboutProcess = lazy(() => import('./views/About/AboutProcess'));
+const AboutAI = lazy(() => import('./views/About/AboutAI'));
+const AboutTools = lazy(() => import('./views/About/AboutTools'));
+const AboutSources = lazy(() => import('./views/About/AboutSources'));
+
+// Project dashboards (used in overlay route)
 import { ProjectDashboard, DynamicProjectDashboard } from './views/projects';
 import { showcaseConfig } from './data/projects/X00-block-showcase/project/showcaseConfig';
-import { resolveProjectIdentifier } from './services/projects';
 
 // Project overlay wrapper component
 function ProjectOverlay() {
@@ -93,31 +97,16 @@ function ProjectOverlay() {
 
 function AppContent() {
   const { user, isAuthenticated } = useAuth();
-  const [userUUID, setUserUUID] = useState<string | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Load user UUID when authenticated
+  // Track page views when location changes (user.id comes directly from auth)
   useEffect(() => {
-    if (isAuthenticated && user?.username) {
-      getUserByEmail(user.username).then(dbUser => {
-        if (dbUser) {
-          setUserUUID(dbUser.id);
-        }
-      });
-    } else {
-      setUserUUID(null);
-    }
-  }, [isAuthenticated, user?.username]);
-
-  // Track page views when location changes
-  useEffect(() => {
-    if (userUUID) {
-      // Extract page name from pathname
+    if (isAuthenticated && user?.id) {
       const pageName = location.pathname === '/' ? 'home' : location.pathname.slice(1).replace(/\//g, '-');
-      logPageView(userUUID, pageName, null);
+      logPageView(user.id, pageName, null);
     }
-  }, [location.pathname, userUUID]);
+  }, [location.pathname, isAuthenticated, user?.id]);
 
   // Lock body scroll when on project overlay routes
   useEffect(() => {
@@ -144,6 +133,7 @@ function AppContent() {
       <div className="h-20" />
 
       <main>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home onNavigate={() => {}} onOpenProject={openProject} />} />
@@ -208,6 +198,7 @@ function AppContent() {
           {/* Fallback - redirect to home */}
           <Route path="*" element={<Home onNavigate={() => {}} onOpenProject={openProject} />} />
         </Routes>
+        </Suspense>
       </main>
     </div>
   );

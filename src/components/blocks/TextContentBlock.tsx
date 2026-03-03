@@ -1,8 +1,15 @@
+import DOMPurify from 'dompurify';
 import type { TextContentData } from './types';
 
 interface TextContentBlockProps {
   data: TextContentData;
 }
+
+// Sanitize HTML to prevent XSS
+const sanitize = (html: string) => DOMPurify.sanitize(html, {
+  ALLOWED_TAGS: ['strong', 'em', 'br', 'a'],
+  ALLOWED_ATTR: ['class', 'href', 'target', 'rel'],
+});
 
 export function TextContentBlock({ data }: TextContentBlockProps) {
   const { content } = data;
@@ -26,7 +33,7 @@ export function TextContentBlock({ data }: TextContentBlockProps) {
 
       // Bullet points
       if (line.startsWith('- ')) {
-        const bulletContent = processBold(line.slice(2));
+        const bulletContent = sanitize(processBold(line.slice(2)));
         return (
           <li
             key={index}
@@ -36,7 +43,7 @@ export function TextContentBlock({ data }: TextContentBlockProps) {
         );
       }
 
-      const processedLine = processBold(line);
+      const processedLine = sanitize(processBold(line));
 
       // Empty lines
       if (line.trim() === '') {
