@@ -186,9 +186,7 @@ export async function analyzeIntent(
     ? `Recent conversation:\n${conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}\n\n`
     : '';
 
-  const prompt = `Analyze this conversation in the context of architectural design research.
-
-${historyContext}Current message: "${query}"
+  const systemPrompt = `Analyze conversations in the context of architectural design research.
 
 Our research covers: ${RESEARCH_TOPICS.join(', ')}
 
@@ -206,7 +204,9 @@ Intent types:
 - conversational: greetings, thanks, or very short replies needing clarification
 - general_design: design question likely outside our specific research`;
 
-  const response = await callClaude(prompt, 'haiku');
+  const userPrompt = `${historyContext}<user_input>${query}</user_input>`;
+
+  const response = await callClaude(userPrompt, 'haiku', systemPrompt);
 
   try {
     let jsonStr = response;
@@ -243,9 +243,7 @@ async function generateConversationalResponse(
     ? `Recent conversation:\n${context.conversationHistory.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')}\n\n`
     : '';
 
-  const prompt = `You're a research assistant at Pfluger Architects chatting with someone exploring design ideas. Respond naturally and helpfully.
-
-${historyContext}Their latest message: "${query}"
+  const systemPrompt = `You're a research assistant at Pfluger Architects chatting with someone exploring design ideas. Respond naturally and helpfully.
 
 Context:
 - They seem interested in: ${context.topic}
@@ -256,7 +254,9 @@ ${context.hasResearch ? '' : '- We don\'t have specific research on their exact 
 
 Respond conversationally (1-3 sentences). ${context.hasResearch ? 'Help them clarify what they\'re looking for.' : 'Acknowledge their interest and gently steer toward topics we can help with, or offer general thoughts.'}`;
 
-  return callClaude(prompt, 'haiku');
+  const userPrompt = `${historyContext}<user_input>${query}</user_input>`;
+
+  return callClaude(userPrompt, 'haiku', systemPrompt);
 }
 
 // Phase 1: Haiku relevance check
@@ -273,19 +273,19 @@ export async function checkRelevance(
 
   console.log('Blocks sent to Haiku for relevance:', blocksContext.map(b => `${b.id} (${b.block_type}): ${b.summary?.slice(0, 50) || 'no summary'}`));
 
-  const prompt = `You are a research relevance checker. Given a user question and research block summaries, determine which blocks are relevant.
-
-User Question: "${query}"
-
-Research Blocks:
-${JSON.stringify(blocksContext, null, 2)}
+  const systemPrompt = `You are a research relevance checker. Given a user question and research block summaries, determine which blocks are relevant.
 
 Respond ONLY with valid JSON (no markdown, no explanation):
 {"relevant": true, "relevantBlockIds": ["id1", "id2"], "reasoning": "Brief explanation"}
 
 Only include blocks that directly help answer the question.`;
 
-  const response = await callClaude(prompt, 'haiku');
+  const userPrompt = `<user_input>${query}</user_input>
+
+Research Blocks:
+${JSON.stringify(blocksContext, null, 2)}`;
+
+  const response = await callClaude(userPrompt, 'haiku', systemPrompt);
 
   console.log('Haiku relevance response:', response);
 
@@ -365,9 +365,7 @@ export async function synthesizeAnswer(
     ? `Conversation so far:\n${conversationHistory.slice(-6).map(m => `${m.role}: ${m.content}`).join('\n')}\n\n`
     : '';
 
-  const prompt = `You're chatting with someone exploring design research at Pfluger Architects. Be genuinely curious and helpful - like a knowledgeable colleague, not a search engine.
-
-${historyContext}Their current question: "${query}"
+  const systemPrompt = `You're chatting with someone exploring design research at Pfluger Architects. Be genuinely curious and helpful, like a knowledgeable colleague, not a search engine.
 
 VOICE:
 - Natural, warm, curious
@@ -380,7 +378,7 @@ STRUCTURE (flexible, not rigid):
 - Reference projects by their ID when mentioning them (e.g., "X25-RB01 explores..." or "In project X26-RB02...")
 - Available projects: ${projectIds.join(', ')}
 - Connect to what they've shared about their project/interests
-- Keep it conversational - 2-4 sentences total
+- Keep it conversational, 2-4 sentences total
 
 AVOID:
 - Bullet points, headers, lists
@@ -394,7 +392,9 @@ ${JSON.stringify(context, null, 2)}
 Available Sources (use these exact IDs when citing):
 ${sourceMap.map(s => `[${s.id}] ${s.citation}`).join('\n')}`;
 
-  return callClaude(prompt, 'sonnet');
+  const userPrompt = `${historyContext}<user_input>${query}</user_input>`;
+
+  return callClaude(userPrompt, 'sonnet', systemPrompt);
 }
 
 // Phase 3: Opus deep analysis (for complex queries)
@@ -406,9 +406,7 @@ export async function deepAnalysis(
 ): Promise<string> {
   const sourcesContext = sources.map(s => `[${s.id}] ${s.author}. ${s.title}`).join('\n');
 
-  const prompt = `You are a senior research analyst at Pfluger Architects. The user needs a deeper analysis of their question. Review the previous answer and provide additional insights, connections, or considerations.
-
-User Question: "${query}"
+  const systemPrompt = `You are a senior research analyst at Pfluger Architects. Review the previous answer and provide additional insights, connections, or considerations. Provide deeper analysis, identify patterns, suggest implications for design practice, or note areas needing further research. Cite sources where applicable.
 
 Previous Answer: ${previousAnswer}
 
@@ -416,11 +414,11 @@ Full Research Context:
 ${blocks.map(b => b.searchable_text).join('\n\n')}
 
 Available Sources:
-${sourcesContext}
+${sourcesContext}`;
 
-Provide deeper analysis, identify patterns, suggest implications for design practice, or note areas needing further research. Cite sources where applicable.`;
+  const userPrompt = `<user_input>${query}</user_input>`;
 
-  return callClaude(prompt, 'opus');
+  return callClaude(userPrompt, 'opus', systemPrompt);
 }
 
 // Expand section blocks to include their child content blocks
@@ -657,7 +655,7 @@ async function webSearch(query: string, context?: string): Promise<string> {
 }
 
 // Claude API call via Supabase Edge Function
-async function callClaude(prompt: string, model: 'haiku' | 'sonnet' | 'opus'): Promise<string> {
+async function callClaude(prompt: string, model: 'haiku' | 'sonnet' | 'opus', system?: string): Promise<string> {
   const modelMap = {
     haiku: 'claude-haiku-4-5-20251001',
     sonnet: 'claude-sonnet-4-5-20250929',
@@ -670,17 +668,22 @@ async function callClaude(prompt: string, model: 'haiku' | 'sonnet' | 'opus'): P
   const apiEndpoint = `${supabaseUrl}/functions/v1/claude`;
 
   try {
+    const body: Record<string, unknown> = {
+      model: modelMap[model],
+      prompt,
+      max_tokens: model === 'haiku' ? 500 : 2000,
+    };
+    if (system) {
+      body.system = system;
+    }
+
     const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${supabaseAnonKey}`,
       },
-      body: JSON.stringify({
-        model: modelMap[model],
-        prompt,
-        max_tokens: model === 'haiku' ? 500 : 2000,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

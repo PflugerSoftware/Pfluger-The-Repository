@@ -155,29 +155,28 @@ And mark it complete: [PITCH_UPDATE: complete="true"]
 Start by warmly greeting them and asking what research idea they're interested in exploring.`;
 
 // Call Claude via Supabase Edge Function (matches rag.ts pattern)
-async function callClaude(prompt: string): Promise<string> {
-  const modelMap = {
-    haiku: 'claude-haiku-4-5-20251001',
-    sonnet: 'claude-sonnet-4-5-20250929',
-    opus: 'claude-opus-4-5-20251101',
-  };
-
+async function callClaude(prompt: string, system?: string): Promise<string> {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   const apiEndpoint = `${supabaseUrl}/functions/v1/claude`;
 
   try {
+    const body: Record<string, unknown> = {
+      model: 'claude-sonnet-4-5-20250929',
+      prompt,
+      max_tokens: 1024,
+    };
+    if (system) {
+      body.system = system;
+    }
+
     const response = await fetch(apiEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${supabaseAnonKey}`,
       },
-      body: JSON.stringify({
-        model: modelMap.sonnet,
-        prompt,
-        max_tokens: 1024,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
@@ -193,29 +192,33 @@ async function callClaude(prompt: string): Promise<string> {
   }
 }
 
-// Build prompt from system context, projects, and conversation history
-function buildPrompt(messages: PitchMessage[], systemPrompt: string, projects?: ProjectContext[]): string {
-  let prompt = systemPrompt;
+// Build system and user prompts from context, projects, and conversation history
+function buildPrompt(messages: PitchMessage[], systemPromptBase: string, projects?: ProjectContext[]): { system: string; prompt: string } {
+  let system = systemPromptBase;
 
-  // Add existing projects context if available
+  // Add existing projects context to system prompt
   if (projects && projects.length > 0) {
-    prompt += '\n\n---\n\n## EXISTING PFLUGER RESEARCH PROJECTS\n\n';
+    system += '\n\n---\n\n## EXISTING PFLUGER RESEARCH PROJECTS\n\n';
     for (const p of projects) {
-      prompt += `- **${p.id}: ${p.title}** (${p.phase})\n`;
-      prompt += `  Researcher: ${p.researcher} | Category: ${p.category}\n`;
-      prompt += `  ${p.description}\n\n`;
+      system += `- **${p.id}: ${p.title}** (${p.phase})\n`;
+      system += `  Researcher: ${p.researcher} | Category: ${p.category}\n`;
+      system += `  ${p.description}\n\n`;
     }
   }
 
-  prompt += '\n---\n\nConversation so far:\n';
+  // Build user prompt with conversation history, wrapping user messages
+  let prompt = 'Conversation so far:\n';
 
   for (const msg of messages) {
-    const role = msg.role === 'user' ? 'User' : 'Assistant';
-    prompt += `\n${role}: ${msg.content}\n`;
+    if (msg.role === 'user') {
+      prompt += `\nUser: <user_input>${msg.content}</user_input>\n`;
+    } else {
+      prompt += `\nAssistant: ${msg.content}\n`;
+    }
   }
 
   prompt += '\nAssistant:';
-  return prompt;
+  return { system, prompt };
 }
 
 // Parse PITCH_UPDATE tags from response
@@ -339,8 +342,8 @@ export async function sendPitchMessage(
   ];
 
   // Build prompt and get response from Claude
-  const prompt = buildPrompt(messages, SYSTEM_PROMPT, projects);
-  const response = await callClaude(prompt);
+  const { system, prompt } = buildPrompt(messages, SYSTEM_PROMPT, projects);
+  const response = await callClaude(prompt, system);
 
   // Extract any pitch data from the conversation
   const allMessages = [...messages, { role: 'assistant' as const, content: response }];

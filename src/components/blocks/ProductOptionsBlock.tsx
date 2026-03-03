@@ -42,6 +42,7 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
               <img
                 src={getStorageUrl(image)}
                 alt={name}
+                loading="lazy"
                 className="max-w-full max-h-full object-contain"
               />
             </div>

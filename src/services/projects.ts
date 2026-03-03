@@ -1,5 +1,5 @@
 import { supabase } from '../config/supabase';
-import type { ProjectConfig, BlockConfig, BlockType } from '../components/blocks/types';
+import type { ProjectConfig, BlockConfig } from '../components/blocks/types';
 
 // Project metadata - small static config (blocks come from database)
 const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
@@ -115,12 +115,13 @@ interface DBBlock {
 }
 
 // Transform database block to BlockConfig
+// Cast at DB boundary: Supabase returns untyped JSONB, we trust the schema
 function dbBlockToConfig(dbBlock: DBBlock): BlockConfig {
   return {
-    type: dbBlock.block_type as BlockType,
+    type: dbBlock.block_type,
     id: dbBlock.id,
     data: dbBlock.data,
-  };
+  } as BlockConfig;
 }
 
 // Fetch project config from database

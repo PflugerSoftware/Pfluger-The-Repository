@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import type { BlockConfig, StatGridData, BarChartData, KeyFindingsData, ComparisonTableData, TimelineData, TextContentData, SectionData, ImageGalleryData, SourcesData, ToolComparisonData, CaseStudyCardData, WorkflowStepsData, DonutChartData, ScenarioBarChartData, CostBuilderData, SurveyRatingData, FeedbackSummaryData, QuotesData, ActivityRingsData, ProductOptionsData } from './types';
+import type { BlockConfig } from './types';
 
 // Lazy load all block components - each project dashboard only loads what it uses
 const StatGridBlock = lazy(() => import('./StatGridBlock').then(m => ({ default: m.StatGridBlock })));
@@ -32,61 +32,67 @@ interface BlockRendererProps {
 }
 
 export function BlockRenderer({ block }: BlockRendererProps) {
-  const { type, title, description, data } = block;
-
   const renderBlock = () => {
-    switch (type) {
+    switch (block.type) {
       case 'section':
-        return <SectionBlock data={data as SectionData} />;
+        return <SectionBlock data={block.data} />;
       case 'stat-grid':
-        return <StatGridBlock data={data as StatGridData} />;
+        return <StatGridBlock data={block.data} />;
       case 'bar-chart':
-        return <BarChartBlock data={data as BarChartData} />;
+        return <BarChartBlock data={block.data} />;
       case 'key-findings':
-        return <KeyFindingsBlock data={data as KeyFindingsData} />;
+        return <KeyFindingsBlock data={block.data} />;
       case 'comparison-table':
-        return <ComparisonTableBlock data={data as ComparisonTableData} />;
+        return <ComparisonTableBlock data={block.data} />;
       case 'timeline':
-        return <TimelineBlock data={data as TimelineData} />;
+        return <TimelineBlock data={block.data} />;
       case 'text-content':
-        return <TextContentBlock data={data as TextContentData} />;
+        return <TextContentBlock data={block.data} />;
       case 'image-gallery':
-        return <ImageGalleryBlock data={data as ImageGalleryData} />;
+        return <ImageGalleryBlock data={block.data} />;
       case 'sources':
-        return <SourcesBlock data={data as SourcesData} />;
+        return <SourcesBlock data={block.data} />;
       case 'tool-comparison':
-        return <ToolComparisonBlock data={data as ToolComparisonData} />;
+        return <ToolComparisonBlock data={block.data} />;
       case 'case-study-card':
-        return <CaseStudyCardBlock data={data as CaseStudyCardData} />;
+        return <CaseStudyCardBlock data={block.data} />;
       case 'workflow-steps':
-        return <WorkflowStepsBlock data={data as WorkflowStepsData} />;
+        return <WorkflowStepsBlock data={block.data} />;
       case 'donut-chart':
-        return <DonutChartBlock data={data as DonutChartData} />;
+        return <DonutChartBlock data={block.data} />;
       case 'scenario-bar-chart':
-        return <ScenarioBarChartBlock data={data as ScenarioBarChartData} />;
+        return <ScenarioBarChartBlock data={block.data} />;
       case 'cost-builder':
-        return <CostBuilderBlock data={data as CostBuilderData} />;
+        return <CostBuilderBlock data={block.data} />;
       case 'survey-rating':
-        return <SurveyRatingBlock data={data as SurveyRatingData} />;
+        return <SurveyRatingBlock data={block.data} />;
       case 'feedback-summary':
-        return <FeedbackSummaryBlock data={data as FeedbackSummaryData} />;
+        return <FeedbackSummaryBlock data={block.data} />;
       case 'quotes':
-        return <QuotesBlock data={data as QuotesData} />;
+        return <QuotesBlock data={block.data} />;
       case 'activity-rings':
-        return <ActivityRingsBlock data={data as ActivityRingsData} />;
+        return <ActivityRingsBlock data={block.data} />;
       case 'product-options':
-        return <ProductOptionsBlock data={data as ProductOptionsData} />;
-      default:
+        return <ProductOptionsBlock data={block.data} />;
+      case 'line-chart':
         return (
           <div className="p-4 bg-card border border-card rounded-xl text-gray-400 text-sm">
-            Unknown block type: {type}
+            Line chart block (not yet implemented)
           </div>
         );
+      default: {
+        const _exhaustive: never = block;
+        return (
+          <div className="p-4 bg-card border border-card rounded-xl text-gray-400 text-sm">
+            Unknown block type: {(_exhaustive as BlockConfig).type}
+          </div>
+        );
+      }
     }
   };
 
   // Section and image-gallery blocks don't need wrapper (handled by parent)
-  if (type === 'section' || type === 'image-gallery') {
+  if (block.type === 'section' || block.type === 'image-gallery') {
     return (
       <Suspense fallback={<BlockFallback />}>
         {renderBlock()}
@@ -96,10 +102,10 @@ export function BlockRenderer({ block }: BlockRendererProps) {
 
   return (
     <div className="mb-8">
-      {(title || description) && (
+      {(block.title || block.description) && (
         <div className="mb-6">
-          {title && <h3 className="text-xl font-bold text-white mb-1">{title}</h3>}
-          {description && <p className="text-gray-500">{description}</p>}
+          {block.title && <h3 className="text-xl font-bold text-white mb-1">{block.title}</h3>}
+          {block.description && <p className="text-gray-500">{block.description}</p>}
         </div>
       )}
       <Suspense fallback={<BlockFallback />}>

@@ -50,6 +50,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
               <img
                 src={getStorageUrl(image.src)}
                 alt={image.alt}
+                loading="lazy"
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
@@ -119,6 +120,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
                 <img
                   src={getStorageUrl(images[lightboxIndex].src)}
                   alt={images[lightboxIndex].alt}
+                  loading="lazy"
                   className="max-w-full max-h-[85vh] object-contain"
                 />
                 {images[lightboxIndex].caption && (

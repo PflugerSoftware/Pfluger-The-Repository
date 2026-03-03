@@ -29,3 +29,6 @@ tmpclaude-*
 
 # Supabase CLI temp files
 supabase/.temp/
+
+# Claude Code local settings (may contain credential references)
+.claude/settings.local.json

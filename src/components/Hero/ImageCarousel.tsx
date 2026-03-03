@@ -50,6 +50,7 @@ export function ImageCarousel({ onOpenProject }: ImageCarouselProps) {
           <img
             src={image.url}
             alt={image.alt}
+            loading="lazy"
             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
           />
           {/* Bold label in bottom left */}

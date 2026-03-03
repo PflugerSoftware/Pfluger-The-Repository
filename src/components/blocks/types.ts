@@ -19,15 +19,6 @@ export interface TabConfig {
   blocks: BlockConfig[];
 }
 
-export interface BlockConfig {
-  type: BlockType;
-  id: string;
-  title?: string;
-  description?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-}
-
 export type BlockType =
   | 'section'
   | 'stat-grid'
@@ -50,6 +41,42 @@ export type BlockType =
   | 'quotes'
   | 'activity-rings'
   | 'product-options';
+
+// Maps each BlockType to its corresponding data interface
+export type BlockDataMap = {
+  'section': SectionData;
+  'stat-grid': StatGridData;
+  'bar-chart': BarChartData;
+  'donut-chart': DonutChartData;
+  'line-chart': LineChartData;
+  'comparison-table': ComparisonTableData;
+  'image-gallery': ImageGalleryData;
+  'text-content': TextContentData;
+  'timeline': TimelineData;
+  'key-findings': KeyFindingsData;
+  'sources': SourcesData;
+  'tool-comparison': ToolComparisonData;
+  'case-study-card': CaseStudyCardData;
+  'workflow-steps': WorkflowStepsData;
+  'scenario-bar-chart': ScenarioBarChartData;
+  'cost-builder': CostBuilderData;
+  'survey-rating': SurveyRatingData;
+  'feedback-summary': FeedbackSummaryData;
+  'quotes': QuotesData;
+  'activity-rings': ActivityRingsData;
+  'product-options': ProductOptionsData;
+};
+
+// Discriminated union: narrows `data` type based on `type` field
+export type BlockConfig = {
+  [K in BlockType]: {
+    type: K;
+    id: string;
+    title?: string;
+    description?: string;
+    data: BlockDataMap[K];
+  };
+}[BlockType];
 
 export interface SectionData {
   title: string;
@@ -104,6 +131,24 @@ export interface BarChartData {
   unit?: string;
   showValues?: boolean;
   legendPosition?: 'inline' | 'end' | 'none';
+}
+
+export interface LineChartDataPoint {
+  label: string;
+  value: number;
+}
+
+export interface LineChartSeries {
+  name: string;
+  color?: string;
+  data: LineChartDataPoint[];
+}
+
+export interface LineChartData {
+  series: LineChartSeries[];
+  xLabel?: string;
+  yLabel?: string;
+  unit?: string;
 }
 
 export interface DonutChartData {

@@ -41,6 +41,8 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 - **Deploy via CLI:** `wrangler pages deploy dist --project-name=pfluger-the-repo`
 - **Requires:** `wrangler` CLI authenticated (`wrangler login` if needed)
 - **No auto-deploy on push.** Deploys are manual via CLI after `npm run build`.
+- **Rollback:** Cloudflare Pages dashboard > Deployments > select previous deployment > "Rollback to this deploy"
+- **Release tagging:** Tag releases before deploying: `git tag v1.x.x && git push origin v1.x.x`
 
 ### Database Access
 
@@ -394,6 +396,25 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 - useMemo/useCallback for optimization
 - Lazy loading for routes
 - Code splitting where appropriate
+
+## CI/CD
+
+- **GitHub Actions:** `.github/workflows/ci.yml` runs `tsc --noEmit` and `npm run build` on every push to `main` and on PRs
+- **No auto-deploy.** CI validates the build. Deploy remains manual via `wrangler pages deploy dist`.
+
+## Database Migrations
+
+- **Directory:** `supabase/migrations/`
+- **Baseline:** Not yet captured. Run `supabase login && supabase link --project-ref bydkzxqmgsvsnjtafphj && supabase db pull` to capture current schema as baseline.
+- **New migrations:** `supabase migration new <name>`, then edit the generated SQL file
+- **Apply:** Migrations run automatically on `supabase db push`
+
+## Dev vs. Production Database
+
+- **Current state:** Dev and prod share the same Supabase project (`bydkzxqmgsvsnjtafphj`)
+- **Planned:** Create a separate Supabase project for development
+- **When created:** Add dev credentials to `.env.development.local`, keep prod in `.env.local`
+- **Vite auto-loads** `.env.development.local` in dev mode and `.env.local` in production builds
 
 ## Known Limitations
 
