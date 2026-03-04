@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { ImageCarousel } from '../components/Hero/ImageCarousel';
 
 interface HomeProps {
-  onNavigate: (sectionId: string) => void;
   onOpenProject?: (projectId: string) => void;
 }
 

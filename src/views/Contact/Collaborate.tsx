@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Mail, Send, Building2, MapPin, Lock, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const Collaborate: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -12,6 +12,11 @@ const Collaborate: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isConfidential, setIsConfidential] = useState(false);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  useEffect(() => {
+    return () => clearTimeout(resetTimerRef.current);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +29,7 @@ const Collaborate: React.FC = () => {
     setIsSubmitted(true);
 
     // Reset form after 3 seconds
-    setTimeout(() => {
+    resetTimerRef.current = setTimeout(() => {
       setFormData({ name: '', email: '', organization: '', message: '' });
       setIsSubmitted(false);
     }, 3000);

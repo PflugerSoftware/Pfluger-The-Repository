@@ -23,11 +23,7 @@ const KEY_MILESTONES = [
   { date: 'Apr 10', project: 'Immersive Learning', label: 'Conference Presentation' },
 ];
 
-interface DashboardProps {
-  onNavigate: (view: string) => void;
-}
-
-const Dashboard: React.FC<DashboardProps> = ({ onNavigate: _onNavigate }) => {
+const Dashboard: React.FC = () => {
   const { projects, loading } = useProjects();
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [projectFilter, setProjectFilter] = useState<'in-progress' | 'completed' | 'future'>('in-progress');

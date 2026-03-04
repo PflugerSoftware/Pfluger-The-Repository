@@ -16,7 +16,6 @@ import {
 import { MessageContent } from '../../components/MessageContent';
 
 interface TheRepoProps {
-  onNavigate: (view: string) => void;
   onOpenProject?: (projectId: string) => void;
 }
 
@@ -27,7 +26,7 @@ const QUICK_PROMPTS = [
   { icon: TrendingUp, label: 'Recent work', prompt: 'What are the most recent completed projects?' },
 ];
 
-const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProject }) => {
+const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
   const { projects } = useProjects();
   const { user, isAuthenticated } = useAuth();
   const [inputValue, setInputValue] = useState('');
@@ -188,7 +187,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
     }
 
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: 'user',
       content: text,
       timestamp: new Date()
@@ -423,7 +422,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
                                 >
                                   {source.project_id}
                                 </button>{' '}
-                                {source.url ? (
+                                {source.url && /^https?:\/\//i.test(source.url) ? (
                                   <a
                                     href={source.url}
                                     target="_blank"

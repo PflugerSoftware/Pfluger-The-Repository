@@ -136,7 +136,7 @@ function AppContent() {
         <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Home onNavigate={() => {}} onOpenProject={openProject} />} />
+          <Route path="/" element={<Home onOpenProject={openProject} />} />
           <Route path="/campus" element={<ResearchMap onOpenProjectDashboard={openProject} />} />
           <Route path="/explore" element={<Portfolio onOpenProjectDashboard={openProject} />} />
           <Route path="/contact" element={<Collaborate />} />
@@ -155,7 +155,7 @@ function AppContent() {
             path="/repository"
             element={
               <ProtectedRoute>
-                <TheRepo onNavigate={() => {}} onOpenProject={openProject} />
+                <TheRepo onOpenProject={openProject} />
               </ProtectedRoute>
             }
           />
@@ -196,7 +196,7 @@ function AppContent() {
           <Route path="/explore/:projectId" element={<ProjectOverlay />} />
 
           {/* Fallback - redirect to home */}
-          <Route path="*" element={<Home onNavigate={() => {}} onOpenProject={openProject} />} />
+          <Route path="*" element={<Home onOpenProject={openProject} />} />
         </Routes>
         </Suspense>
       </main>

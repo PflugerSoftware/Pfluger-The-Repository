@@ -26,10 +26,10 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
   const [selectedProject, setSelectedProject] = useState<ResearchProject | null>(null);
 
   // Extract category colors from theme
-  const categoryColors = Object.entries(researchColors).reduce((acc, [key, value]) => {
+  const categoryColors = useMemo(() => Object.entries(researchColors).reduce((acc, [key, value]) => {
     acc[key] = value.color;
     return acc;
-  }, {} as Record<string, string>);
+  }, {} as Record<string, string>), [researchColors]);
 
   // Group projects by office
   const projectsByOffice = useMemo(() => {

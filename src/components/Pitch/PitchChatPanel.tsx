@@ -83,7 +83,7 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
     if (!inputValue.trim() || isLoading) return;
 
     const userMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       role: 'user',
       content: inputValue
     };

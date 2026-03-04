@@ -23,6 +23,7 @@ export function AnimatedHero({ onCycleComplete }: AnimatedHeroProps) {
 
   useEffect(() => {
     const currentInterval = intervals[currentWordIndex] || 200;
+    let innerTimeout: ReturnType<typeof setTimeout>;
 
     const timeout = setTimeout(() => {
       setCurrentWordIndex((prev) => {
@@ -32,7 +33,7 @@ export function AnimatedHero({ onCycleComplete }: AnimatedHeroProps) {
         if (nextIndex === 0 && !hasCompletedCycle) {
           setHasCompletedCycle(true);
           // Wait for the last word to be visible before hiding
-          setTimeout(() => {
+          innerTimeout = setTimeout(() => {
             if (onCycleComplete) {
               onCycleComplete();
             }
@@ -43,7 +44,10 @@ export function AnimatedHero({ onCycleComplete }: AnimatedHeroProps) {
       });
     }, currentInterval);
 
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      clearTimeout(innerTimeout);
+    };
   }, [currentWordIndex, hasCompletedCycle, onCycleComplete]);
 
   return (

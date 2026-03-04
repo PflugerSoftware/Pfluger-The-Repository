@@ -38,8 +38,6 @@ export async function searchBlocks(
   projectId?: string,
   limit: number = 25
 ): Promise<BlockMatch[]> {
-  console.log('Searching for:', query);
-
   // Try full-text search first (Postgres websearch handles natural language)
   let queryBuilder = supabase
     .from('project_blocks')
@@ -53,12 +51,8 @@ export async function searchBlocks(
 
   let { data, error } = await queryBuilder;
 
-  console.log('Full-text search result:', { count: data?.length, error });
-
   // If full-text search fails, try searching with OR on multiple terms
   if (error || !data || data.length === 0) {
-    console.log('Full-text failed, trying multi-term OR search');
-
     // Get all words longer than 4 chars as potential search terms
     const terms = query
       .toLowerCase()
@@ -76,7 +70,6 @@ export async function searchBlocks(
         .limit(10);
 
       if (!termError && termData) {
-        console.log(`Term "${term}" found ${termData.length} results`);
         for (const block of termData) {
           if (!allResults.has(block.id)) {
             allResults.set(block.id, block as BlockMatch);
@@ -87,7 +80,6 @@ export async function searchBlocks(
 
     data = Array.from(allResults.values()).slice(0, limit);
     error = null;
-    console.log('Multi-term search found:', data.length, 'unique blocks');
   }
 
   if (error) {
@@ -271,7 +263,6 @@ export async function checkRelevance(
     conclusions: b.conclusions,
   }));
 
-  console.log('Blocks sent to Haiku for relevance:', blocksContext.map(b => `${b.id} (${b.block_type}): ${b.summary?.slice(0, 50) || 'no summary'}`));
 
   const systemPrompt = `You are a research relevance checker. Given a user question and research block summaries, determine which blocks are relevant.
 
@@ -287,7 +278,6 @@ ${JSON.stringify(blocksContext, null, 2)}`;
 
   const response = await callClaude(userPrompt, 'haiku', systemPrompt);
 
-  console.log('Haiku relevance response:', response);
 
   try {
     // Try to extract JSON from response (handle markdown code blocks)
@@ -397,30 +387,6 @@ ${sourceMap.map(s => `[${s.id}] ${s.citation}`).join('\n')}`;
   return callClaude(userPrompt, 'sonnet', systemPrompt);
 }
 
-// Phase 3: Opus deep analysis (for complex queries)
-export async function deepAnalysis(
-  query: string,
-  blocks: BlockMatch[],
-  sources: Source[],
-  previousAnswer: string
-): Promise<string> {
-  const sourcesContext = sources.map(s => `[${s.id}] ${s.author}. ${s.title}`).join('\n');
-
-  const systemPrompt = `You are a senior research analyst at Pfluger Architects. Review the previous answer and provide additional insights, connections, or considerations. Provide deeper analysis, identify patterns, suggest implications for design practice, or note areas needing further research. Cite sources where applicable.
-
-Previous Answer: ${previousAnswer}
-
-Full Research Context:
-${blocks.map(b => b.searchable_text).join('\n\n')}
-
-Available Sources:
-${sourcesContext}`;
-
-  const userPrompt = `<user_input>${query}</user_input>`;
-
-  return callClaude(userPrompt, 'opus', systemPrompt);
-}
-
 // Expand section blocks to include their child content blocks
 async function expandSectionBlocks(
   blocks: BlockMatch[]
@@ -434,7 +400,6 @@ async function expandSectionBlocks(
 
     // If it's a section block, fetch its child blocks
     if (block.block_type === 'section') {
-      console.log(`Expanding section block: ${block.id}`);
 
       // Get all blocks for this project ordered by block_order
       const { data: allBlocks, error } = await supabase
@@ -468,7 +433,6 @@ async function expandSectionBlocks(
              b.block_type !== 'sources' // Exclude sources blocks from synthesis
       );
 
-      console.log(`Found ${childBlocks.length} child blocks for section ${block.id}`);
 
       // Add child blocks (not the section itself)
       for (const child of childBlocks) {
@@ -498,11 +462,8 @@ export async function queryRAG(
   projectId?: string,
   conversationHistory: ConversationMessage[] = []
 ): Promise<RAGResponse> {
-  console.log('QueryRAG starting for:', query);
-
   // Step 1: Analyze intent with conversation context
   const intent = await analyzeIntent(query, conversationHistory);
-  console.log('Intent analysis:', intent);
 
   // Route: Conversational - let model generate response
   if (intent.intent === 'conversational') {

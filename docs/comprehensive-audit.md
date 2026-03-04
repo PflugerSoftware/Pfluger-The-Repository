@@ -180,11 +180,11 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | INJ-12 | MEDIUM | Input | No input length limits on any form or chat | Multiple files | Add maxLength to inputs, enforce in service layer | 2 hours |
 | S09 | MEDIUM | Secrets | OpenAsset tokens use VITE_ prefix | .env.local:12-14 | Drop VITE_ prefix | 5 min |
 | C03 | MEDIUM | XSS | dangerouslySetInnerHTML with regex-processed content | TextContentBlock.tsx:34,51 | Use DOMPurify or react-markdown | 1 hour |
-| S10 | LOW | Config | Verbose console.log in production (17 in rag.ts) | rag.ts:36,51,55,etc. | Strip console in prod builds | 30 min |
-| AUTH-17 | LOW | Secrets | Unused VITE_ANTHROPIC_API_KEY reference risk | .env.local:9 | Remove after renaming | 5 min |
+| S10 | LOW | Config | Verbose console.log in production (17 in rag.ts) | rag.ts:36,51,55,etc. | ~~Strip console in prod builds~~ RESOLVED: all console.log removed, console.error kept | 30 min |
+| AUTH-17 | LOW | Secrets | Unused VITE_ANTHROPIC_API_KEY reference risk | .env.local:9 | ~~Remove after renaming~~ RESOLVED: already removed from source | 5 min |
 | AUTH-19 | LOW | Auth | All 17 users share one password, no accountability | AuthContext.tsx:20 | Migrate to Azure SSO | Planned |
 | INJ-06 | HIGH | Auth | Credential exposure in client bundle | AuthContext.tsx:20 | Move server-side | With AUTH-01 |
-| INJ-11 | LOW | XSS | Source URLs rendered unvalidated | TheRepo.tsx:432 | Add URL protocol validation | 15 min |
+| INJ-11 | LOW | XSS | Source URLs rendered unvalidated | TheRepo.tsx:432 | ~~Add URL protocol validation~~ RESOLVED: https?:// check added | 15 min |
 | S07 | LOW | Secrets | Mapbox public token hardcoded (by design, but no URL restriction) | mapbox.ts:11 | Add URL restrictions on Mapbox dashboard | 15 min |
 
 ### Architecture & Quality Findings (Agents 4-5)
@@ -193,9 +193,9 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 |----|----------|--------|---------|-----------|-------------|--------|
 | ARC-01 | HIGH | SRP | PitchSubmission.tsx: 1,490 lines, 19 useState hooks, 9 responsibilities | PitchSubmission.tsx | Decompose into 6+ sub-components + custom hook | 1-2 days |
 | ARC-02 | MEDIUM | DRY | callClaude() duplicated in rag.ts and pitchAgent.ts | rag.ts:655, pitchAgent.ts:158 | Extract to shared services/claude.ts | 1 hour |
-| ARC-03 | MEDIUM | DRY | getInitials() duplicated in 2 files | PitchSubmission.tsx:165, TopNavbar.tsx:121 | Extract to lib/utils.ts | 15 min |
-| ARC-04 | MEDIUM | DRY | PROJECTS_WITH_DASHBOARDS divergent (2 vs 10 entries) | ResearchMap.tsx:13, Portfolio.tsx:5 | **DATA BUG** - unify to single source of truth | 30 min |
-| ARC-05 | MEDIUM | DRY | Confidential project IDs hardcoded 4 times | ResearchMap.tsx:107,195,251,255 | Use is_confidential flag from DB | 30 min |
+| ARC-03 | MEDIUM | DRY | getInitials() duplicated in 2 files | PitchSubmission.tsx:165, TopNavbar.tsx:121 | ~~Extract to lib/utils.ts~~ RESOLVED | 15 min |
+| ARC-04 | MEDIUM | DRY | PROJECTS_WITH_DASHBOARDS divergent (2 vs 10 entries) | ResearchMap.tsx:13, Portfolio.tsx:5 | ~~**DATA BUG** - unify to single source of truth~~ RESOLVED: both use hasProject() | 30 min |
+| ARC-05 | MEDIUM | DRY | Confidential project IDs hardcoded 4 times | ResearchMap.tsx:107,195,251,255 | ~~Use is_confidential flag from DB~~ RESOLVED: dead code removed (loadProjects filters server-side) | 30 min |
 | ARC-06 | MEDIUM | Deps | Domain types in components/blocks/types.ts | services/projects.ts imports from components/ | Move to src/types/ or src/models/ | 1 hour |
 | ARC-07 | MEDIUM | Deps | AuthContext makes direct Supabase calls | AuthContext.tsx | Extract to services/auth.ts | 30 min |
 | ARC-08 | MEDIUM | Arch | Services layer not abstracted from Supabase | All service files | Low priority, acceptable for project scale | Deferred |
@@ -203,15 +203,15 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | CQ-01 | HIGH | Types | BlockConfig has `data: any`, undermines type safety | blocks/types.ts:28 | Convert to discriminated union | 2-3 hours |
 | CQ-02 | MEDIUM | Complexity | StackedAreaChart: 180-line useEffect | Schedule.tsx:161-362 | Extract D3 helpers | 1 hour |
 | CQ-03 | MEDIUM | Complexity | queryRAG: 3 identical fallback patterns | rag.ts:506-568 | Extract handleFallbackResponse() | 30 min |
-| CQ-04 | MEDIUM | DRY | ChatMessage interface defined 3 times | chatHistory.ts:5, ChatPanel.tsx:4, PitchChatPanel.tsx:8 | Unify into single exported type | 15 min |
+| CQ-04 | MEDIUM | DRY | ChatMessage interface defined 3 times | chatHistory.ts:5, ChatPanel.tsx:4, PitchChatPanel.tsx:8 | REVIEWED: interfaces have different shapes per context, no forced unification needed | 15 min |
 | CQ-05 | MEDIUM | Consistency | Mixed async patterns (.then vs async/await) | App.tsx, TheRepo.tsx vs PitchSubmission.tsx | Standardize on async/await | 1 hour |
 | CQ-06 | MEDIUM | Dead | 9 unused exported functions | pitchService.ts, projects.ts, analytics.ts | Remove dead exports | 15 min |
-| CQ-07 | LOW | Dead | Unused onNavigate prop in Dashboard, TheRepo, Home | Dashboard.tsx:27, TheRepo.tsx:31, Home.tsx:5 | Remove vestigial props | 15 min |
+| CQ-07 | LOW | Dead | Unused onNavigate prop in Dashboard, TheRepo, Home | Dashboard.tsx:27, TheRepo.tsx:31, Home.tsx:5 | ~~Remove vestigial props~~ RESOLVED | 15 min |
 | CQ-08 | LOW | Consistency | No Prettier configured, inconsistent formatting | Project root | Add .prettierrc | 15 min |
 | CQ-09 | LOW | Consistency | 67 console.log/warn/error calls across 12 files | Multiple | Create logger utility with levels | 1 hour |
 | CQ-10 | LOW | Types | as casts in pitchService (eslint-disable any) | pitchService.ts:559-560 | Type Supabase join responses | 30 min |
-| CQ-11 | LOW | Dead | Unused @anthropic-ai/sdk dependency | package.json | npm uninstall | 5 min |
-| CQ-12 | LOW | Dead | deepAnalysis() exported but never called | rag.ts:396 | Remove or implement | 5 min |
+| CQ-11 | LOW | Dead | Unused @anthropic-ai/sdk dependency | package.json | ~~npm uninstall~~ RESOLVED: already removed | 5 min |
+| CQ-12 | LOW | Dead | deepAnalysis() exported but never called | rag.ts:396 | ~~Remove or implement~~ RESOLVED: removed (was unused Phase 3 concept) | 5 min |
 
 ### Data Layer Findings (Agent 6)
 
@@ -226,10 +226,10 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | DAT-07 | MEDIUM | Race | Non-atomic pitch ID generation (collision risk) | PitchSubmission.tsx:307-381 | Use database sequence or UUID | 1 hour |
 | DAT-08 | MEDIUM | Integrity | Multi-step pitch creation without rollback | PitchSubmission.tsx:307-381 | Use Supabase RPC for atomic operation | 2 hours |
 | DAT-09 | MEDIUM | State | localStorage auth: no expiry, no schema validation | AuthContext.tsx:28-33 | Add TTL, try/catch, shape validation | 30 min |
-| DAT-10 | LOW | Race | Check-then-act in savePitchAiSession | pitchService.ts:420-462 | Use upsert() | 15 min |
+| DAT-10 | LOW | Race | Check-then-act in savePitchAiSession | pitchService.ts:420-462 | ~~Use upsert()~~ RESOLVED | 15 min |
 | DAT-11 | LOW | Perf | RAG pipeline: 6 sequential API calls per query | rag.ts:492-623 | Consider streaming, batch where possible | 2 hours |
-| DAT-12 | LOW | State | Message ID collision potential (Date.now()) | TheRepo.tsx:194 | Use crypto.randomUUID() | 5 min |
-| DAT-13 | LOW | State | Chat saves fire on every message state change | TheRepo.tsx:83-87 | Debounce saves | 30 min |
+| DAT-12 | LOW | State | Message ID collision potential (Date.now()) | TheRepo.tsx:194 | ~~Use crypto.randomUUID()~~ RESOLVED | 5 min |
+| DAT-13 | LOW | State | Chat saves fire on every message state change | TheRepo.tsx:83-87 | ~~Debounce saves~~ RESOLVED: duplicate of PERF-08, 800ms debounce added | 30 min |
 | DAT-14 | LOW | Perf | getPitches fires 2-3 sequential queries | pitchService.ts:170-229 | Parallelize with Promise.all | 30 min |
 
 ### Operations Findings (Agent 7)
@@ -245,7 +245,7 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | OPS-07 | MEDIUM | Logs | PII in production logs (emails, search queries) | PitchSubmission.tsx:181, rag.ts | Remove PII from console output | 30 min |
 | OPS-08 | MEDIUM | Config | Storage URL hardcoded in 3 different places | storage.ts:3, ImageCarousel.tsx:4, scripts | Derive from VITE_SUPABASE_URL | 30 min |
 | OPS-09 | MEDIUM | Deploy | No build artifact verification before deploy | N/A | Add post-build checks | 1 hour |
-| OPS-10 | LOW | Config | No .env.example file | N/A | Create template with required var names | 15 min |
+| OPS-10 | LOW | Config | No .env.example file | N/A | ~~Create template with required var names~~ RESOLVED: .env.example created | 15 min |
 | OPS-11 | LOW | Deps | Deno std@0.168.0 in Edge Functions (very old) | supabase/functions/ | Update to recent Deno std | 15 min |
 | OPS-12 | LOW | Monitoring | No uptime monitoring | N/A | Add UptimeRobot or equivalent | 15 min |
 | OPS-13 | LOW | Monitoring | No performance monitoring (Core Web Vitals) | N/A | Consider Cloudflare Web Analytics | 15 min |
@@ -260,14 +260,14 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | PERF-04 | HIGH | Bundle | Unused @anthropic-ai/sdk in dependencies | package.json | Remove dependency | 5 min |
 | PERF-05 | HIGH | Images | No lazy loading on any images | ImageCarousel.tsx, Portfolio.tsx | Add loading="lazy", srcset | 1 hour |
 | PERF-06 | MEDIUM | Async | 5+ unhandled promise rejections across useEffects | App.tsx:43,101, TheRepo.tsx:45, PitchChatPanel.tsx:41 | Add .catch() handlers | 1 hour |
-| PERF-07 | MEDIUM | Memory | requestAnimationFrame loops without cancellation | StatGridBlock.tsx:56, CostBuilderBlock.tsx:35 | Add cancelAnimationFrame in cleanup | 15 min |
-| PERF-08 | MEDIUM | Writes | Chat saves fire on every message change (no debounce) | TheRepo.tsx:83-87, PitchChatPanel.tsx:66-76 | Debounce save operations | 30 min |
+| PERF-07 | MEDIUM | Memory | requestAnimationFrame loops without cancellation | StatGridBlock.tsx:56, CostBuilderBlock.tsx:35 | ~~Add cancelAnimationFrame in cleanup~~ RESOLVED | 15 min |
+| PERF-08 | MEDIUM | Writes | Chat saves fire on every message change (no debounce) | TheRepo.tsx:83-87, PitchChatPanel.tsx:66-76 | ~~Debounce save operations~~ RESOLVED: 800ms debounce | 30 min |
 | PERF-09 | MEDIUM | Render | Zero React.memo, useCallback, useMemo optimization | Multiple | Add memoization to heavy components | 2 hours |
 | PERF-10 | MEDIUM | Perf | PitchSubmission mount: 4 sequential Supabase queries | PitchSubmission.tsx:174-215 | Use Promise.all for independent queries | 30 min |
 | PERF-11 | MEDIUM | Perf | Analytics fires Supabase INSERT on every navigation | App.tsx:114-120 | Batch and debounce page views | 1 hour |
-| PERF-12 | LOW | Async | Nested setTimeout without cleanup (AnimatedHero) | AnimatedHero.tsx:35-38 | Track and clear inner timeout | 15 min |
-| PERF-13 | LOW | Async | setTimeout for form reset not cleaned up | Collaborate.tsx:27-30 | Store ID in ref, clean up on unmount | 10 min |
-| PERF-14 | LOW | Render | categoryColors object re-created every render | ResearchMap.tsx:30-33 | Wrap in useMemo | 5 min |
+| PERF-12 | LOW | Async | Nested setTimeout without cleanup (AnimatedHero) | AnimatedHero.tsx:35-38 | ~~Track and clear inner timeout~~ RESOLVED | 15 min |
+| PERF-13 | LOW | Async | setTimeout for form reset not cleaned up | Collaborate.tsx:27-30 | ~~Store ID in ref, clean up on unmount~~ RESOLVED | 10 min |
+| PERF-14 | LOW | Render | categoryColors object re-created every render | ResearchMap.tsx:30-33 | ~~Wrap in useMemo~~ RESOLVED | 5 min |
 | PERF-15 | LOW | Render | D3 chart destroys/rebuilds entire SVG on re-render | Schedule.tsx:166-347 | Acceptable at current scale | Deferred |
 | PERF-16 | LOW | Async | CostBuilderBlock animation reads stale state | CostBuilderBlock.tsx:23-39 | Use ref for animated value | 15 min |
 | PERF-17 | LOW | Bundle | No block-level code splitting | BlockRenderer.tsx | Lazy-load block components | 1 hour |
