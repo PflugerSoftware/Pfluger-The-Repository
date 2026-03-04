@@ -419,10 +419,11 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 ## Known Limitations
 
 - Authentication uses Supabase Auth with shared password (Azure SSO migration planned)
-- Edge functions do not yet verify JWT (auth check planned for post-migration)
 - No file upload functionality in-app (images uploaded directly to Supabase Storage)
 - Export features not implemented
 - Project connections are currently hardcoded arrays (being reimplemented)
+- No error tracking service (Sentry or equivalent) yet
+- Dev and prod share the same Supabase database
 
 ## Testing
 

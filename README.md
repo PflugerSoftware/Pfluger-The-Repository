@@ -510,16 +510,17 @@ The app will be available at `http://localhost:5173`.
 
 ### Environment Variables
 
-Create `.env.local` with:
+Create `.env.local` with the required variables. See `.env.example` for the full template.
 
-```bash
-# Supabase
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+Key variables:
+- `VITE_SUPABASE_URL` - Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `VITE_MAPBOX_TOKEN` - Mapbox GL JS access token
 
-# Anthropic (for local development - production uses Edge Function secrets)
-VITE_ANTHROPIC_API_KEY=sk-ant-...
-```
+Server-side only (no VITE_ prefix, not bundled):
+- `DATABASE_URL` - PostgreSQL connection string
+- `ANTHROPIC_API_KEY` - For Edge Functions
+- `SUPABASE_SERVICE_ROLE_KEY` - For admin scripts
 
 Supabase Edge Functions need `ANTHROPIC_API_KEY` set in the dashboard secrets.
 
@@ -544,7 +545,9 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 
 ## Authentication
 
-**Test Accounts:**
+Authentication uses **Supabase Auth** with server-side JWT sessions. The Supabase JS client handles password hashing, token issuance, session persistence, and auto-refresh.
+
+**Test Accounts (17 users):**
 
 All users share the password `123456Softwares!`
 
@@ -569,56 +572,29 @@ All users share the password `123456Softwares!`
 | `agustin.salinas@pflugerarchitects.com` | Researcher | San Antonio |
 | *(logged out)* | Viewer | Public content only |
 
-**Database Users Table (17 users):**
-
-All users must exist in the Supabase `users` table with matching emails. Current users:
-
-| UUID | Email | Name | Role | Office |
-|------|-------|------|------|--------|
-| `00000000-0000-0000-0000-000000000001` | software@pflugerarchitects.com | Dev User | admin | Austin |
-| `a1b2c3d4-e5f6-4789-a1b2-c3d4e5f67890` | nilen.varade@pflugerarchitects.com | Nilen Varade | researcher | Austin |
-| `a1b2c3d4-e5f6-7890-abcd-ef1234567890` | logan.steitle@pflugerarchitects.com | Logan Steitle | researcher | Austin |
-| `f1a2b3c4-d5e6-4f78-9a0b-c1d2e3f4a5b6` | christian.owens@pflugerarchitects.com | Christian Owens | researcher | Austin |
-| `46223899-d809-4b8a-8767-c10308c66476` | allie.schneider@pflugerarchitects.com | Allie Schneider | researcher | Austin |
-| `904f7e9e-9d35-4528-8f65-07dc1b09bc39` | wendy.rosamond@pflugerarchitects.com | Wendy Rosamond | researcher | Austin |
-| `6808aad5-41fe-4b5c-bc00-7f34a6e32249` | josh.sawyer@pflugerarchitects.com | Josh Sawyer | researcher | Austin |
-| `b2c3d4e5-f6a7-4890-b2c3-d4e5f6a78901` | monse.rios@pflugerarchitects.com | Monse Rios | researcher | Dallas |
-| `c3d4e5f6-a7b8-4901-c3d4-e5f6a7b89012` | katherine.wiley@pflugerarchitects.com | Katherine Wiley | researcher | Dallas |
-| `a2b3c4d5-e6f7-4901-ab23-d4e5f6a7b8c9` | samantha.goosen@pflugerarchitects.com | Samantha Goosen | researcher | Dallas |
-| `a3b4c5d6-e7f8-4a9b-c0d1-e2f3a4b5c6d7` | emily.perna@pflugerarchitects.com | Emily Perna | researcher | Dallas |
-| `b4c5d6e7-f8a9-4b0c-d1e2-f3a4b5c6d7e8` | tim.estrada@pflugerarchitects.com | Tim Estrada | researcher | Dallas |
-| `25e11631-0561-4302-a25d-591e8c2d1d79` | david.young@pflugerarchitects.com | David Young | researcher | Dallas |
-| `ad94057f-ded9-46b0-aac2-45774dd9fab9` | brenda.swirczynski@pflugerarchitects.com | Brenda Swirczynski | researcher | Dallas |
-| `b2c3d4e5-f6a7-8901-bcde-f12345678901` | braden.haley@pflugerarchitects.com | Braden Haley | researcher | San Antonio |
-| `d4e5f6a7-b8c9-4012-d4e5-f6a7b8c90123` | leah.vandersanden@pflugerarchitects.com | Leah VanderSanden | researcher | San Antonio |
-| `e5f6a7b8-c9d0-4123-e5f6-a7b8c9d01234` | agustin.salinas@pflugerarchitects.com | Agustin Salinas | researcher | San Antonio |
-
 **How Authentication Works:**
-1. User logs in with email/password (validated against `AuthContext.tsx`)
-2. System looks up user by email in Supabase `users` table
-3. If found, user's UUID is used to assign/filter pitches
-4. If NOT found, user can log in but cannot submit pitches (will see error)
+1. User signs in with email/password via `supabase.auth.signInWithPassword()`
+2. Supabase Auth validates credentials server-side, returns JWT
+3. `AuthContext` fetches user profile (name, role, office) from `users` table
+4. `auth.uid()` matches `users.id`, enabling RLS policies
+5. Access tokens auto-refresh (~1hr access token, ~7d refresh token)
 
 **Adding New Users:**
-1. Add credentials to `VALID_USERS` array in `src/components/System/AuthContext.tsx`
-2. Insert matching row in Supabase `users` table:
-```sql
-INSERT INTO users (id, email, name, role, office) VALUES
-('your-uuid-here', 'email@pflugerarchitects.com', 'Full Name', 'researcher', 'Austin');
-```
-
-**Current Implementation:**
-- Hardcoded credentials in `AuthContext.tsx`
-- localStorage-based session persistence
-- Two-tier permissions: Admin/Researcher (requires login) vs Viewer (public)
-- Viewer role = default logged-out state (no credentials needed)
+1. Create Supabase Auth user via dashboard or `supabase.auth.admin.createUser()`
+2. Insert matching row in `users` table with the same UUID
 
 **Role Permissions:**
 - **Admin** - Full access to all pitches across all users, review dashboard, system management
 - **Researcher** - Submit and manage own pitches only, claim greenlit opportunities, view all projects
 - **Viewer** - Public read-only access to Campus, Explore, Connect, About (no login required)
 
-*Note: Designed for future migration to Azure SSO (Microsoft Entra ID). Architecture supports federated authentication with minimal refactoring.*
+**Security:**
+- RLS enabled on all 18 tables with public/auth/owner policies
+- Edge Functions validate JWT and restrict CORS to production domain
+- Cloudflare Pages security headers (CSP, HSTS, X-Frame-Options)
+- DOMPurify sanitization on HTML rendering, ILIKE wildcards escaped
+
+*Note: Will migrate to Azure SSO (Microsoft Entra ID) in the future.*
 
 ## Project Structure
 
@@ -670,6 +646,7 @@ src/
 ├── context/
 │   └── ProjectsContext.tsx         # Global project state
 ├── scripts/
+│   ├── backfill-rag-conclusions.mjs # Backfill RAG conclusions on project_blocks
 │   ├── fetchAnalytics.mjs          # Pull user analytics from Supabase
 │   └── updateResearchers.mjs       # Update project researcher names
 supabase/
@@ -690,9 +667,9 @@ Project dashboards use a composable block system. Blocks are stored in the Supab
 - `DynamicProjectDashboard` fetches blocks on demand with loading state
 - Images served from Supabase Storage bucket
 
-**Database Stats (as of Feb 2026):**
-- 204 blocks across 9 projects
-- RAG-searchable with summary, tags, and searchable_text fields
+**Database Stats (as of Mar 2026):**
+- 207 blocks across 9 projects
+- All 112 content blocks have full RAG fields (summary, tags, searchable_text, conclusions)
 
 ### Available Blocks (21 types)
 
@@ -818,20 +795,24 @@ Each category has a dedicated color:
 
 ### Critical Priority
 
-- [ ] **Azure SSO Migration** - Replace hardcoded credentials with Microsoft Entra ID
-  - Current: Hardcoded `software@pflugerarchitects.com` / `123456Softwares!` in `AuthContext.tsx`
-  - Architecture prepared for minimal refactoring to Azure AD
+- [x] **Supabase Auth Migration** - Server-side authentication with JWT sessions
+  - Migrated from client-side shared password to Supabase Auth
+  - RLS enabled on all 18 tables with public/auth/owner policies
+  - Edge Functions hardened with CORS restrictions and input validation
+  - Security headers (CSP, HSTS, X-Frame-Options) via Cloudflare Pages
+  - DOMPurify sanitization, ILIKE escaping, prompt injection defenses
+
+- [ ] **Azure SSO Migration** - Replace shared password with Microsoft Entra ID
+  - Current: Supabase Auth with shared password (functional but not per-user)
   - Integrate `@azure/msal-react` for federated authentication
   - Map Azure AD users to Supabase `users` table
-  - Three-role system: Admin, Researcher, Viewer
-  - Token refresh and session management
   - Awaiting Azure AD tenant configuration
 
 - [x] **Database Schema (Supabase)** - Schema complete, project blocks migrated
-  - 17 tables created with proper foreign keys and constraints
+  - 18 tables created with proper foreign keys and constraints
   - Supabase Auth integrated with users table
-  - RLS policies configured
-  - **182 project blocks migrated** to `project_blocks` table
+  - RLS policies configured on all tables
+  - **207 project blocks** across 9 projects, all with RAG fields
 
 - [x] **Project Blocks Database Integration**
   - Project dashboards fetch blocks from Supabase dynamically
@@ -918,10 +899,10 @@ Each category has a dedicated color:
   - Environment-based feature flags
   - Separate dev/staging/prod configs
 
-- [ ] **Production Logging**
-  - Replace console.log/error with proper logging service
-  - Error tracking (Sentry or similar)
-  - Performance monitoring
+- [ ] **Production Observability**
+  - Error tracking (Sentry or similar) - highest remaining audit priority
+  - Performance monitoring (Core Web Vitals)
+  - Note: React ErrorBoundary and CI pipeline already in place
 
 - [ ] **PWA Features**
   - Offline support for field research
@@ -947,7 +928,7 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 | `contact_projects` | Many-to-many contacts/projects |
 | `collaboration_requests` | Public contact form submissions |
 | `calendar_events` | Project timeline events |
-| `project_blocks` | Dashboard block content (204 blocks across 9 projects) |
+| `project_blocks` | Dashboard block content (207 blocks across 9 projects) |
 | `project_partners` | Many-to-many projects/partners |
 | `project_researchers` | Many-to-many projects/users |
 | `project_sources` | Project citations |
@@ -987,16 +968,15 @@ Database hosted on Supabase (PostgreSQL). Connection via Session Pooler for IPv4
 
 | File | Issue | Status |
 |------|-------|--------|
-| `AuthContext.tsx` | Hardcoded credentials (email/password) | Not fixed - awaiting Azure SSO |
 | `Collaborate.tsx` | Simulated form submission | Not fixed |
 | `Schedule.tsx` | Mock hours data | Not fixed |
+| ~~`AuthContext.tsx`~~ | ~~Hardcoded credentials~~ | ✅ FIXED - Migrated to Supabase Auth |
 | ~~`loadProjects.ts`~~ | ~~Unsplash placeholders~~ | ✅ FIXED - 8 projects use Supabase Storage images |
 | ~~`ImageCarousel.tsx`~~ | ~~Unsplash hero images~~ | ✅ FIXED - Uses project renders from bucket |
-| ~~`users` table~~ | ~~Missing researcher test user~~ | ✅ FIXED - All 9 users in database |
-| ~~`PitchSubmission.tsx`~~ | ~~Hardcoded GreenLit topics~~ | ✅ FIXED - In database |
-| ~~`PitchSubmission.tsx`~~ | ~~Mock DEFAULT_PITCHES data~~ | ✅ FIXED - Loads from database |
-| ~~`PitchSubmission.tsx`~~ | ~~"submittedBy" hardcoded~~ | ✅ FIXED - Uses user context |
-| ~~`PitchSubmission.tsx`~~ | ~~Single user view only~~ | ✅ FIXED - Admin sees all pitches |
+| ~~`PitchSubmission.tsx`~~ | ~~1,490 lines, monolithic~~ | ✅ FIXED - Decomposed to orchestrator + 5 modules |
+| ~~`blocks/types.ts`~~ | ~~BlockConfig data: any~~ | ✅ FIXED - Discriminated union (21 types) |
+| ~~`vite.config.ts`~~ | ~~2.5MB single bundle~~ | ✅ FIXED - Code-split to 311kB initial |
+| ~~`project_blocks`~~ | ~~87 blocks missing RAG conclusions~~ | ✅ FIXED - 112/112 blocks have conclusions |
 
 ## License
 
