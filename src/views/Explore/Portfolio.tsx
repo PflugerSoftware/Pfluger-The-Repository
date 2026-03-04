@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useProjects } from '../../context/ProjectsContext';
-
-const PROJECTS_WITH_DASHBOARDS = ['X24-RB01', 'X25-RB01', 'X25-RB02', 'X25-RB03', 'X25-RB05', 'X25-RB06', 'X25-RB08', 'X25-RB13', 'X26-RB01', 'X00-DEMO'];
+import { hasProject } from '../../services/projects';
 
 interface PortfolioProps {
   onOpenProjectDashboard?: (projectId: string) => void;
@@ -45,7 +44,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
   }, [projects]);
 
   const handleProjectClick = (project: { id: string }) => {
-    if (PROJECTS_WITH_DASHBOARDS.includes(project.id) && onOpenProjectDashboard) {
+    if (hasProject(project.id) && onOpenProjectDashboard) {
       onOpenProjectDashboard(project.id);
     }
   };

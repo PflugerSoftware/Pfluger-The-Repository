@@ -4,7 +4,7 @@ import { supabase } from '../config/supabase';
 // Types
 // ============================================
 
-export type PitchStatus = 'pending' | 'revise' | 'greenlit';
+export type PitchStatus = 'draft' | 'pending' | 'revise' | 'greenlit';
 
 export interface Pitch {
   id: string;
@@ -391,6 +391,37 @@ export async function generatePitchId(): Promise<string> {
   return `${prefix}${nextNum}`;
 }
 
+/**
+ * Create a draft pitch with placeholder data
+ */
+export async function createDraftPitch(userId: string): Promise<Pitch | null> {
+  const id = await generatePitchId();
+  return createPitch({
+    id,
+    userId,
+    title: 'Untitled Draft',
+    researchIdea: '',
+    status: 'draft',
+  });
+}
+
+/**
+ * Delete the AI session for a pitch
+ */
+export async function deletePitchAiSession(pitchId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('pitch_ai_sessions')
+    .delete()
+    .eq('pitch_id', pitchId);
+
+  if (error) {
+    console.error('Error deleting pitch AI session:', error);
+    return false;
+  }
+
+  return true;
+}
+
 // ============================================
 // Pitch AI Sessions (Ezra chats)
 // ============================================
@@ -415,50 +446,28 @@ export async function getPitchAiSession(pitchId: string): Promise<PitchAiSession
 }
 
 /**
- * Create or update AI session for a pitch
+ * Create or update AI session for a pitch (upsert)
  */
 export async function savePitchAiSession(
   pitchId: string,
   userId: string | null,
   messages: PitchChatMessage[]
 ): Promise<PitchAiSession | null> {
-  // Check if session exists
-  const existing = await getPitchAiSession(pitchId);
+  const { data, error } = await supabase
+    .from('pitch_ai_sessions')
+    .upsert(
+      { pitch_id: pitchId, user_id: userId, messages },
+      { onConflict: 'pitch_id' }
+    )
+    .select()
+    .single();
 
-  if (existing) {
-    // Update
-    const { data, error } = await supabase
-      .from('pitch_ai_sessions')
-      .update({ messages })
-      .eq('pitch_id', pitchId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating pitch AI session:', error);
-      return null;
-    }
-
-    return rowToAiSession(data);
-  } else {
-    // Insert
-    const { data, error } = await supabase
-      .from('pitch_ai_sessions')
-      .insert({
-        pitch_id: pitchId,
-        user_id: userId,
-        messages
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating pitch AI session:', error);
-      return null;
-    }
-
-    return rowToAiSession(data);
+  if (error) {
+    console.error('Error saving pitch AI session:', error);
+    return null;
   }
+
+  return rowToAiSession(data);
 }
 
 // ============================================

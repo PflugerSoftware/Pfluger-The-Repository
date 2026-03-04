@@ -454,14 +454,14 @@ Available Sources (use these exact IDs when citing):
 - Enables understanding "the site" refers to earlier context
 - Allows natural conversation flow without repeating context
 
-### Web Search Fallback
+### General Knowledge Fallback
 
 When we don't have research on a topic:
-1. Call `web-search` Edge Function
-2. Sonnet generates general knowledge response
+1. Call `general-knowledge` Edge Function
+2. Sonnet generates a response from its training knowledge about architectural design
 3. Gently nudge toward related topics we DO have
 
-Edge Function uses Sonnet to answer general design questions, keeping the same conversational voice.
+Edge Function uses Sonnet to answer general design questions, keeping the same conversational voice. This is not a web search. It draws from Claude's training data, not the internet.
 
 ### Research Topics We Cover
 
@@ -675,7 +675,7 @@ src/
 supabase/
 └── functions/
     ├── claude/index.ts             # Claude API proxy
-    └── web-search/index.ts         # Web search fallback
+    └── general-knowledge/index.ts  # General design knowledge fallback
 public/
 └── _redirects                      # Cloudflare Pages SPA routing config
 ```
@@ -860,8 +860,8 @@ Each category has a dedicated color:
   - Full conversation history for context-aware responses
   - Smart intent routing (research query vs conversational vs general design)
   - Numbered citations with project attribution
-  - Web search fallback via Supabase Edge Function
-  - Files: `src/services/rag.ts`, `supabase/functions/claude/`, `supabase/functions/web-search/`
+  - General knowledge fallback via Supabase Edge Function
+  - Files: `src/services/rag.ts`, `supabase/functions/claude/`, `supabase/functions/general-knowledge/`
 
 - [x] **Asset Management** - PARTIALLY COMPLETE (Feb 2026)
   - [x] Replaced Unsplash placeholders with Supabase Storage images for 8 projects

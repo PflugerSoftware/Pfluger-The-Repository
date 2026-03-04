@@ -187,7 +187,7 @@ function AppContent() {
             path="/pitch/mypitches"
             element={
               <ProtectedRoute>
-                <PitchSubmission initialViewMode="my-pitches" />
+                <PitchSubmission />
               </ProtectedRoute>
             }
           />

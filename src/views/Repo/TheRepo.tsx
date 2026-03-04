@@ -73,9 +73,13 @@ const TheRepo: React.FC<TheRepoProps> = ({ onNavigate: _onNavigate, onOpenProjec
   }, []);
 
   useEffect(() => {
-    if (activeSessionId && messages.length > 0) {
+    if (!activeSessionId || messages.length === 0) return;
+
+    const timer = setTimeout(() => {
       saveMessagesToSession(activeSessionId, messages);
-    }
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [messages, activeSessionId, saveMessagesToSession]);
 
   const startNewChat = () => {

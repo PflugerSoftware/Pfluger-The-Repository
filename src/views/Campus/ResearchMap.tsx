@@ -7,11 +7,9 @@ import { useProjects } from '../../context/ProjectsContext';
 import type { ResearchProject } from '../../data/loadProjects';
 import { useTheme } from '../../components/System/ThemeManager';
 import { MAPBOX_TOKEN } from '../../config/mapbox';
+import { hasProject } from '../../services/projects';
 
 mapboxgl.accessToken = MAPBOX_TOKEN;
-
-// Projects that have interactive dashboards
-const PROJECTS_WITH_DASHBOARDS = ['X25-RB02', 'X25-RB08'];
 
 interface ResearchMapProps {
   onOpenProjectDashboard?: (projectId: string) => void;
@@ -105,9 +103,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
 
     // Add new markers
     researchProjects.forEach((project) => {
-      const isConfidential = ['X25-RB09', 'X25-RB10', 'X25-RB11'].includes(project.id);
-      const baseColor = categoryColors[project.category] || componentThemes.map.dark.confidentialColor;
-      const color = isConfidential ? '#666666' : baseColor;
+      const color = categoryColors[project.category] || componentThemes.map.dark.confidentialColor;
 
       const marker = new mapboxgl.Marker({
         color: color,
@@ -122,7 +118,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
       }).setHTML(`
         <div style="text-align: center; padding: 4px;">
           <strong style="color: ${color};">
-            ${isConfidential ? 'CONFIDENTIAL' : project.title}
+            ${project.title}
           </strong><br/>
           <span style="font-size: 11px; color: #999;">${project.id}</span>
         </div>
@@ -193,8 +189,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
                 <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{office}</p>
                 <div className="space-y-2">
                   {projects.map(project => {
-                    const isConfidential = ['X25-RB09', 'X25-RB10', 'X25-RB11'].includes(project.id);
-                    const markerColor = isConfidential ? '#666666' : categoryColors[project.category];
+                    const markerColor = categoryColors[project.category];
 
                     return (
                       <motion.div
@@ -216,8 +211,8 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
                           style={{ backgroundColor: markerColor }}
                         />
                         <div className="min-w-0">
-                          <p className={`text-sm font-medium truncate ${isConfidential ? 'text-gray-500' : 'text-white'}`}>
-                            {isConfidential ? 'Confidential' : project.title}
+                          <p className="text-sm font-medium truncate text-white">
+                            {project.title}
                           </p>
                           <p className="text-xs text-gray-500 truncate">{project.researcher}</p>
                         </div>
@@ -249,14 +244,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
             {/* Header */}
             <div className="p-5 flex items-start justify-between border-b border-white/10">
               <div className="flex-1 min-w-0">
-                {['X25-RB09', 'X25-RB10', 'X25-RB11'].includes(selectedProject.id) && (
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Confidential</p>
-                )}
-                <h2 className={`text-xl font-bold truncate ${
-                  ['X25-RB09', 'X25-RB10', 'X25-RB11'].includes(selectedProject.id)
-                    ? 'text-gray-400'
-                    : 'text-white'
-                }`}>{selectedProject.title}</h2>
+                <h2 className="text-xl font-bold truncate text-white">{selectedProject.title}</h2>
                 <p className="text-sm text-gray-500">{selectedProject.id}</p>
               </div>
               <button
@@ -337,7 +325,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
               )}
 
               {/* View Dashboard Button */}
-              {PROJECTS_WITH_DASHBOARDS.includes(selectedProject.id) && onOpenProjectDashboard && (
+              {hasProject(selectedProject.id) && onOpenProjectDashboard && (
                 <motion.button
                   onClick={() => onOpenProjectDashboard(selectedProject.id)}
                   className="w-full py-3 px-4 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-all flex items-center justify-center gap-2"

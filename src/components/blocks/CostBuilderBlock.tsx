@@ -24,6 +24,7 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
     const interpolator = interpolate(animatedTotal, currentTotal);
     const duration = 500;
     const startTime = Date.now();
+    let frameId: number;
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -32,11 +33,12 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
       setAnimatedTotal(interpolator(eased));
 
       if (t < 1) {
-        requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
   }, [currentTotal]);
 
   const toggleAlternate = (id: number) => {

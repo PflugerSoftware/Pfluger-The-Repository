@@ -62,9 +62,11 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
     }
   }, [messages, onMessagesChange]);
 
-  // Save messages to database when pitch is linked
+  // Save messages to database when pitch is linked (debounced)
   useEffect(() => {
-    if (pitchId && userId && messages.length > 0) {
+    if (!pitchId || !userId || messages.length === 0) return;
+
+    const timer = setTimeout(() => {
       const dbMessages: PitchChatMessage[] = messages.map(m => ({
         id: m.id,
         role: m.role,
@@ -72,7 +74,9 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
         timestamp: new Date()
       }));
       savePitchAiSession(pitchId, userId, dbMessages);
-    }
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [messages, pitchId, userId]);
 
   const handleSend = async () => {

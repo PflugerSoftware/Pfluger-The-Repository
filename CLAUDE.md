@@ -50,7 +50,7 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 - **Project ref:** `bydkzxqmgsvsnjtafphj`
 - **psql connection:** Uses `DATABASE_URL` from `.env` (session pooler)
 - **Storage bucket:** `Repository Bucket` (public, files listed via `storage.objects` table)
-- **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/web-search/`
+- **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/general-knowledge/` (general design knowledge fallback)
 - **Env vars (in `.env.local`, gitignored):**
   - Client-side (VITE_ prefix): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_MAPBOX_TOKEN`
   - Server-side only (no VITE_ prefix): `DATABASE_URL`, `ANTHROPIC_API_KEY`, `OPENASSET_BASE_URL`, `OPENASSET_TOKEN_ID`, `OPENASSET_TOKEN_STRING`, `SUPABASE_SERVICE_ROLE_KEY`

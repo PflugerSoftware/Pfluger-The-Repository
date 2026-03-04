@@ -529,10 +529,10 @@ export async function queryRAG(
     : query;
   const blocks = await searchBlocks(searchQuery, projectId);
 
-  // Route: No blocks found - try web search or generate helpful response
+  // Route: No blocks found - try general knowledge or generate helpful response
   if (!blocks.length) {
-    // Try web search for general knowledge
-    const webResult = await webSearch(query, intent.contextSummary);
+    // Try general knowledge fallback (Claude's training data, not web search)
+    const webResult = await fetchGeneralKnowledge(query, intent.contextSummary);
 
     if (webResult) {
       // Let model weave in what we do have
@@ -626,11 +626,11 @@ export async function queryRAG(
   };
 }
 
-// Web search for general design questions
-async function webSearch(query: string, context?: string): Promise<string> {
+// General knowledge fallback for design questions outside our research data
+async function fetchGeneralKnowledge(query: string, context?: string): Promise<string> {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const apiEndpoint = `${supabaseUrl}/functions/v1/web-search`;
+  const apiEndpoint = `${supabaseUrl}/functions/v1/general-knowledge`;
 
   try {
     const response = await fetch(apiEndpoint, {
@@ -643,7 +643,7 @@ async function webSearch(query: string, context?: string): Promise<string> {
     });
 
     if (!response.ok) {
-      throw new Error(`Web search error: ${response.status}`);
+      throw new Error(`General knowledge error: ${response.status}`);
     }
 
     const data = await response.json();

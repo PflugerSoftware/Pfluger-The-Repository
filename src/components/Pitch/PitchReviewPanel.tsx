@@ -17,19 +17,15 @@ import {
   SCOPE_LABELS,
   calculateHoursPerWeek,
 } from '../../views/Pitch/usePitchData';
+import { getInitials } from '../../lib/utils';
 import type { Pitch, PitchComment, PitchStatus, User as DbUser } from '../../services/pitchService';
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ElementType }> = {
+  draft: { label: 'Draft', color: 'text-gray-400', bg: 'bg-gray-900/30', border: 'border-gray-700', icon: Edit3 },
   pending: { label: 'Pending Review', color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-800', icon: Clock },
   revise: { label: 'Revise & Resubmit', color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-800', icon: Edit3 },
   greenlit: { label: 'Green Lit!', color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-800', icon: Zap },
 };
-
-function getInitials(name: string) {
-  const parts = name.split(' ');
-  if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-  return name.slice(0, 2).toUpperCase();
-}
 
 interface PitchReviewPanelProps {
   pitch: Pitch;
@@ -66,13 +62,16 @@ export function PitchReviewPanel({
   onAddCollaborator,
   onRemoveCollaborator,
 }: PitchReviewPanelProps) {
-  const status = STATUS_CONFIG[pitch.status];
+  const status = STATUS_CONFIG[pitch.status] || STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
   const methodInfo = pitch.scopeTier && pitch.methodology
     ? RESEARCH_METHODS.find(m => m.scope === pitch.scopeTier && m.methodology === pitch.methodology)
     : null;
   const scopeLabel = pitch.scopeTier ? SCOPE_LABELS[pitch.scopeTier] : null;
   const isMyComment = (comment: PitchComment) => comment.userId === currentUser?.id;
+  const isAdmin = currentUser?.role === 'admin';
+  // Non-admin users cannot edit pending pitches
+  const canEdit = isAdmin || pitch.status !== 'pending';
 
   return (
     <motion.div
@@ -95,16 +94,23 @@ export function PitchReviewPanel({
                 <div className="p-6 border-b border-gray-800/50">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <h2 className="text-2xl font-bold text-white">{pitch.title}</h2>
-                    <button
-                      onClick={() => setIsEditingPitch(!isEditingPitch)}
-                      className={`p-2.5 rounded-lg transition-colors shrink-0 ${
-                        isEditingPitch
-                          ? 'bg-white text-black'
-                          : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700'
-                      }`}
-                    >
-                      {isEditingPitch ? <Check className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
-                    </button>
+                    {canEdit ? (
+                      <button
+                        onClick={() => setIsEditingPitch(!isEditingPitch)}
+                        className={`p-2.5 rounded-lg transition-colors shrink-0 ${
+                          isEditingPitch
+                            ? 'bg-white text-black'
+                            : 'bg-gray-800/50 text-gray-400 hover:text-white hover:bg-gray-700'
+                        }`}
+                      >
+                        {isEditingPitch ? <Check className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-yellow-900/20 text-yellow-400 text-xs font-medium shrink-0">
+                        <Clock className="w-3 h-3" />
+                        Submitted
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-3 text-sm mb-3">

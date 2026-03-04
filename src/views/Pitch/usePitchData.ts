@@ -12,10 +12,14 @@ import {
   addPitchComment,
   getUser,
   savePitchAiSession,
+  getPitchAiSession,
   getUsers,
   getPitchCollaborators,
   addPitchCollaborator,
   removePitchCollaborator,
+  createDraftPitch,
+  deletePitch,
+  deletePitchAiSession,
   type Pitch,
   type PitchComment,
   type PitchStatus,
@@ -84,6 +88,7 @@ export function usePitchData() {
   const [pitchData, setPitchData] = useState<PitchData>(EMPTY_PITCH_DATA);
   const [chatMessages, setChatMessages] = useState<Array<{ id: string; role: 'user' | 'assistant'; content: string }>>([]);
   const [isPitchComplete, setIsPitchComplete] = useState(false);
+  const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
 
   // Load data on mount
   useEffect(() => {
@@ -96,7 +101,10 @@ export function usePitchData() {
         if (user) {
           if (authUser.role === 'admin') {
             const allPitches = await getPitches();
-            setMyPitches(allPitches);
+            // Admin sees all pitches except other users' drafts
+            setMyPitches(allPitches.filter(p =>
+              p.status !== 'draft' || p.userId === user.id
+            ));
           } else {
             const mine = await getPitches({ userId: user.id });
             setMyPitches(mine);
@@ -146,6 +154,47 @@ export function usePitchData() {
       if (extracted.partner) updates.partners = extracted.partner;
       if (extracted.successMetrics) updates.impact = extracted.successMetrics;
       if (extracted.timeline) updates.timeline = extracted.timeline;
+
+      // Persist partial progress to the draft pitch in DB
+      if (activeDraftId) {
+        const dbUpdates: Partial<{
+          title: string;
+          researchIdea: string;
+          scopeTier: string;
+          methodology: string;
+          alignment: string;
+          projectName: string;
+          partner: string;
+          impact: string;
+          timeline: string;
+        }> = {};
+        if (updates.researchIdea) {
+          dbUpdates.researchIdea = updates.researchIdea;
+          // Auto-generate title from research idea
+          const titleMatch = updates.researchIdea.match(/^[^.!?]+/);
+          dbUpdates.title = titleMatch
+            ? titleMatch[0].slice(0, 60) + (titleMatch[0].length > 60 ? '...' : '')
+            : updates.researchIdea.slice(0, 60) + '...';
+        }
+        if (updates.scopeTier) dbUpdates.scopeTier = updates.scopeTier;
+        if (updates.methodology) dbUpdates.methodology = updates.methodology;
+        if (updates.alignment) dbUpdates.alignment = updates.alignment;
+        if (updates.projectName) dbUpdates.projectName = updates.projectName;
+        if (updates.partners) dbUpdates.partner = updates.partners;
+        if (updates.impact) dbUpdates.impact = updates.impact;
+        if (updates.timeline) dbUpdates.timeline = updates.timeline;
+        if (Object.keys(dbUpdates).length > 0) {
+          updatePitch(activeDraftId, dbUpdates).then(success => {
+            if (success && dbUpdates.title) {
+              // Update the local pitch list with the new title
+              setMyPitches(prev => prev.map(p =>
+                p.id === activeDraftId ? { ...p, ...dbUpdates } as Pitch : p
+              ));
+            }
+          });
+        }
+      }
+
       return { ...prev, ...updates };
     });
     if (extracted.isComplete) setIsPitchComplete(true);
@@ -159,12 +208,58 @@ export function usePitchData() {
     }
     setIsSubmitting(true);
     try {
-      const newId = await generatePitchId();
       const titleMatch = pitchData.researchIdea.match(/^[^.!?]+/);
       const title = titleMatch
         ? titleMatch[0].slice(0, 60) + (titleMatch[0].length > 60 ? '...' : '')
         : pitchData.researchIdea.slice(0, 60) + '...';
 
+      // If we have an active draft, promote it to pending
+      if (activeDraftId) {
+        const success = await updatePitch(activeDraftId, {
+          title,
+          researchIdea: pitchData.researchIdea,
+          status: 'pending',
+          alignment: pitchData.alignment || undefined,
+          projectName: pitchData.projectName || undefined,
+          partner: pitchData.partners || undefined,
+          methodology: pitchData.methodology || undefined,
+          scopeTier: pitchData.scopeTier || undefined,
+          impact: pitchData.impact || undefined,
+          timeline: pitchData.timeline || undefined,
+        });
+
+        if (success) {
+          // Chat messages are already auto-saved by PitchChatPanel
+          const promotedPitch: Pitch = {
+            id: activeDraftId,
+            userId: currentUser.id,
+            userName: currentUser.name,
+            title,
+            status: 'pending',
+            researchIdea: pitchData.researchIdea,
+            alignment: pitchData.alignment || null,
+            projectName: pitchData.projectName || null,
+            partner: pitchData.partners || null,
+            methodology: pitchData.methodology || null,
+            scopeTier: pitchData.scopeTier || null,
+            impact: pitchData.impact || null,
+            timeline: pitchData.timeline || null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          setMyPitches(prev => prev.map(p =>
+            p.id === activeDraftId ? promotedPitch : p
+          ));
+          resetPitch();
+          return promotedPitch;
+        } else {
+          setSubmitError('Failed to submit pitch. Please try again.');
+          return null;
+        }
+      }
+
+      // Fallback: no active draft, create a new pitch (legacy path)
+      const newId = await generatePitchId();
       const newPitch = await createPitch({
         id: newId,
         userId: currentUser.id,
@@ -269,6 +364,66 @@ export function usePitchData() {
     setIsPitchComplete(false);
     setChatMessages([]);
     setPitchData(EMPTY_PITCH_DATA);
+    setActiveDraftId(null);
+  };
+
+  const startDraft = async (): Promise<string | null> => {
+    if (!currentUser) return null;
+    const draft = await createDraftPitch(currentUser.id);
+    if (draft) {
+      setMyPitches(prev => [draft, ...prev]);
+      setActiveDraftId(draft.id);
+      resetPitch();
+      setActiveDraftId(draft.id); // re-set after resetPitch clears it
+      return draft.id;
+    }
+    return null;
+  };
+
+  const resumeDraft = async (pitchId: string) => {
+    const pitch = myPitches.find(p => p.id === pitchId);
+    if (!pitch) return;
+
+    setActiveDraftId(pitchId);
+
+    // Restore pitch data from the pitch record
+    setPitchData({
+      researchIdea: pitch.researchIdea || '',
+      alignment: (pitch.alignment || '') as PitchData['alignment'],
+      projectName: pitch.projectName || '',
+      methodology: pitch.methodology || '',
+      scopeTier: (pitch.scopeTier || '') as PitchData['scopeTier'],
+      impact: pitch.impact || '',
+      resources: '',
+      timeline: pitch.timeline || '',
+      partners: pitch.partner || '',
+    });
+
+    // Restore chat messages from the AI session
+    const session = await getPitchAiSession(pitchId);
+    if (session && session.messages.length > 0) {
+      setChatMessages(session.messages.map(m => ({
+        id: m.id,
+        role: m.role,
+        content: m.content,
+      })));
+    } else {
+      setChatMessages([]);
+    }
+
+    setIsPitchComplete(false);
+  };
+
+  const handleDeleteDraft = async (pitchId: string): Promise<boolean> => {
+    await deletePitchAiSession(pitchId);
+    const success = await deletePitch(pitchId);
+    if (success) {
+      setMyPitches(prev => prev.filter(p => p.id !== pitchId));
+      if (activeDraftId === pitchId) {
+        resetPitch();
+      }
+    }
+    return success;
   };
 
   return {
@@ -290,6 +445,7 @@ export function usePitchData() {
     setChatMessages,
     isPitchComplete,
     setIsPitchComplete,
+    activeDraftId,
     loadPitchDetails,
     handlePitchUpdate,
     handleSubmit,
@@ -301,5 +457,8 @@ export function usePitchData() {
     handleAddCollaborator,
     handleRemoveCollaborator,
     resetPitch,
+    startDraft,
+    resumeDraft,
+    deleteDraft: handleDeleteDraft,
   };
 }

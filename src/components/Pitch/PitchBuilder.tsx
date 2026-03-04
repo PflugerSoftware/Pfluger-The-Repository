@@ -28,6 +28,8 @@ interface PitchBuilderProps {
   isSubmitting: boolean;
   submitError: string | null;
   chatMessages: Array<{ id: string; role: 'user' | 'assistant'; content: string }>;
+  draftPitchId?: string;
+  userId?: string;
   onPitchUpdate: (extracted: ExtractedPitch) => void;
   onMessagesChange: (msgs: Array<{ id: string; role: 'user' | 'assistant'; content: string }>) => void;
   onSubmit: () => void;
@@ -40,6 +42,8 @@ export function PitchBuilder({
   isSubmitting,
   submitError,
   chatMessages,
+  draftPitchId,
+  userId,
   onPitchUpdate,
   onMessagesChange,
   onSubmit,
@@ -68,6 +72,8 @@ export function PitchBuilder({
       {/* Left: Chat Panel */}
       <div className="flex-1 min-w-0">
         <PitchChatPanel
+          pitchId={draftPitchId}
+          userId={userId}
           onPitchUpdate={onPitchUpdate}
           initialMessages={chatMessages}
           onMessagesChange={onMessagesChange}

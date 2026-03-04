@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '../System/AuthContext';
+import { getInitials } from '../../lib/utils';
 
 interface SubItem {
   label: string;
@@ -116,15 +117,6 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
   const { logout, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-
-  // Generate initials from user name
-  const getInitials = (name: string) => {
-    const parts = name.split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
-  };
 
   const handleAuthClick = () => {
     if (isAuthenticated) {

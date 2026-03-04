@@ -41,6 +41,7 @@ function AnimatedNumber({ value, duration = 1000, trigger = true }: AnimatedNumb
     const startTime = Date.now();
     const startNum = 0;
     const endNum = parsed.num;
+    let frameId: number;
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
@@ -53,11 +54,12 @@ function AnimatedNumber({ value, duration = 1000, trigger = true }: AnimatedNumb
       setDisplayNum(current);
 
       if (progress < 1) {
-        requestAnimationFrame(animate);
+        frameId = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
   }, [trigger, value, duration, parsed?.num]);
 
   if (!parsed) {
