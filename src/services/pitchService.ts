@@ -284,7 +284,7 @@ export async function createPitch(pitch: {
     .single();
 
   if (error) {
-    console.error('Error creating pitch:', error.message, error.details, error.hint, error.code);
+    console.error('Error creating pitch:', error.message);
     return null;
   }
 
@@ -524,26 +524,28 @@ export async function addPitchComment(
   return rowToComment(data);
 }
 
-/**
- * Delete a comment
- */
-export async function deletePitchComment(commentId: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('pitch_comments')
-    .delete()
-    .eq('id', commentId);
-
-  if (error) {
-    console.error('Error deleting pitch comment:', error);
-    return false;
-  }
-
-  return true;
-}
-
 // ============================================
 // Pitch Collaborators
 // ============================================
+
+interface CollaboratorJoinRow {
+  user_id: string;
+  users: {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+    office: string | null;
+    avatar_url: string | null;
+  } | {
+    id: string;
+    email: string;
+    name: string;
+    role: string;
+    office: string | null;
+    avatar_url: string | null;
+  }[] | null;
+}
 
 /**
  * Get all collaborators for a pitch
@@ -562,12 +564,10 @@ export async function getPitchCollaborators(pitchId: string): Promise<User[]> {
     return [];
   }
 
-  // Supabase infers users as array through junction table, but it's always a single object per row
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (data || [])
-    .filter((row: any) => row.users)
-    .map((row: any) => {
-      const u = Array.isArray(row.users) ? row.users[0] : row.users;
+  return ((data as CollaboratorJoinRow[] | null) || [])
+    .filter(row => row.users)
+    .map(row => {
+      const u = Array.isArray(row.users) ? row.users[0] : row.users!;
       return {
         id: u.id,
         email: u.email,

@@ -1,8 +1,6 @@
 // Supabase Edge Function for Claude API proxy
 // Deploy with: supabase functions deploy claude
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-
 const ALLOWED_ORIGINS = [
   'https://repository.pflugerarchitects.com',
   'http://localhost:5173',
@@ -27,7 +25,7 @@ function getCorsHeaders(req: Request) {
   };
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
   // Handle CORS preflight

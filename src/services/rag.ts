@@ -302,7 +302,7 @@ ${JSON.stringify(blocksContext, null, 2)}`;
       reasoning: parsed.reasoning ?? 'No reasoning provided'
     };
   } catch (e) {
-    console.error('Failed to parse Haiku response:', e, response);
+    console.error('Failed to parse Haiku response:', e);
     // If parsing fails but we have blocks, assume they're relevant
     if (blocks.length > 0) {
       return {
@@ -456,6 +456,30 @@ async function expandSectionBlocks(
   return expandedBlocks;
 }
 
+// Build a fallback RAGResponse when no relevant blocks are found
+async function buildFallbackResponse(
+  query: string,
+  intent: { intent: string; topic: string; relatedTopics: string[]; contextSummary: string },
+  conversationHistory: ConversationMessage[],
+  hasResearch: boolean,
+  contextSuffix?: string,
+): Promise<RAGResponse> {
+  const contextSummary = contextSuffix
+    ? `${intent.contextSummary}. ${contextSuffix}`
+    : intent.contextSummary;
+
+  const answer = await generateConversationalResponse(query, {
+    intent: intent.intent,
+    topic: intent.topic,
+    relatedTopics: intent.relatedTopics,
+    contextSummary,
+    hasResearch,
+    conversationHistory,
+  });
+
+  return { answer, sources: [], blocks_used: [], model_used: 'haiku' };
+}
+
 // Main RAG function - smart routing approach
 export async function queryRAG(
   query: string,
@@ -467,21 +491,7 @@ export async function queryRAG(
 
   // Route: Conversational - let model generate response
   if (intent.intent === 'conversational') {
-    const answer = await generateConversationalResponse(query, {
-      intent: intent.intent,
-      topic: intent.topic,
-      relatedTopics: intent.relatedTopics,
-      contextSummary: intent.contextSummary,
-      hasResearch: true,
-      conversationHistory,
-    });
-
-    return {
-      answer,
-      sources: [],
-      blocks_used: [],
-      model_used: 'haiku',
-    };
+    return buildFallbackResponse(query, intent, conversationHistory, true);
   }
 
   // Step 2: Search for relevant blocks (use searchTerms from intent)
@@ -496,62 +506,17 @@ export async function queryRAG(
     const webResult = await fetchGeneralKnowledge(query, intent.contextSummary);
 
     if (webResult) {
-      // Let model weave in what we do have
-      const answer = await generateConversationalResponse(query, {
-        intent: intent.intent,
-        topic: intent.topic,
-        relatedTopics: intent.relatedTopics,
-        contextSummary: `${intent.contextSummary}. General info: ${webResult}`,
-        hasResearch: false,
-        conversationHistory,
-      });
-
-      return {
-        answer,
-        sources: [],
-        blocks_used: [],
-        model_used: 'haiku',
-      };
+      return buildFallbackResponse(query, intent, conversationHistory, false, `General info: ${webResult}`);
     }
 
-    // No web result either - generate helpful response
-    const answer = await generateConversationalResponse(query, {
-      intent: intent.intent,
-      topic: intent.topic,
-      relatedTopics: intent.relatedTopics,
-      contextSummary: intent.contextSummary,
-      hasResearch: false,
-      conversationHistory,
-    });
-
-    return {
-      answer,
-      sources: [],
-      blocks_used: [],
-      model_used: 'haiku',
-    };
+    return buildFallbackResponse(query, intent, conversationHistory, false);
   }
 
   // Step 3: Haiku checks relevance
   const relevanceCheck = await checkRelevance(query, blocks);
 
   if (!relevanceCheck.relevant || !relevanceCheck.relevantBlockIds.length) {
-    // Blocks found but not relevant - ask for clarification
-    const answer = await generateConversationalResponse(query, {
-      intent: intent.intent,
-      topic: intent.topic,
-      relatedTopics: intent.relatedTopics,
-      contextSummary: intent.contextSummary,
-      hasResearch: true,
-      conversationHistory,
-    });
-
-    return {
-      answer,
-      sources: [],
-      blocks_used: [],
-      model_used: 'haiku',
-    };
+    return buildFallbackResponse(query, intent, conversationHistory, true);
   }
 
   // Filter to relevant blocks

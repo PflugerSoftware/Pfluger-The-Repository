@@ -10,25 +10,24 @@ DATE: 2026-03-03
 LAST UPDATED: 2026-03-04
 
 ORIGINAL FINDINGS BY SEVERITY:
-  CRITICAL: 7    HIGH: 19    MEDIUM: 25    LOW: 18    INFO: 2
+  CRITICAL: 7    HIGH: 19    MEDIUM: 26    LOW: 18    INFO: 2
 
-RESOLVED: 64 of 71 findings (90%)
-  CRITICAL: 7/7   HIGH: 17/19   MEDIUM: 26/25 (1 added)   LOW: 14/18
+RESOLVED: 72 of 73 findings (99%)
+  CRITICAL: 7/7   HIGH: 17/19   MEDIUM: 31/31   LOW: 17/18
 
-REMAINING (7 unresolved):
-  CRITICAL: 0    HIGH: 2    MEDIUM: 5 (non-security)    LOW: 0
-  (Plus ~22 deferred optimization/quality items)
+REMAINING (2 unresolved):
+  HIGH: 2 (OPS-01 error tracking, OPS-05 dev/prod DB split)
+  (Plus ~14 deferred optimization/infrastructure items)
 
 TOP REMAINING:
   1. No error tracking service - Sentry or equivalent (HIGH, OPS-01)
   2. Dev and prod share the same Supabase database (HIGH, OPS-05)
-  3. Azure SSO migration still planned (LOW, AUTH-19)
 
 POSTURE:
   Security:      GREEN (Supabase Auth, RLS, secrets removed, CORS restricted, DOMPurify, prompt injection fixed)
-  Architecture:  YELLOW (PitchSubmission decomposed, block types typed, some DRY items remain)
-  Code Quality:  YELLOW (async standardized, dead code removed, some optimization items remain)
-  Operations:    YELLOW (CI/CD added, Error Boundary added, no error tracking yet)
+  Architecture:  GREEN (auth service extracted, block types typed, PitchSubmission decomposed, fallback DRY)
+  Code Quality:  GREEN (dead exports removed, Prettier configured, Supabase joins typed, async standardized)
+  Operations:    YELLOW (CI/CD added, Error Boundary added, PII removed from logs, no error tracking yet)
   Performance:   GREEN (311kB initial bundle, lazy loading, debounced saves, block-level splitting)
 ```
 
@@ -196,19 +195,19 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | ARC-04 | MEDIUM | DRY | PROJECTS_WITH_DASHBOARDS divergent (2 vs 10 entries) | ResearchMap.tsx:13, Portfolio.tsx:5 | ~~**DATA BUG** - unify to single source of truth~~ RESOLVED: both use hasProject() | 30 min |
 | ARC-05 | MEDIUM | DRY | Confidential project IDs hardcoded 4 times | ResearchMap.tsx:107,195,251,255 | ~~Use is_confidential flag from DB~~ RESOLVED: dead code removed (loadProjects filters server-side) | 30 min |
 | ARC-06 | MEDIUM | Deps | Domain types in components/blocks/types.ts | services/projects.ts imports from components/ | Move to src/types/ or src/models/ | 1 hour |
-| ARC-07 | MEDIUM | Deps | AuthContext makes direct Supabase calls | AuthContext.tsx | Extract to services/auth.ts | 30 min |
+| ~~ARC-07~~ | ~~MEDIUM~~ | ~~Deps~~ | ~~AuthContext makes direct Supabase calls~~ | ~~AuthContext.tsx~~ | ~~RESOLVED: Extracted to services/auth.ts~~ | ~~30 min~~ |
 | ARC-08 | MEDIUM | Arch | Services layer not abstracted from Supabase | All service files | Low priority, acceptable for project scale | Deferred |
 | ARC-09 | MEDIUM | Hardcode | Schedule.tsx has 84 lines of hardcoded data | Schedule.tsx:40-84 | Move to database or config | 1 hour |
 | CQ-01 | HIGH | Types | BlockConfig has `data: any`, undermines type safety | blocks/types.ts:28 | ~~Convert to discriminated union~~ RESOLVED: discriminated union with 21 block types | 2-3 hours |
 | CQ-02 | MEDIUM | Complexity | StackedAreaChart: 180-line useEffect | Schedule.tsx:161-362 | Extract D3 helpers | 1 hour |
-| CQ-03 | MEDIUM | Complexity | queryRAG: 3 identical fallback patterns | rag.ts:506-568 | Extract handleFallbackResponse() | 30 min |
+| ~~CQ-03~~ | ~~MEDIUM~~ | ~~Complexity~~ | ~~queryRAG: 3 identical fallback patterns~~ | ~~rag.ts~~ | ~~RESOLVED: Extracted buildFallbackResponse()~~ | ~~30 min~~ |
 | CQ-04 | MEDIUM | DRY | ChatMessage interface defined 3 times | chatHistory.ts:5, ChatPanel.tsx:4, PitchChatPanel.tsx:8 | REVIEWED: interfaces have different shapes per context, no forced unification needed | 15 min |
 | CQ-05 | MEDIUM | Consistency | Mixed async patterns (.then vs async/await) | App.tsx, TheRepo.tsx vs PitchSubmission.tsx | ~~Standardize on async/await~~ RESOLVED | 1 hour |
-| CQ-06 | MEDIUM | Dead | 9 unused exported functions | pitchService.ts, projects.ts, analytics.ts | Remove dead exports | 15 min |
+| ~~CQ-06~~ | ~~MEDIUM~~ | ~~Dead~~ | ~~Unused exported functions~~ | ~~pitchService.ts, analytics.ts~~ | ~~RESOLVED: Removed 4 dead exports~~ | ~~15 min~~ |
 | CQ-07 | LOW | Dead | Unused onNavigate prop in Dashboard, TheRepo, Home | Dashboard.tsx:27, TheRepo.tsx:31, Home.tsx:5 | ~~Remove vestigial props~~ RESOLVED | 15 min |
-| CQ-08 | LOW | Consistency | No Prettier configured, inconsistent formatting | Project root | Add .prettierrc | 15 min |
+| ~~CQ-08~~ | ~~LOW~~ | ~~Consistency~~ | ~~No Prettier configured~~ | ~~Project root~~ | ~~RESOLVED: Added .prettierrc~~ | ~~15 min~~ |
 | CQ-09 | LOW | Consistency | 67 console.log/warn/error calls across 12 files | Multiple | Create logger utility with levels | 1 hour |
-| CQ-10 | LOW | Types | as casts in pitchService (eslint-disable any) | pitchService.ts:559-560 | Type Supabase join responses | 30 min |
+| ~~CQ-10~~ | ~~LOW~~ | ~~Types~~ | ~~as casts in pitchService~~ | ~~pitchService.ts~~ | ~~RESOLVED: Typed CollaboratorJoinRow, removed eslint-disable~~ | ~~30 min~~ |
 | CQ-11 | LOW | Dead | Unused @anthropic-ai/sdk dependency | package.json | ~~npm uninstall~~ RESOLVED: already removed | 5 min |
 | CQ-12 | LOW | Dead | deepAnalysis() exported but never called | rag.ts:396 | ~~Remove or implement~~ RESOLVED: removed (was unused Phase 3 concept) | 5 min |
 
@@ -241,11 +240,11 @@ This password ships in the production JavaScript bundle. Anyone can extract it f
 | OPS-04 | HIGH | Deploy | No rollback strategy or release versioning | N/A | ~~Tag releases, document rollback process~~ RESOLVED: rollback docs and release tagging added | 30 min |
 | OPS-05 | HIGH | Data | Dev and prod share the same Supabase database | N/A | Create separate Supabase project for dev | 2 hours |
 | OPS-06 | HIGH | Data | No database migration tracking | No supabase/migrations/ | ~~Begin tracking with supabase migration workflow~~ RESOLVED: supabase/migrations/ initialized | 2 hours |
-| OPS-07 | MEDIUM | Logs | PII in production logs (emails, search queries) | PitchSubmission.tsx:181, rag.ts | Remove PII from console output | 30 min |
-| OPS-08 | MEDIUM | Config | Storage URL hardcoded in 3 different places | storage.ts:3, ImageCarousel.tsx:4, scripts | Derive from VITE_SUPABASE_URL | 30 min |
+| ~~OPS-07~~ | ~~MEDIUM~~ | ~~Logs~~ | ~~PII in production logs~~ | ~~rag.ts, pitchService.ts~~ | ~~RESOLVED: Removed response/detail logging from error handlers~~ | ~~30 min~~ |
+| ~~OPS-08~~ | ~~MEDIUM~~ | ~~Config~~ | ~~Storage URL hardcoded in 3 different places~~ | ~~storage.ts, components~~ | ~~RESOLVED: All components use STORAGE_BASE_URL from env~~ | ~~30 min~~ |
 | OPS-09 | MEDIUM | Deploy | No build artifact verification before deploy | N/A | Add post-build checks | 1 hour |
 | OPS-10 | LOW | Config | No .env.example file | N/A | ~~Create template with required var names~~ RESOLVED: .env.example created | 15 min |
-| OPS-11 | LOW | Deps | Deno std@0.168.0 in Edge Functions (very old) | supabase/functions/ | Update to recent Deno std | 15 min |
+| ~~OPS-11~~ | ~~LOW~~ | ~~Deps~~ | ~~Deno std@0.168.0 in Edge Functions~~ | ~~supabase/functions/~~ | ~~RESOLVED: Migrated to built-in Deno.serve()~~ | ~~15 min~~ |
 | OPS-12 | LOW | Monitoring | No uptime monitoring | N/A | Add UptimeRobot or equivalent | 15 min |
 | OPS-13 | LOW | Monitoring | No performance monitoring (Core Web Vitals) | N/A | Consider Cloudflare Web Analytics | 15 min |
 
@@ -490,3 +489,13 @@ The codebase does several things well that should be preserved:
 - Filled all RAG fields (searchable_text, summary, tags, conclusions) on 3 empty X26-RB01 storage blocks
 - Result: 112/112 content blocks now have conclusions (was 25/112)
 - Script: `scripts/backfill-rag-conclusions.mjs` (deterministic extraction, no API calls, idempotent)
+
+### 2026-03-04: Quick win audit fixes (8 items)
+- ARC-07: Extracted auth Supabase calls from AuthContext.tsx to services/auth.ts
+- CQ-03: Extracted buildFallbackResponse() in rag.ts (replaced 4 identical fallback patterns)
+- CQ-06: Removed 4 unused exports (deletePitchComment, getUserPageViews, getSessionPageViews, getAnalyticsSummary)
+- CQ-08: Added .prettierrc with project conventions
+- CQ-10: Typed Supabase join response in getPitchCollaborators() with CollaboratorJoinRow interface
+- OPS-07: Removed PII from console.error calls (stripped response body from rag.ts, error details from pitchService.ts)
+- OPS-08: Confirmed already resolved (all components use STORAGE_BASE_URL from env)
+- OPS-11: Migrated 3 Edge Functions from deno.land/std@0.168.0 serve() to built-in Deno.serve()

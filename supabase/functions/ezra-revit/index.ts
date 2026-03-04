@@ -2,7 +2,6 @@
 // Self-contained RAG pipeline - accepts a question, returns a grounded answer.
 // Deploy with: supabase functions deploy ezra-revit
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // ---------------------------------------------------------------------------
@@ -536,7 +535,7 @@ async function runEzraRAG(
 // HTTP handler
 // ---------------------------------------------------------------------------
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
   if (req.method === 'OPTIONS') {

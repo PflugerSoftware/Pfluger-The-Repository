@@ -1,12 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { supabase } from '../../config/supabase';
+import { fetchUserProfile, signIn, signOut, getSession, onAuthStateChange, type UserProfile } from '../../services/auth';
 
-interface User {
-  id: string;
-  username: string;
-  name: string;
-  role: 'admin' | 'researcher' | 'contributor' | 'viewer';
-}
+type User = UserProfile;
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -17,25 +12,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-async function fetchUserProfile(email: string): Promise<User | null> {
-  const { data, error } = await supabase
-    .from('users')
-    .select('id, email, name, role')
-    .eq('email', email)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return {
-    id: data.id,
-    username: data.email,
-    name: data.name,
-    role: data.role as User['role'],
-  };
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -44,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize session and listen for auth state changes
   useEffect(() => {
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         const profile = await fetchUserProfile(session.user.email || '');
         if (profile) {
@@ -56,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Subscribe to auth state changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
           const profile = await fetchUserProfile(session.user.email || '');
@@ -78,10 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await signIn(email, password);
 
       if (error) {
         return { success: false, error: error.message };
@@ -95,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await fetchUserProfile(data.user.email || '');
       if (!profile) {
         // Auth succeeded but no user profile found in users table
-        await supabase.auth.signOut();
+        await signOut();
         return { success: false, error: 'Account not found in team directory' };
       }
 
@@ -108,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     setUser(null);
     setIsAuthenticated(false);
   };
