@@ -48,7 +48,7 @@ Public Routes:
 /about                         → About R&B
 /about/research&benchmarking   → R&B Overview
 /about/process                 → Research Process
-/about/tools                   → Tools & Methods
+/about/tools                   → Tools & Methods (login required)
 /about/ai                      → AI Usage
 /about/sources                 → Citations
 
@@ -238,7 +238,7 @@ The app uses React Router for proper URL routing with a centered top navigation 
 
 - **Research & Benchmarking** - Department overview and team
 - **Our Process** - Six-step research methodology
-- **Our Tools** - Software and custom tools used
+- **Our Tools** - Software, AI tools (with logins), and research platforms (login required)
 - **Use of AI** - Transparency about AI in research
 - **Sources & Citations** - APA formatting standards
 
@@ -785,11 +785,9 @@ Each category has a dedicated color:
 - ArcGIS
 - Qualtrics
 
-### Custom Tools
-- Repository (this platform)
-- Modulizer
-- POE Dashboard (in development)
-- Region Intel (in development)
+### AI Tools (on /about/tools, login required)
+- Midjourney, Gemini, Veo 3, Genie 3, Nano Banana, Magnific, Claude AI, CapCut, Figma
+- Claude AI has per-office logins; all others use apps@pflugerarchitects.com
 
 ## Production Roadmap
 

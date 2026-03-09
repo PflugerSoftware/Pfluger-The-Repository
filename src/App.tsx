@@ -146,7 +146,7 @@ function AppContent() {
           <Route path="/about" element={<AboutRB />} />
           <Route path="/about/research&benchmarking" element={<AboutRB />} />
           <Route path="/about/process" element={<AboutProcess />} />
-          <Route path="/about/tools" element={<AboutTools />} />
+          <Route path="/about/tools" element={<ProtectedRoute><AboutTools /></ProtectedRoute>} />
           <Route path="/about/ai" element={<AboutAI />} />
           <Route path="/about/sources" element={<AboutSources />} />
 
