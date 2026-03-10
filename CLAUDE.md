@@ -51,6 +51,7 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 - **psql connection:** Uses `DATABASE_URL` from `.env` (session pooler)
 - **Storage bucket:** `Repository Bucket` (public, files listed via `storage.objects` table)
 - **Edge functions:** `supabase/functions/claude/` (Anthropic proxy), `supabase/functions/general-knowledge/` (general design knowledge fallback)
+- **Shared edge function (separate repo):** `ezra-revit` — RAG pipeline with Revit context, deployed from `EzraRevit` repo. See `C:\Users\alex.wickes.PFLUGER\Developer\EzraRevit`
 - **Env vars (in `.env.local`, gitignored):**
   - Client-side (VITE_ prefix): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_MAPBOX_TOKEN`
   - Server-side only (no VITE_ prefix): `DATABASE_URL`, `ANTHROPIC_API_KEY`, `OPENASSET_BASE_URL`, `OPENASSET_TOKEN_ID`, `OPENASSET_TOKEN_STRING`, `SUPABASE_SERVICE_ROLE_KEY`
@@ -127,7 +128,12 @@ Project dashboards are built from composable blocks stored in the `project_block
 
 **Block data is DB-only** — no block content lives in code. To add/modify blocks, update the `project_blocks` table in Supabase. See `docs/R&B-Adding-a-New-Project.md` for the full guide including all block type JSON schemas.
 
-**RAG fields** on blocks (`summary`, `tags`, `searchable_text`, `conclusions`) power Ezra's AI search.
+**RAG fields** on blocks (`summary`, `tags`, `searchable_text`, `conclusions`) power Ezra's AI search — both the web app's Ezra and the Revit add-in's `ezra-revit` edge function query these same blocks.
+
+**Shared tables used by EzraRevit** (deployed from separate repo):
+- `project_blocks` — research content (read by `ezra-revit` edge function for RAG)
+- `ezra_revit_chat_logs` — analytics for Revit chat sessions
+- `ezra_sessions` — server-side conversation cache (history + revit context per session)
 
 ### Supabase Storage
 
