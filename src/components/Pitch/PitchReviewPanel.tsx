@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock,
   Edit3,
@@ -11,7 +12,11 @@ import {
   Send,
   X,
   UserPlus,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
+import { stripPitchTags, stripMarkdown } from '../../services/pitchAgent';
 import {
   RESEARCH_METHODS,
   SCOPE_LABELS,
@@ -43,6 +48,7 @@ interface PitchReviewPanelProps {
   onAddComment: (pitchId: string) => void;
   onAddCollaborator: (pitchId: string, userId: string) => void;
   onRemoveCollaborator: (pitchId: string, userId: string) => void;
+  chatMessages?: Array<{ id: string; role: 'user' | 'assistant'; content: string }>;
 }
 
 export function PitchReviewPanel({
@@ -61,7 +67,9 @@ export function PitchReviewPanel({
   onAddComment,
   onAddCollaborator,
   onRemoveCollaborator,
+  chatMessages,
 }: PitchReviewPanelProps) {
+  const [showChat, setShowChat] = useState(false);
   const status = STATUS_CONFIG[pitch.status] || STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
   const methodInfo = pitch.scopeTier && pitch.methodology
@@ -398,6 +406,57 @@ export function PitchReviewPanel({
             </div>
           </div>
         </div>
+
+        {/* Collapsible Chat History */}
+        {chatMessages && chatMessages.length > 0 && (
+          <div className="mt-6 border-t border-gray-800 pt-4">
+            <button
+              onClick={() => setShowChat(!showChat)}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors w-full"
+            >
+              <Sparkles className="w-4 h-4 text-sky-500" />
+              <span className="font-semibold">Conversation with Ezra</span>
+              <span className="text-xs text-gray-600">({chatMessages.length} messages)</span>
+              <span className="ml-auto">
+                {showChat ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </span>
+            </button>
+            <AnimatePresence>
+              {showChat && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-3 space-y-3 max-h-96 overflow-y-auto rounded-xl bg-gray-900/50 p-4">
+                    {chatMessages.map((msg) => (
+                      <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                        {msg.role === 'assistant' && (
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-3 h-3 text-white" />
+                          </div>
+                        )}
+                        <div className={`max-w-[80%] ${msg.role === 'user' ? 'text-right' : ''}`}>
+                          <div className={`inline-block rounded-xl px-3 py-2 ${
+                            msg.role === 'user'
+                              ? 'bg-white text-black rounded-tr-sm'
+                              : 'bg-gray-800 rounded-tl-sm'
+                          }`}>
+                            <p className={`text-xs whitespace-pre-wrap ${msg.role === 'user' ? 'text-black' : 'text-gray-300'}`}>
+                              {msg.role === 'assistant' ? stripMarkdown(stripPitchTags(msg.content)) : msg.content}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
     </motion.div>
   );

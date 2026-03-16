@@ -89,6 +89,7 @@ export function usePitchData() {
   const [chatMessages, setChatMessages] = useState<Array<{ id: string; role: 'user' | 'assistant'; content: string }>>([]);
   const [isPitchComplete, setIsPitchComplete] = useState(false);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
+  const [reviewChatMessages, setReviewChatMessages] = useState<Array<{ id: string; role: 'user' | 'assistant'; content: string }>>([]);
 
   // Load data on mount
   useEffect(() => {
@@ -101,10 +102,7 @@ export function usePitchData() {
         if (user) {
           if (authUser.role === 'admin') {
             const allPitches = await getPitches();
-            // Admin sees all pitches except other users' drafts
-            setMyPitches(allPitches.filter(p =>
-              p.status !== 'draft' || p.userId === user.id
-            ));
+            setMyPitches(allPitches);
           } else {
             const mine = await getPitches({ userId: user.id });
             setMyPitches(mine);
@@ -123,18 +121,23 @@ export function usePitchData() {
     loadData();
   }, [authUser]);
 
-  // Load comments and collaborators for a pitch
+  // Load comments, collaborators, and chat history for a pitch
   const loadPitchDetails = async (pitchId: string | null) => {
     if (pitchId) {
-      const [comments, collaborators] = await Promise.all([
+      const [comments, collaborators, session] = await Promise.all([
         getPitchComments(pitchId),
         getPitchCollaborators(pitchId),
+        getPitchAiSession(pitchId),
       ]);
       setPitchComments(comments);
       setPitchCollaborators(collaborators);
+      setReviewChatMessages(
+        session?.messages.map(m => ({ id: m.id, role: m.role, content: m.content })) || []
+      );
     } else {
       setPitchComments([]);
       setPitchCollaborators([]);
+      setReviewChatMessages([]);
     }
   };
 
@@ -446,6 +449,7 @@ export function usePitchData() {
     isPitchComplete,
     setIsPitchComplete,
     activeDraftId,
+    reviewChatMessages,
     loadPitchDetails,
     handlePitchUpdate,
     handleSubmit,

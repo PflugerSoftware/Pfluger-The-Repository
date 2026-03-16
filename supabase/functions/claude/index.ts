@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { model, system, prompt, max_tokens } = body;
+    const { model, system, prompt, messages: providedMessages, max_tokens } = body;
 
     // Input validation
     const resolvedModel = model || 'claude-3-5-haiku-20241022';
@@ -46,16 +46,38 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (!prompt || typeof prompt !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'prompt is required and must be a string' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    // Accept either messages (array) or prompt (string)
+    let apiMessages: Array<{ role: string; content: string }>;
 
-    if (prompt.length > MAX_PROMPT_LENGTH) {
+    if (providedMessages && Array.isArray(providedMessages)) {
+      // Validate messages format
+      for (const msg of providedMessages) {
+        if (!msg.role || !msg.content || typeof msg.content !== 'string') {
+          return new Response(
+            JSON.stringify({ error: 'Each message must have a role and content string' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      }
+      const totalLength = providedMessages.reduce((sum: number, m: { content: string }) => sum + m.content.length, 0);
+      if (totalLength > MAX_PROMPT_LENGTH) {
+        return new Response(
+          JSON.stringify({ error: `Total message content exceeds maximum length of ${MAX_PROMPT_LENGTH} characters` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      apiMessages = providedMessages;
+    } else if (prompt && typeof prompt === 'string') {
+      if (prompt.length > MAX_PROMPT_LENGTH) {
+        return new Response(
+          JSON.stringify({ error: `prompt exceeds maximum length of ${MAX_PROMPT_LENGTH} characters` }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      apiMessages = [{ role: 'user', content: prompt }];
+    } else {
       return new Response(
-        JSON.stringify({ error: `prompt exceeds maximum length of ${MAX_PROMPT_LENGTH} characters` }),
+        JSON.stringify({ error: 'Either prompt (string) or messages (array) is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -74,7 +96,7 @@ Deno.serve(async (req) => {
     const anthropicBody: Record<string, unknown> = {
       model: resolvedModel,
       max_tokens: resolvedMaxTokens,
-      messages: [{ role: 'user', content: prompt }],
+      messages: apiMessages,
     };
 
     // Use the dedicated system parameter if provided

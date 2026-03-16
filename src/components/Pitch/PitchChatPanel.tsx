@@ -27,6 +27,14 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
   const [isInitialized, setIsInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Refs to track latest values for unmount save
+  const messagesRef = useRef(messages);
+  messagesRef.current = messages;
+  const pitchIdRef = useRef(pitchId);
+  pitchIdRef.current = pitchId;
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+
   // Convert projects to context format for the agent
   const projectContext: ProjectContext[] = projects.map(p => ({
     id: p.id,
@@ -79,6 +87,25 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
     return () => clearTimeout(timer);
   }, [messages, pitchId, userId]);
 
+  // Flush save on unmount so navigating away doesn't lose messages
+  useEffect(() => {
+    return () => {
+      const pid = pitchIdRef.current;
+      const uid = userIdRef.current;
+      const msgs = messagesRef.current;
+      if (pid && uid && msgs.length > 0) {
+        const dbMessages: PitchChatMessage[] = msgs.map(m => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp: new Date()
+        }));
+        savePitchAiSession(pid, uid, dbMessages);
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSend = async () => {
     if (!inputValue.trim() || isLoading) return;
 
@@ -109,7 +136,7 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
       const aiMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: stripMarkdown(stripPitchTags(response.message))
+        content: response.message
       };
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
@@ -163,7 +190,7 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
                   }`}
                 >
                   <p className={`text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'text-black' : 'text-gray-300'}`}>
-                    {msg.content}
+                    {msg.role === 'assistant' ? stripMarkdown(stripPitchTags(msg.content)) : msg.content}
                   </p>
                 </div>
               </div>

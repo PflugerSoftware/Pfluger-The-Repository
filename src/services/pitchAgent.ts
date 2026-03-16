@@ -123,23 +123,26 @@ When referencing existing projects, mention the project ID (e.g., X25-RB05) and 
 
 Always respond naturally in conversation.
 
-**IMPORTANT: When a decision is locked in, include a status tag at the END of your response to update the UI:**
+**CRITICAL: You MUST include PITCH_UPDATE tags at the end of EVERY response where relevant information was discussed or agreed upon. The UI progress tracker depends entirely on these tags to check off steps. Do not wait for perfect confirmation — tag information as soon as it is reasonably clear from the conversation. If you do not emit these tags, the user's progress checklist will never update.**
 
-When research idea is clear, add: [PITCH_UPDATE: idea="their research question here"]
-When scope is determined, add: [PITCH_UPDATE: scope="simple|medium|complex"]
-When methodology is chosen, add: [PITCH_UPDATE: methodology="the method"]
-When project connection is known, add: [PITCH_UPDATE: alignment="current-project|prospected-project|thought-leadership"]
-When project name mentioned (if project-related), add: [PITCH_UPDATE: projectName="project name or number"]
-When partner/organization mentioned, add: [PITCH_UPDATE: partner="organization or partner name"]
-When deliverable/impact is clear, add: [PITCH_UPDATE: impact="what this will produce"]
-When timeline discussed, add: [PITCH_UPDATE: timeline="the timeline"]
+Available tags (include at the END of your response, after your conversational text):
 
-You can include multiple updates in one response, e.g.:
-[PITCH_UPDATE: scope="medium"]
-[PITCH_UPDATE: methodology="Survey/Post-Occupancy"]
-[PITCH_UPDATE: impact="Survey data analysis and recommendations report"]
+[PITCH_UPDATE: idea="their research question or topic"]
+[PITCH_UPDATE: scope="simple|medium|complex"]
+[PITCH_UPDATE: methodology="the method"]
+[PITCH_UPDATE: alignment="current-project|prospected-project|thought-leadership"]
+[PITCH_UPDATE: projectName="project name or number"]
+[PITCH_UPDATE: partner="organization or partner name"]
+[PITCH_UPDATE: impact="what this will produce / deliverable"]
+[PITCH_UPDATE: timeline="the timeline"]
 
-When you've gathered enough info, include a brief pitch summary like:
+You can and SHOULD include multiple updates in one response, e.g.:
+[PITCH_UPDATE: idea="How do collegiate athletic facilities express university identity"]
+[PITCH_UPDATE: scope="complex"]
+[PITCH_UPDATE: methodology="Case Study Analysis"]
+[PITCH_UPDATE: impact="Design checklist/framework for identity-driven athletic spaces"]
+
+When you've gathered enough info for a complete pitch, include a brief pitch summary like:
 
 ---
 **Pitch Summary**
@@ -154,8 +157,11 @@ And mark it complete: [PITCH_UPDATE: complete="true"]
 
 Start by warmly greeting them and asking what research idea they're interested in exploring.`;
 
-// Call Claude via Supabase Edge Function (matches rag.ts pattern)
-async function callClaude(prompt: string, system?: string): Promise<string> {
+// Call Claude via Supabase Edge Function using multi-turn messages
+async function callClaude(
+  messages: Array<{ role: string; content: string }>,
+  system?: string
+): Promise<string> {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
   const apiEndpoint = `${supabaseUrl}/functions/v1/claude`;
@@ -163,7 +169,7 @@ async function callClaude(prompt: string, system?: string): Promise<string> {
   try {
     const body: Record<string, unknown> = {
       model: 'claude-sonnet-4-5-20250929',
-      prompt,
+      messages,
       max_tokens: 1024,
     };
     if (system) {
@@ -192,8 +198,12 @@ async function callClaude(prompt: string, system?: string): Promise<string> {
   }
 }
 
-// Build system and user prompts from context, projects, and conversation history
-function buildPrompt(messages: PitchMessage[], systemPromptBase: string, projects?: ProjectContext[]): { system: string; prompt: string } {
+// Build system prompt and proper multi-turn messages from conversation history
+function buildPrompt(
+  messages: PitchMessage[],
+  systemPromptBase: string,
+  projects?: ProjectContext[]
+): { system: string; apiMessages: Array<{ role: string; content: string }> } {
   let system = systemPromptBase;
 
   // Add existing projects context to system prompt
@@ -206,19 +216,25 @@ function buildPrompt(messages: PitchMessage[], systemPromptBase: string, project
     }
   }
 
-  // Build user prompt with conversation history, wrapping user messages
-  let prompt = 'Conversation so far:\n';
+  // Build proper alternating messages for the Anthropic Messages API.
+  // Skip leading assistant messages (static greeting) since the system prompt
+  // already defines Ezra's persona. This ensures the first message is role: "user".
+  const apiMessages: Array<{ role: string; content: string }> = [];
 
   for (const msg of messages) {
-    if (msg.role === 'user') {
-      prompt += `\nUser: <user_input>${msg.content}</user_input>\n`;
+    // Skip leading assistant messages (the static greeting)
+    if (apiMessages.length === 0 && msg.role === 'assistant') {
+      continue;
+    }
+    // Merge consecutive same-role messages (safety for edge cases)
+    if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === msg.role) {
+      apiMessages[apiMessages.length - 1].content += '\n\n' + msg.content;
     } else {
-      prompt += `\nAssistant: ${msg.content}\n`;
+      apiMessages.push({ role: msg.role, content: msg.content });
     }
   }
 
-  prompt += '\nAssistant:';
-  return { system, prompt };
+  return { system, apiMessages };
 }
 
 // Parse PITCH_UPDATE tags from response
@@ -341,9 +357,9 @@ export async function sendPitchMessage(
     { role: 'user', content: userMessage }
   ];
 
-  // Build prompt and get response from Claude
-  const { system, prompt } = buildPrompt(messages, SYSTEM_PROMPT, projects);
-  const response = await callClaude(prompt, system);
+  // Build messages and get response from Claude
+  const { system, apiMessages } = buildPrompt(messages, SYSTEM_PROMPT, projects);
+  const response = await callClaude(apiMessages, system);
 
   // Extract any pitch data from the conversation
   const allMessages = [...messages, { role: 'assistant' as const, content: response }];

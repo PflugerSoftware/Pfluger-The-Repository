@@ -178,6 +178,7 @@ const PitchSubmission: React.FC = () => {
             setCommentInput={data.setCommentInput}
             pitchCollaborators={data.pitchCollaborators}
             allUsers={data.allUsers}
+            chatMessages={data.reviewChatMessages}
             onUpdateField={data.handleUpdatePitchField}
             onMethodChange={data.handleMethodChange}
             onStatusChange={data.handleStatusChange}

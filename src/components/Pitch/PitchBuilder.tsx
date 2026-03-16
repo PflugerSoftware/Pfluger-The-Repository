@@ -14,12 +14,22 @@ const PITCH_STEPS = [
   { id: 'submit', label: 'Submit', description: 'Ready for review' },
 ];
 
-function getCurrentStep(pitchData: PitchData) {
-  if (!pitchData.researchIdea) return 0;
-  if (!pitchData.alignment) return 1;
-  if (!pitchData.methodology) return 2;
-  if (!pitchData.timeline) return 3;
-  return 4;
+// Each step is independently checkable — steps can complete out of order
+// as Ezra's conversation flow doesn't always match the checklist order.
+function getStepCompletion(pitchData: PitchData): boolean[] {
+  return [
+    !!pitchData.researchIdea,                         // Research Idea
+    !!pitchData.impact,                               // Goal & Outcome (deliverable)
+    !!pitchData.methodology,                          // Scope & Method
+    !!pitchData.timeline,                             // Timeline & Partners
+    false,                                            // Submit (always manual)
+  ];
+}
+
+function getCurrentStep(pitchData: PitchData): number {
+  const completion = getStepCompletion(pitchData);
+  const firstIncomplete = completion.findIndex(c => !c);
+  return firstIncomplete === -1 ? completion.length : firstIncomplete;
 }
 
 interface PitchBuilderProps {
@@ -65,6 +75,7 @@ export function PitchBuilder({
     );
   }
 
+  const completed = getStepCompletion(pitchData);
   const currentStep = getCurrentStep(pitchData);
 
   return (
@@ -86,7 +97,7 @@ export function PitchBuilder({
           <h3 className="text-sm font-semibold text-white mb-4">Pitch Progress</h3>
           <div className="space-y-3 flex-1">
             {PITCH_STEPS.map((step, index) => {
-              const isComplete = index < currentStep;
+              const isComplete = completed[index];
               const isCurrent = index === currentStep;
               return (
                 <div key={step.id} className="flex items-start gap-3">
