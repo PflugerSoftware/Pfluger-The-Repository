@@ -66,8 +66,6 @@ This document lists decisions that need to be made by stakeholders to move forwa
 
 | API / Service | Purpose | Yearly Cost | Approval Needed |
 |---------------|---------|-------------|-----------------|
-
-<<<<<<< Updated upstream
 Lic we have now after budget approval
 *| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | TBD |
 *| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
@@ -76,21 +74,19 @@ Lic we have now after budget approval
 *| Twinmotion | Real-time visualization | Free | team@pfluger | double check with Logan on account cost
 *| Unreal Engine | Real-time engine | Free | team@pfluger |
 *| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
-
 *| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. AI Ultra: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
 
 
 Lic we still have to get after budget approval, didnt get to respect the budget
 *| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
 *| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
-=======
+
 4148 4600 0869 7949 07/28 485 Lauren Paver
 *| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
 *| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
 *| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
 *| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. AI Ultra: *10k img, 5 vid, $249/mo, $2,988/yr | TBD | went with the $249
 *| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
->>>>>>> Stashed changes
 *| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
 *| Veo 3 Standard API | ~50 vids/mo (4-sec), $80/mo, $960/yr | TBD |  Told LP 1000
 
@@ -99,35 +95,6 @@ Lic we still have to get after budget approval, didnt get to respect the budget
 *| Apple Developer | App distribution Build to Apple Vision Pro | $99/yr | TBD | 
 |AI Bucket|
 |Bambu Labs | 3d printing |  apps@pfluger | free 
-
-### Claude Users Standard $25, Premium $125
-
-**Current Users** 
-(Claude Code Alex Wickes, Logan Steitle) | software@pflugerarchitects.com | Standard,  upgrade to premium 
-Lauren Cloud | Lauren.Cloud@pflugerarchitects.com | Standard
-Nilen Varade | Nilen.Varade@pflugerarchitects.com | Standard
-Katherine Wiley | Katherine.Wiley@pflugerarchitects.com | Standard
-Taraneh Kalati | Taraneh.Kalati@pflugerarchitects.com | Standard
-William Webb | William.Webb@pflugerarchitects.com | Standard (Unassigned)
-
-Samantha Goosen | Samantha.Goosen@pflugerarchitects.com | None
-Casey Wilkinson | Casey.wilkinson@pflugerarchitects.com | None
-Chris Hickey | Chris.Hickey@pflugerarchitects.com | None
-Jonathan Bryer | jonathan.bryer@pflugerarchitects.com | None
-Monse Rios | monse.rios@pflugerarchitects.com | None
-Agustin Salinas | Agustin.Salinas@pflugerarchitects.com | None
-Tim Estrada | tim.estrada@pflugerarchitects.com | None
-
-Zhun Jiao | Zhun.Jiao@pflugerarchitects.com | None
-Tony Plascencia | Tony.plascencia@pflugerarchitects.com | None
-Tony Schmitz | Tony.Schmitz@pflugerarchitects.com | None
-Kipp Schecht | Kipp.Schecht@pflugerarchitects.com | None
-Cameron Richards | Cameron.richards@pflugerarchitects.com | None
-Hunter Bradshaw | Hunter.Bradshaw@pflugerarchitects.com | None
-Braden Haley | braden.haley@pflugerarchitects.com | None
-Leah Van Der Sanden | leah.vandersanden@pflugerarchitects.com | None
-Jeremy Barragan | Jeremy.barragan@pflugerarchitects.com | None
-Wendy Rosamond | Wendy.Rosamond@pflugerarchitects.com | None
 
 ---
 ## Application Action Items
