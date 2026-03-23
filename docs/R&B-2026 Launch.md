@@ -14,20 +14,20 @@ This document lists decisions that need to be made by stakeholders to move forwa
 | LP | Lauren Paver | COO / co-CEO (Board) |
 | CC | Cody Cunningham | Chief Growth Officer (Board) |
 | TH | Terry Hoyle | CEO (Board)|
-| LF | Lisa Ftize | Finance Director |
+| LF | Lisa Fitze | Finance Director |
 | CB | Craig Bogner | CIO/CTO (Innerium, outsourced) |
-| DY | David Yound  | Communications and Engagement Manager Board|
+| DY | David Young  | Communications and Engagement Manager Board|
 
 | CM | Chad Martin | Principal, Architect Director |
 | TS | Tony Schmitz | Principal, Process Performance Director |
 | JS | Josh Sawyer | Principal, Educational Planning Director |
 | TP | Tony Plascencia | Principal, Design Director | 
- | AS | Ally Schnider | Principal, Interior Design Director
+ | AS | Ally Schneider | Principal, Interior Design Director
 
-| AW | Alex Wickes | Associate Design Performacne Leader | 
-| LS | Logan Steitle| Associalte Visualization + Immersive Designer|
+| AW | Alex Wickes | Associate Design Performance Leader |
+| LS | Logan Stitle | Associate Visualization + Immersive Designer|
 | AN | Austin Nguyen | Associate Systems Administrator|
-| DC | Dennis Carrisalez | Systems Administrator, outsourced|
+| DC | Dennis Carrizalez | Systems Administrator, outsourced|
 | CW | Casey Wilkinson | Marketing Specialist|
 | BS | Brenda Swirczynski | Education Facilities Planner |
 
@@ -57,7 +57,7 @@ This document lists decisions that need to be made by stakeholders to move forwa
 *| Claude API - Haiku 4.5 | ~8k msgs/mo (3K tk/msg), $56/mo, $672/yr | Username/account |
 *| Mapbox API | Interactive maps | Free tier (50k loads/mo) | Username/account |
 *| GitHub | Code repository | Included / Free | Username/account |
-*| Climate Studio | Building performance simulation in lue of Safira Sketchup $2000/yr | ~$2,500/year | TBD - pending | going to try to pro rate and cancle safiri
+*| Climate Studio | Building performance simulation in lieu of Sefaira Sketchup $2000/yr | ~$2,500/year | TBD - pending | going to try to pro rate and cancel Sefaira
 | Resend API | email automation API | Free Tier 3k emails/mo | Username/account |
 | Census API | Demographics / district data | Free | Username/account |
 | Vantage Point API | CRM / contact routing | Included in license | Username/account |
@@ -77,7 +77,7 @@ Lic we have now after budget approval
 *| Unreal Engine | Real-time engine | Free | team@pfluger |
 *| Digital Model Assets | 3D asset budget | $1,200/yr ($100/mo) | dedicated Username/account |
 
-*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
+*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. AI Ultra: 1k img, 5 vid, $249/mo, $2,988/yr | TBD |
 
 
 Lic we still have to get after budget approval, didnt get to respect the budget
@@ -88,7 +88,7 @@ Lic we still have to get after budget approval, didnt get to respect the budget
 *| Magnific GUI | AI image upscaling | $468/yr ($39/mo) | Apps@pfluger | | TBD |
 *| Magnific API (Freepik) | AI upscaling | ~500 upscales/mo, $55/mo, $660/yr | TBD |
 *| Nano Banana Pro API | AI image generation (4K) | ~500 imgs/mo, $120/mo, $1,440/yr | TBD |  Told LP 1500
-*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. Ultimate: *10k img, 5 vid, $249/mo, $2,988/yr | TBD | went with the $249
+*| Google Gemini GUI | Pro: 1k img, 3 vid, $20/mo, $240/yr. AI Ultra: *10k img, 5 vid, $249/mo, $2,988/yr | TBD | went with the $249
 *| MidJourney GUI | AI image generation | $360/yr ($30/mo) | TBD | getting a number of user accounts for people to use 
 >>>>>>> Stashed changes
 *| Veo 3 Fast API | ~50 vids/mo (4-sec), $30/mo, $360/yr | TBD |   at $360
@@ -178,10 +178,10 @@ Discuss trade-offs and finalize software procurement/budget for 2026
 ### Meeting Notes (LP Sidebar): ###
 
 **Software & Licensing**
-- Safira: Prorate and cancel license
+- Sefaira: Prorate and cancel license
 - Rhino: Reach out for pricing, confirm with Austin
 - Claude: Kill Max 5x, set up Teams (1 Std + 1 Ulti), cancel CH account
-- Claude API username: `software@pflugerarchitects.com` workes better with Crag (noted from Austin)
+- Claude API username: `software@pflugerarchitects.com` works better with Crag (noted from Austin)
 - Autodesk: ATG is rep, transitioning to FORMA
 
 **IT & Account Management**
@@ -203,26 +203,26 @@ Discuss trade-offs and finalize software procurement/budget for 2026
 
 **Actionitems:**
 In Progress
-- AW: Prorate/cancel Safira license | need to hard conteact
-- AW: Cancel CH Claude Max 5x | awaiting support to contact back, calcled plan
-- AW: Cancel Apps@ Claude Teams | awaiting support to contact back, calcled plan
+- AW: Prorate/cancel Sefaira license | need to hard contact
+- AW: Cancel CH Claude Max 5x | awaiting support to contact back, cancelled plan
+- AW: Cancel Apps@ Claude Teams | awaiting support to contact back, cancelled plan
 - aw create census account | 
 
 - AW: Confirm IT Glue setup with Craig and all new log all users/passwords accounts created. 
 - AW: Track all hours to C&P (keep separate log if reallocation needed)
 
 Done
-- Makerspace cost, ($95/mo consider 4mo a year / person), aditional one time training: $70 base, $135 laser cutting, $250 CNC. 
+- Makerspace cost, ($95/mo consider 4mo a year / person), additional one time training: $70 base, $135 laser cutting, $250 CNC. 
 - AW: Send glass and plexi pricing to TS, CO
 - AW: Send Makerspace (CP) membership + training costs to LP, CO
 - AW: Set up monthly 30-min tech budget check-in
-- AW download to LP | recipts, 9k computer, Rhino isnt Lic, $1k a seat.
-- AW: Reach out on Rhino pricing, confirm with Austin | no aditional rhino costs. Seats: 10 R8, 10 R7, 2 R6, aditional seat is $995. Seats are floating, 10 R8 max.
+- AW download to LP | recipts, 9k computer, Rhino isn't Lic, $1k a seat.
+- AW: Reach out on Rhino pricing, confirm with Austin | no aditional rhino costs. Seats: 10 R8, 10 R7, 2 R6, additional seat is $995. Seats are floating, 10 R8 max.
 - AW: Get render machine, Apple Vision, 3D printer | Boxx render machine was ($9,000 not $5000)
 - created new teams account for claude teams with software@pflugerarchitects.com, phone number is austin W, LP is card at $150 / mo for 5 seats.
 - AW set up claude developer account | software@pflugerarchitects, no pass (email)
 - Github account | created software@pflugerarchitects.com  kk(otS0>H-9r<kRHY|Cc, need to add to IT Glue
-- Mapbox, | created account named pflugerarchtiects. email: software@pflugerarchitects.com, password is kk(otS0>H-9r<kRHY|Cc, need to add to IT Glue
+- Mapbox, | created account named pflugerarchitects. email: software@pflugerarchitects.com, password is kk(otS0>H-9r<kRHY|Cc, need to add to IT Glue
 - AW create CF account | software@pflugerarchitects.com veg72_pyvA3q6JU, deleter the developer@ account*- AW create SB account | software@pflugerarchitects.com -bQ98aK!kQ94pnT, deleted old org and requested deletion of account. project Pfluger_RB_Repo -c77.xSjc9v_RJc.
 - aw create resend account | software@pflugerarchitects.com X-khxUcD.fjcWV9
 - new apple cloud account first: software last: pfluger, 01/01/1972 software@pflugerarchitects.com
@@ -241,15 +241,15 @@ Provided project number breakdowns for R&B. LF said she emailed Matt (AW not CC'
 - Are we committed to this date? Will need unblocks to accomplish this.
 
 **Internal Launch** (10 min)
-- RB projects inner and outfacing need review will get the software from Grag, we need to get going. get the low items done. 
+- RB projects inner and outfacing need review will get the software from Crag, we need to get going. get the low items done. 
 - Ezra AI assistant and repo, pitch needs tech unblocks (reviewed with LP 1/7)
 - Who reviews? JS, CO, Me, BS, Others? Can we get tech unblocked?
 
 R&B purpose is to enhance the work' - CO
-secondary is expertice
-- in the application we will need to vet the projects and thier current schedule. 
-- The conversations will need to all go through th edirectors, they control the hours. 
-- peopel approving pitchs are CO, JS, BW, AW
+secondary is expertise
+- in the application we will need to vet the projects and their current schedule. 
+- The conversations will need to all go through the directors, they control the hours. 
+- people approving pitches are CO, JS, BW, AW
 
 **External Launch** (10 min) , there is going to be a new marketing director. 
 - 2025 Content sign-off (12 projects, About/Process pages)
@@ -269,10 +269,10 @@ secondary is expertice
 **Budgets**
  wont have $$ hours, budgets and expenses, we will make a bucket for RB. CO will regroup with Terry on the 2k hours.
 
-Tony is now the direct or design, will be learing the design shareouts.
+Tony is now the Director of Design, will be leading the design shareouts.
 
-There are now design forumns will be with the designers and planners to insipre people. 
-That day is TBD. directors and designers. adgenda is getting developed, RB will be aparts. 
+There are now design forums will be with the designers and planners to inspire people. 
+That day is TBD. directors and designers. agenda is getting developed, RB will be a part. 
 
 Need to let the Directors know about the RB before roll out. Give Tony a heads up, see what the days is. 
 After midwinter everyone will be in person. There will be a section that is a What's Next.
@@ -384,29 +384,29 @@ Let me know what works for their schedules this week or early next.
 - How much development do you want in 2026?
 
 **Meeting Notes:**
-pflugervill and delvalle, dripping springs, along with LHSID, Mannor may be a maybe, no burnet, also sheryland and burnet and mcallan. 
+Pflugerville and Del Valle, Dripping Springs, along with LHISD, Manor may be a maybe, no Burnet, also Sharyland and Burnet and McAllen. 
 JS wants to combine all the efforts. 
 we need to check with Blair on the level of detail, and resolution. 
-CMTA does performaci modeling, MEP engineer
+CMTA does performance modeling, MEP engineer
 Alpha does assessments and cost
 CMTA will tell us what combinations of alpha needs to get. 
-they can say if you swap and perforamnce compairisons. 
-so north start of the prism is to plan for a bond. the mainence and sub domain is secondary. 
+they can say if you swap and performance comparisons. 
+so north star of Prism is to plan for a bond (new builds only). Maintenance and sub-domain is not part of this and is not a focus.
 alpha is just spec level items. 
-HT told JS somthing about round up to the 10k. 
+HT told JS something about round up to the 10k. 
 verm is a flat % 
 
 **Attendees:**
 AW To have Clair send follow up email
 JS Wants to set up meeting week of 19th to go over 1/15 meeting and consolidated Cam work into it and get on a reoccurring maintenance loop with Verm to update tables. 
 Verm agreed to meeting on 2/4, they have not signed an NDA
-Need to mirage d1, DNA, mapbox
+Need to migrate D1, NDA, mapbox
 
  ---
 
 ### 01/15 - Meeting with school bond finder
 
-Alex.wickes@pflguerarchitects.com should have been set up. Password 43Bfjv-ad3.EQrP
+Alex.wickes@pflugerarchitects.com should have been set up. Password 43Bfjv-ad3.EQrP
 Are notifications for all of them or just the ones that updated
 CC not attend. CW, SW, TM attend. Amy Berd, director of client retention
 Api access, documentation, Costs, Limits
@@ -432,6 +432,25 @@ Hey all, Happy new years. Tony Schmitz did you have a time in mind to tackle thi
 **Agenda:**
 **Status:** TBD
 **Outcome:** _TBD_
+
+---
+
+### 4/6 - R&B Tech Tools Meeting
+**Attendees:** CO, CM, LP, LF, CB, DC, TP
+
+**Action Item Updates**
+- AI tools onboarding doc ready: "R:\RESEARCH AND BENCHMARKING\02_Resources\Reference Documentation\2026-AI-Tools-Onboarding.pdf"
+  - Covers: Claude, Claude Code, Gemini, MJ, Magnific, CapCut
+- LP and Crag expanding tool list beyond design domain to overall tech stack list - Per last meeting, list needing other production tools from Chad/TonyP.
+- RB List on RB site, can add to SharePoint
+- AI policy on SharePoint, need to refine?
+- Item from Design Forum: Claude and AI concerns (project checklist and using AI in production)
+
+**New Items**
+- Claude API usage: Revit-122 messages (9 days / 8 users), Repo-137 messages (25 users). ~$2-4/mo per user
+- Revit add-in update: research queries work well, model queries don't.
+- Dallas hitting Claude usage limits - need to set up a Dallas2 account
+- Google account and Apple accounts in vendor court
 
 ---
 
@@ -598,7 +617,7 @@ Directors oversee that it happens
 **The problem:** The person with the idea is at the bottom. They must convince up the chain to get hours. Directors "control" hours but don't initiate research. Principals are client-facing but aren't researching. The worker has vision but no agency.
 
 **Action Items**
-AW Cordinated with LF, LF sent email to Matt, AW to log all hours under Craft and Prduct.
+AW Coordinated with LF, LF sent email to Matt, AW to log all hours under Craft and Product.
 ---
 
 ### 2/15 Design Forum (NEW - per 1/8 meeting)

@@ -1,0 +1,125 @@
+# R&B AI Tools - IT Onboarding Guide
+
+**Purpose:** Step-by-step guide for IT to install and configure AI tools on a team member's workstation.
+**Credentials:** All account passwords are stored in IT Glue. Do not share passwords via email or chat.
+
+---
+
+## Before You Start
+
+Confirm the user has the following inboxes added to their Outlook:
+
+1. **apps@pflugerarchitects.com** - shared inbox for web-based AI tools
+2. **Office shared inbox** (e.g. PAAustin@, PADallas@, etc.) - used for Claude sign-in
+
+If either is missing, add them before proceeding.
+
+---
+
+## Desktop Installs
+
+### Claude Desktop
+
+Claude Desktop is the GUI app for conversational AI - used for writing, research, and analysis.
+
+1. Download from [claude.com/download](https://claude.com/download)
+2. IT runs the installer with **admin privileges**
+3. Launch the app
+4. Sign in with the **office-specific** Claude Teams account (see table below)
+5. Verify the user appears under the Pfluger Teams organization
+
+**Claude Office Logins:**
+
+| Office | Email |
+|--------|-------|
+| Austin | PAAustin@pflugerarchitects.com |
+| Dallas | PADallas@pflugerarchitects.com |
+| San Antonio | PASanAntonio@pflugerarchitects.com |
+| Houston | PAHouston@pflugerarchitects.com |
+| Corpus Christi | PACorpus@pflugerarchitects.com |
+
+Sign-in uses email verification (no password). Office users already have the shared inbox added to their Outlook, so they can approve the verification code themselves.
+
+**Master Admin/Org Account:** software@pflugerarchitects.com - Only use this for R&B development work requiring heavy Claude Code bandwidth. Not for general use.
+
+### Claude Code
+
+Claude Code is a CLI tool for software development - used by R&B developers only.
+
+1. Install Git: [git-scm.com/install](https://git-scm.com/install/)
+2. Install GitHub Desktop: [docs.github.com/en/desktop/installing-and-authenticating-to-github-desktop/installing-github-desktop](https://docs.github.com/en/desktop/installing-and-authenticating-to-github-desktop/installing-github-desktop)
+3. Install Node.js 18+: [nodejs.org/en/download](https://nodejs.org/en/download)
+4. Install Claude Code ([docs](https://code.claude.com/docs/en/quickstart)) - open PowerShell and run:
+   ```
+   irm https://claude.ai/install.ps1 | iex
+   ```
+5. Run `claude` to launch and follow the authentication prompt
+6. Sign in with the **office-specific** Claude Teams account (see table above)
+
+---
+
+## Web-Based Tools
+
+These tools run in the browser - no install required. Ensure the user can access the URL and sign in.
+
+**Note:** The tools below use apps@pflugerarchitects.com. IT may need to add the user to the apps@ inbox so they can receive verification emails.
+
+### Claude Online
+
+- **URL:** [claude.ai](https://claude.ai)
+- **Sign in:** Office-specific Claude Teams account (see office login table above)
+
+### Magnific
+
+AI image upscaling tool for enhancing renders and images.
+
+- **URL:** [magnific.ai](https://magnific.ai)
+- **Sign in:** apps@pflugerarchitects.com (shared account - see IT Glue for password)
+- **2FA required:** Contact Austin Nguyen or IT to complete the 2FA step
+
+### MidJourney
+
+AI image generation for concept imagery and visualization.
+
+- **URL:** [midjourney.com](https://midjourney.com)
+- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+- **2FA required:** Contact Austin Nguyen or IT to complete the 2FA step
+- **Access:** Also available via Discord integration
+
+### Google Gemini
+
+AI platform with multiple tools for image generation, 3D, and video.
+
+- **URL:** [gemini.google.com](https://gemini.google.com)
+- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+
+**Sub-tools available under Gemini:**
+
+| Tool | Purpose |
+|------|---------|
+| Nano Banana | AI image generation (4K) |
+| Genie 3 | 3D model generation |
+| Veo 3 | AI video generation (4-sec clips) |
+
+### CapCut Pro
+
+Video editing tool for project videos and presentations.
+
+- **URL:** [capcut.com](https://capcut.com)
+- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+- **Desktop app:** Also available as a desktop install from the same URL if preferred
+
+---
+
+## Account Summary
+
+| Tool | Type | Sign-In |
+|------|------|---------|
+| Claude Desktop | Install | Office account (see above) |
+| Claude Code | Install (CLI) | Office account (see above) |
+| Claude Online | Web | Office account (see above) |
+| Magnific | Web | apps@pfluger (IT Glue) |
+| MidJourney | Web | apps@pfluger (IT Glue) |
+| Google Gemini | Web | apps@pfluger (IT Glue) |
+| CapCut Pro | Web | apps@pfluger (IT Glue) |
+
