@@ -8,12 +8,10 @@ Step-by-step guide for IT to install and configure AI tools on a team member's w
 
 Confirm the user has the following inboxes added to their Outlook:
 
-1. **apps@pflugerarchitects.com** - shared inbox for web-based AI tools
+1. **apps@pflugerarchitects.com** - shared inbox for tools
 2. **Office shared inbox** (e.g. PAAustin@, PADallas@, etc.) - used for Claude sign-in
 
 ---
-
-## Desktop Installs
 
 ### Claude Desktop
 
@@ -24,6 +22,8 @@ Claude Desktop is the GUI app for conversational AI - used for writing, research
 3. Launch the app
 4. Sign in with the **office-specific** Claude Teams account (see table below)
 5. Verify the user appears under the Pfluger Teams organization
+- **Online:** [claude.ai](https://claude.ai) - same office account sign-in
+
 
 **Claude Office Logins:**
 
@@ -53,18 +53,6 @@ Claude Code is a CLI tool for software development - used by R&B developers only
 5. Run `claude` to launch and follow the authentication prompt
 6. Sign in with the **office-specific** Claude Teams account (see table above)
 
----
-
-## Web-Based Tools
-
-These tools run in the browser - no install required. Ensure the user can access the URL and sign in.
-
-**Note:** The tools below use apps@pflugerarchitects.com. IT may need to add the user to the apps@ inbox so they can receive verification emails.
-
-### Claude Online
-
-- **URL:** [claude.ai](https://claude.ai)
-- **Sign in:** Office-specific Claude Teams account (see office login table above)
 
 ### Magnific
 
@@ -98,6 +86,14 @@ AI platform with multiple tools for image generation, 3D, and video.
 | Genie 3 | 3D scene generation |
 | Veo 3 | AI video generation |
 
+### Figma
+
+Design and prototyping tool for architecture and UI work.
+
+- **URL:** [figma.com](https://www.figma.com)
+- **Sign in:** apps@pflugerarchitects.com, email 2FA
+- **Desktop app:** Download from [figma.com/downloads](https://www.figma.com/downloads/), IT runs the installer with **admin privileges**
+
 ### CapCut Pro
 
 Video editing tool for project videos and presentations.
@@ -106,17 +102,27 @@ Video editing tool for project videos and presentations.
 - **Sign in:** apps@pflugerarchitects.com, email 2FA
 - **Desktop app:** Also available as a desktop install from the same URL if preferred
 
----
+### Twinmotion
 
-## Account Summary
+Real-time 3D visualization tool for architectural rendering.
 
-| Tool | Type | Sign-In |
-|------|------|---------|
-| Claude Desktop | Install | Office account (see above) |
-| Claude Code | Install (CLI) | Office account (see above) |
-| Claude Online | Web | Office account (see above) |
-| Magnific | Web | apps@pflugerarchitects.com |
-| MidJourney | Web | apps@pflugerarchitects.com |
-| Google Gemini | Web | apps@pflugerarchitects.com |
-| CapCut Pro | Web | apps@pflugerarchitects.com |
+1. Download from [twinmotion.com/download](https://www.twinmotion.com/download)
+2. IT runs the installer with **admin privileges**
+3. Launch the app
+4. Sign in with **apps@pflugerarchitects.com**, email 2FA
 
+### Ezra Revit Add-In
+
+Custom AI assistant add-in for Autodesk Revit. Contact IT to install.
+
+1. Navigate to `R:\RESEARCH AND BENCHMARKING\02_Resources\Installs`
+2. Run **install-ezra.bat** with IT admin logged in
+3. Launch **Revit 2025**
+4. When prompted, click **Always Allow** to trust the add-in
+
+### Pfluger R&B Repository
+
+Pfluger Research and Benchmarking knowledgebase.
+
+- **URL:** [repository.pflugerarchitects.com](https://repository.pflugerarchitects.com)
+- **Sign in:** use Pfluger email, contact the R&B Team for a login.

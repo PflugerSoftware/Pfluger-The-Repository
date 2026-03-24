@@ -58,7 +58,6 @@ This document tracks how user are using Claude in architecture. Document what wo
 - **Component reuse** - Shared login/UI components with sibling project (Project Prism)
 - **CSV data processing** - Successfully imported and structured 15,876 lines of CRM/state data
 - **Strategic framework** - Tier-based BD strategies (Core Focus, Strategic Growth, Long-Range Nurture, Visibility Priority)
-- **Full production deployment** - Live at https://prism.pflugerarchitects.com with PHP/MySQL backend
 - **Revolutionary data architecture** - Two-tier Facilities→Projects model (8 facilities, 12 projects migrated)
 - **Multi-step wizards** - Project Builder Pro (6 steps) and Bond Builder Pro (4 steps) with form validation
 - **Interactive 3D mapping** - Mapbox GL integration with custom markers, project bubbles, terrain visualization
