@@ -1,7 +1,6 @@
-# R&B AI Tools - IT Onboarding Guide
+# AI Tools - IT Onboarding Guide
 
-**Purpose:** Step-by-step guide for IT to install and configure AI tools on a team member's workstation.
-**Credentials:** All account passwords are stored in IT Glue. Do not share passwords via email or chat.
+Step-by-step guide for IT to install and configure AI tools on a team member's workstation.
 
 ---
 
@@ -11,8 +10,6 @@ Confirm the user has the following inboxes added to their Outlook:
 
 1. **apps@pflugerarchitects.com** - shared inbox for web-based AI tools
 2. **Office shared inbox** (e.g. PAAustin@, PADallas@, etc.) - used for Claude sign-in
-
-If either is missing, add them before proceeding.
 
 ---
 
@@ -74,7 +71,7 @@ These tools run in the browser - no install required. Ensure the user can access
 AI image upscaling tool for enhancing renders and images.
 
 - **URL:** [magnific.ai](https://magnific.ai)
-- **Sign in:** apps@pflugerarchitects.com (shared account - see IT Glue for password)
+- **Sign in:** apps@pflugerarchitects.com, email 2FA
 - **2FA required:** Contact Austin Nguyen or IT to complete the 2FA step
 
 ### MidJourney
@@ -82,31 +79,31 @@ AI image upscaling tool for enhancing renders and images.
 AI image generation for concept imagery and visualization.
 
 - **URL:** [midjourney.com](https://midjourney.com)
-- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+- **Sign in:** apps@pflugerarchitects.com, email 2FA
 - **2FA required:** Contact Austin Nguyen or IT to complete the 2FA step
-- **Access:** Also available via Discord integration
+- **Access:** Also available via Discord
 
 ### Google Gemini
 
 AI platform with multiple tools for image generation, 3D, and video.
 
 - **URL:** [gemini.google.com](https://gemini.google.com)
-- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+- **Sign in:** apps@pflugerarchitects.com, email 2FA
 
 **Sub-tools available under Gemini:**
 
 | Tool | Purpose |
 |------|---------|
-| Nano Banana | AI image generation (4K) |
-| Genie 3 | 3D model generation |
-| Veo 3 | AI video generation (4-sec clips) |
+| Nano Banana | AI image generation |
+| Genie 3 | 3D scene generation |
+| Veo 3 | AI video generation |
 
 ### CapCut Pro
 
 Video editing tool for project videos and presentations.
 
 - **URL:** [capcut.com](https://capcut.com)
-- **Sign in:** apps@pflugerarchitects.com (see IT Glue for password)
+- **Sign in:** apps@pflugerarchitects.com, email 2FA
 - **Desktop app:** Also available as a desktop install from the same URL if preferred
 
 ---
@@ -118,8 +115,8 @@ Video editing tool for project videos and presentations.
 | Claude Desktop | Install | Office account (see above) |
 | Claude Code | Install (CLI) | Office account (see above) |
 | Claude Online | Web | Office account (see above) |
-| Magnific | Web | apps@pfluger (IT Glue) |
-| MidJourney | Web | apps@pfluger (IT Glue) |
-| Google Gemini | Web | apps@pfluger (IT Glue) |
-| CapCut Pro | Web | apps@pfluger (IT Glue) |
+| Magnific | Web | apps@pflugerarchitects.com |
+| MidJourney | Web | apps@pflugerarchitects.com |
+| Google Gemini | Web | apps@pflugerarchitects.com |
+| CapCut Pro | Web | apps@pflugerarchitects.com |
 
