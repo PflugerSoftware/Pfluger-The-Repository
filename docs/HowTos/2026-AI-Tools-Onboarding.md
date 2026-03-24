@@ -91,7 +91,7 @@ AI platform with multiple tools for image generation, 3D, and video.
 Design and prototyping tool for architecture and UI work.
 
 - **URL:** [figma.com](https://www.figma.com)
-- **Sign in:** apps@pflugerarchitects.com, email 2FA
+- **Sign in:** apps@pflugerarchitects.com, pass: >)b)T~=ftf71&2/^e\GU
 - **Desktop app:** Download from [figma.com/downloads](https://www.figma.com/downloads/), IT runs the installer with **admin privileges**
 
 ### CapCut Pro
@@ -99,7 +99,7 @@ Design and prototyping tool for architecture and UI work.
 Video editing tool for project videos and presentations.
 
 - **URL:** [capcut.com](https://capcut.com)
-- **Sign in:** apps@pflugerarchitects.com, email 2FA
+- **Sign in:** apps@pflugerarchitects.com, pass: >)b)T~=ftf71&2/^e\GU
 - **Desktop app:** Also available as a desktop install from the same URL if preferred
 
 ### Twinmotion
@@ -109,7 +109,7 @@ Real-time 3D visualization tool for architectural rendering.
 1. Download from [twinmotion.com/download](https://www.twinmotion.com/download)
 2. IT runs the installer with **admin privileges**
 3. Launch the app
-4. Sign in with **apps@pflugerarchitects.com**, email 2FA
+4. Sign in with **[user]@pflugerarchitects.com**, email 2FA
 
 ### Ezra Revit Add-In
 
