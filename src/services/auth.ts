@@ -34,10 +34,6 @@ export async function signOut() {
   return supabase.auth.signOut();
 }
 
-export async function signOutLocal() {
-  return supabase.auth.signOut({ scope: 'local' });
-}
-
 export async function getSession() {
   return supabase.auth.getSession();
 }
