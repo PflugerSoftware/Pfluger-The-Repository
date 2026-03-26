@@ -442,6 +442,17 @@ export function usePitchData() {
     return success;
   };
 
+  const handleDeletePitch = async (pitchId: string): Promise<boolean> => {
+    const success = await deletePitch(pitchId);
+    if (success) {
+      setMyPitches(prev => prev.filter(p => p.id !== pitchId));
+      if (activeDraftId === pitchId) {
+        resetPitch();
+      }
+    }
+    return success;
+  };
+
   return {
     authUser,
     currentUser,
@@ -476,5 +487,6 @@ export function usePitchData() {
     startDraft,
     resumeDraft,
     deleteDraft: handleDeleteDraft,
+    deletePitch: handleDeletePitch,
   };
 }

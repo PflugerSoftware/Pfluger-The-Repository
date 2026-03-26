@@ -94,6 +94,13 @@ const PitchSubmission: React.FC = () => {
     }
   };
 
+  const handleDeletePitch = async (pitchId: string) => {
+    await data.deletePitch(pitchId);
+    setSelectedPitch(null);
+    setIsEditingPitch(false);
+    setContentView('empty');
+  };
+
   const renderChoiceScreen = () => (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto pt-12">
       <div className="text-center mb-12">
@@ -184,6 +191,7 @@ const PitchSubmission: React.FC = () => {
             onAddComment={data.handleAddComment}
             onAddCollaborator={data.handleAddCollaborator}
             onRemoveCollaborator={data.handleRemoveCollaborator}
+            onDeletePitch={handleDeletePitch}
           />
         );
       case 'empty':

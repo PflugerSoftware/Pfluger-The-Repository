@@ -15,6 +15,7 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
+  Trash2,
 } from 'lucide-react';
 import { stripPitchTags, stripMarkdown } from '../../services/pitchAgent';
 import {
@@ -48,6 +49,7 @@ interface PitchReviewPanelProps {
   onAddComment: (pitchId: string) => void;
   onAddCollaborator: (pitchId: string, userId: string) => void;
   onRemoveCollaborator: (pitchId: string, userId: string) => void;
+  onDeletePitch?: (pitchId: string) => void;
   chatMessages?: Array<{ id: string; role: 'user' | 'assistant'; content: string }>;
 }
 
@@ -66,9 +68,11 @@ export function PitchReviewPanel({
   onAddComment,
   onAddCollaborator,
   onRemoveCollaborator,
+  onDeletePitch,
   chatMessages,
 }: PitchReviewPanelProps) {
   const [showChat, setShowChat] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const status = STATUS_CONFIG[pitch.status] || STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
   const scopeInfo = pitch.scopeTier ? SCOPE_TIERS[pitch.scopeTier] : null;
@@ -349,6 +353,35 @@ export function PitchReviewPanel({
                       </p>
                     )}
                   </div>
+                  {isEditingPitch && onDeletePitch && (
+                    <div className="pt-4 border-t border-gray-800/50">
+                      {showDeleteConfirm ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-red-400">Delete this pitch?</span>
+                          <button
+                            onClick={() => onDeletePitch(pitch.id)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-500 transition-colors"
+                          >
+                            Yes, delete
+                          </button>
+                          <button
+                            onClick={() => setShowDeleteConfirm(false)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setShowDeleteConfirm(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:bg-red-900/30 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Delete Pitch
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
           </div>
