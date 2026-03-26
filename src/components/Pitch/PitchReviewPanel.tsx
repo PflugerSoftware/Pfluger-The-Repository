@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import { stripPitchTags, stripMarkdown } from '../../services/pitchAgent';
 import {
-  RESEARCH_METHODS,
+  SCOPE_TIERS,
+  METHODOLOGIES,
   SCOPE_LABELS,
   calculateHoursPerWeek,
 } from '../../views/Pitch/usePitchData';
@@ -43,7 +44,6 @@ interface PitchReviewPanelProps {
   pitchCollaborators: DbUser[];
   allUsers: DbUser[];
   onUpdateField: (pitchId: string, field: string, value: string) => void;
-  onMethodChange: (pitchId: string, value: string) => void;
   onStatusChange: (pitchId: string, status: PitchStatus) => void;
   onAddComment: (pitchId: string) => void;
   onAddCollaborator: (pitchId: string, userId: string) => void;
@@ -62,7 +62,6 @@ export function PitchReviewPanel({
   pitchCollaborators,
   allUsers,
   onUpdateField,
-  onMethodChange,
   onStatusChange,
   onAddComment,
   onAddCollaborator,
@@ -72,9 +71,7 @@ export function PitchReviewPanel({
   const [showChat, setShowChat] = useState(false);
   const status = STATUS_CONFIG[pitch.status] || STATUS_CONFIG.draft;
   const StatusIcon = status.icon;
-  const methodInfo = pitch.scopeTier && pitch.methodology
-    ? RESEARCH_METHODS.find(m => m.scope === pitch.scopeTier && m.methodology === pitch.methodology)
-    : null;
+  const scopeInfo = pitch.scopeTier ? SCOPE_TIERS[pitch.scopeTier] : null;
   const scopeLabel = pitch.scopeTier ? SCOPE_LABELS[pitch.scopeTier] : null;
   const isMyComment = (comment: PitchComment) => comment.userId === currentUser?.id;
   const isAdmin = currentUser?.role === 'admin';
@@ -91,8 +88,7 @@ export function PitchReviewPanel({
         <div className="grid grid-cols-2 gap-6">
           {/* Left: Hero Card */}
           <div className="flex flex-col min-w-0">
-            {methodInfo && scopeLabel ? (
-              <div className={`flex flex-col rounded-2xl border ${
+            <div className={`flex flex-col rounded-2xl border ${
                 pitch.status === 'pending' ? 'bg-yellow-900/20 border-yellow-800' :
                 pitch.status === 'revise' ? 'bg-blue-900/20 border-blue-800' :
                 pitch.status === 'greenlit' ? 'bg-green-900/20 border-green-800' :
@@ -149,40 +145,46 @@ export function PitchReviewPanel({
                     )}
 
                     {isEditingPitch ? (
-                      <select
-                        value={pitch.scopeTier && pitch.methodology ? `${pitch.scopeTier}|${pitch.methodology}` : ''}
-                        onChange={(e) => onMethodChange(pitch.id, e.target.value)}
-                        className="bg-transparent text-white text-xs px-2 py-1 rounded-lg border-2 border-sky-500/50 focus:outline-none focus:border-sky-500"
-                      >
-                        <option value="">Select research method</option>
-                        <optgroup label="Simple (20-60 hours)">
-                          {RESEARCH_METHODS.filter(m => m.scope === 'simple').map(m => (
-                            <option key={m.value} value={m.value}>{m.methodology}</option>
+                      <>
+                        <select
+                          value={pitch.scopeTier || ''}
+                          onChange={(e) => onUpdateField(pitch.id, 'scopeTier', e.target.value)}
+                          className="bg-transparent text-white text-xs px-2 py-1 rounded-lg border-2 border-sky-500/50 focus:outline-none focus:border-sky-500"
+                        >
+                          <option value="">Scope</option>
+                          <option value="simple">Simple (20-60 hrs)</option>
+                          <option value="medium">Medium (60-120 hrs)</option>
+                          <option value="complex">Complex (120-200 hrs)</option>
+                        </select>
+                        <select
+                          value={pitch.methodology || ''}
+                          onChange={(e) => onUpdateField(pitch.id, 'methodology', e.target.value)}
+                          className="bg-transparent text-white text-xs px-2 py-1 rounded-lg border-2 border-sky-500/50 focus:outline-none focus:border-sky-500"
+                        >
+                          <option value="">Methodology</option>
+                          {METHODOLOGIES.map(m => (
+                            <option key={m} value={m}>{m}</option>
                           ))}
-                        </optgroup>
-                        <optgroup label="Medium (60-120 hours)">
-                          {RESEARCH_METHODS.filter(m => m.scope === 'medium').map(m => (
-                            <option key={m.value} value={m.value}>{m.methodology}</option>
-                          ))}
-                        </optgroup>
-                        <optgroup label="Complex (120-200 hours)">
-                          {RESEARCH_METHODS.filter(m => m.scope === 'complex').map(m => (
-                            <option key={m.value} value={m.value}>{m.methodology}</option>
-                          ))}
-                        </optgroup>
-                      </select>
+                        </select>
+                      </>
                     ) : (
                       <>
-                        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700">
-                          <Target className={`w-3 h-3 ${scopeLabel.color}`} />
-                          <span className={scopeLabel.color}>{scopeLabel.label}</span>
-                        </div>
-                        <div className="px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700 text-white">
-                          {methodInfo.methodology}
-                        </div>
-                        <div className="px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700 text-gray-400">
-                          {methodInfo.hours[0]}-{methodInfo.hours[1]} hrs
-                        </div>
+                        {scopeLabel && (
+                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700">
+                            <Target className={`w-3 h-3 ${scopeLabel.color}`} />
+                            <span className={scopeLabel.color}>{scopeLabel.label}</span>
+                          </div>
+                        )}
+                        {pitch.methodology && (
+                          <div className="px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700 text-white">
+                            {pitch.methodology}
+                          </div>
+                        )}
+                        {scopeInfo && (
+                          <div className="px-2.5 py-1 rounded-full text-xs bg-gray-800 border border-gray-700 text-gray-400">
+                            {scopeInfo.hours[0]}-{scopeInfo.hours[1]} hrs
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -349,11 +351,6 @@ export function PitchReviewPanel({
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                <p className="text-sm">Select a research method to see pitch details</p>
-              </div>
-            )}
           </div>
 
           {/* Right: Comments */}

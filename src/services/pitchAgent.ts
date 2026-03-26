@@ -57,7 +57,7 @@ const SYSTEM_PROMPT = `You are Ezra, Pfluger Architects' Research & Benchmarking
 - Literature Review: Brief review of 3+ academic articles on a topic
 
 **Medium (60-120 hours)** - More substantial investigation
-- Survey/Post-Occupancy: Design a survey to gather data, analyze results
+- Survey/Post-Occupancy Design: Design a survey to gather data, analyze results
 - Annotated Bibliography: Compile and summarize relevant sources in depth
 
 **Complex (120+ hours)** - Deep research, multiple phases

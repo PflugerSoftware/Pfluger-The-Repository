@@ -26,21 +26,35 @@ import {
   type User as DbUser,
 } from '../../services/pitchService';
 
-// Combined scope + methodology options (4 hours/week = timeline calculation)
-export const RESEARCH_METHODS = [
-  { value: 'simple|Infographic Creation', scope: 'simple', methodology: 'Infographic Creation', hours: [20, 60], weeks: [5, 15] },
-  { value: 'simple|Expert Interview', scope: 'simple', methodology: 'Expert Interview', hours: [20, 60], weeks: [5, 15] },
-  { value: 'simple|Literature Review', scope: 'simple', methodology: 'Literature Review', hours: [20, 60], weeks: [5, 15] },
-  { value: 'medium|Survey/Post-Occupancy Design', scope: 'medium', methodology: 'Survey/Post-Occupancy Design', hours: [60, 120], weeks: [15, 30] },
-  { value: 'medium|Annotated Bibliography', scope: 'medium', methodology: 'Annotated Bibliography', hours: [60, 120], weeks: [15, 30] },
-  { value: 'complex|Case Study Analysis', scope: 'complex', methodology: 'Case Study Analysis', hours: [120, 200], weeks: [30, 50] },
-  { value: 'complex|Experimental Design', scope: 'complex', methodology: 'Experimental Design', hours: [120, 200], weeks: [30, 50] },
-  { value: 'complex|Long-form Whitepaper', scope: 'complex', methodology: 'Long-form Whitepaper', hours: [120, 200], weeks: [30, 50] },
+// Scope tiers define hour/week ranges
+export const SCOPE_TIERS: Record<string, { hours: [number, number]; weeks: [number, number] }> = {
+  simple:  { hours: [20, 60],   weeks: [5, 15] },
+  medium:  { hours: [60, 120],  weeks: [15, 30] },
+  complex: { hours: [120, 200], weeks: [30, 50] },
+};
+
+// Methodologies are independent of scope - any can pair with any scope
+export const METHODOLOGIES = [
+  'Infographic Creation',
+  'Expert Interview',
+  'Literature Review',
+  'Survey/Post-Occupancy Design',
+  'Annotated Bibliography',
+  'Case Study Analysis',
+  'Experimental Design',
+  'Long-form Whitepaper',
 ];
 
-export const getMethodInfo = (value: string) => RESEARCH_METHODS.find(m => m.value === value);
-
-const formatTimeline = (weeks: [number, number]) => `${weeks[0]}-${weeks[1]} weeks`;
+// All combinations of scope + methodology (used by PitchBuilder progress sidebar)
+export const RESEARCH_METHODS = Object.entries(SCOPE_TIERS).flatMap(([scope, info]) =>
+  METHODOLOGIES.map(m => ({
+    value: `${scope}|${m}`,
+    scope,
+    methodology: m,
+    hours: info.hours,
+    weeks: info.weeks,
+  }))
+);
 
 export const calculateHoursPerWeek = (scope: string, timeline: string): number => {
   const weeksMatch = timeline.match(/(\d+)(?:-(\d+))?\s*weeks?/i);
@@ -48,9 +62,9 @@ export const calculateHoursPerWeek = (scope: string, timeline: string): number =
   const minWeeks = parseInt(weeksMatch[1]);
   const maxWeeks = weeksMatch[2] ? parseInt(weeksMatch[2]) : minWeeks;
   const avgWeeks = (minWeeks + maxWeeks) / 2;
-  const methodInfo = RESEARCH_METHODS.find(m => m.scope === scope);
-  if (!methodInfo) return 4;
-  const avgHours = (methodInfo.hours[0] + methodInfo.hours[1]) / 2;
+  const scopeInfo = SCOPE_TIERS[scope];
+  if (!scopeInfo) return 4;
+  const avgHours = (scopeInfo.hours[0] + scopeInfo.hours[1]) / 2;
   return Math.round(avgHours / avgWeeks);
 };
 
@@ -324,18 +338,17 @@ export function usePitchData() {
   };
 
   const handleUpdatePitchField = async (pitchId: string, field: string, value: string) => {
+    // When scope changes, auto-update timeline to match
+    if (field === 'scopeTier' && value && SCOPE_TIERS[value]) {
+      const weeks = SCOPE_TIERS[value].weeks;
+      const timeline = `${weeks[0]}-${weeks[1]} weeks`;
+      setMyPitches(prev => prev.map(p => p.id === pitchId ? { ...p, scopeTier: value, timeline } : p));
+      await updatePitch(pitchId, { scopeTier: value, timeline });
+      return;
+    }
     setMyPitches(prev => prev.map(p => p.id === pitchId ? { ...p, [field]: value } : p));
     const dbField = field === 'researchIdea' ? 'researchIdea' : field === 'scopeTier' ? 'scopeTier' : field;
     await updatePitch(pitchId, { [dbField]: value });
-  };
-
-  const handleMethodChange = async (pitchId: string, combinedValue: string) => {
-    const methodInfo = getMethodInfo(combinedValue);
-    const updates = methodInfo
-      ? { scopeTier: methodInfo.scope, methodology: methodInfo.methodology, timeline: formatTimeline(methodInfo.weeks as [number, number]) }
-      : { scopeTier: '', methodology: '', timeline: '' };
-    setMyPitches(prev => prev.map(p => p.id === pitchId ? { ...p, ...updates } : p));
-    await updatePitch(pitchId, updates);
   };
 
   const handleStatusChange = async (pitchId: string, newStatus: PitchStatus) => {
@@ -455,7 +468,6 @@ export function usePitchData() {
     handleSubmit,
     handleClaimGreenlit,
     handleUpdatePitchField,
-    handleMethodChange,
     handleStatusChange,
     handleAddComment,
     handleAddCollaborator,

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { fetchUserProfile, signIn, signOut, getSession, onAuthStateChange, type UserProfile } from '../../services/auth';
+import { fetchUserProfile, signIn, signOut, signOutLocal, getSession, onAuthStateChange, type UserProfile } from '../../services/auth';
 
 type User = UserProfile;
 
@@ -28,6 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsAuthenticated(true);
         }
       }
+      setLoading(false);
+    }).catch(async (err) => {
+      console.warn('Session recovery failed, clearing stale session:', err);
+      try { await signOutLocal(); } catch { /* ignore */ }
       setLoading(false);
     });
 
