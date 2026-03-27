@@ -75,20 +75,21 @@ The Repository operates in two modes controlled by authentication state:
 
 ### Authentication Flow
 
-Authentication uses **Supabase Auth** (server-side JWT sessions), managed through `AuthContext.tsx`:
+Authentication uses **Supabase Auth** with non-persistent sessions, managed through `AuthContext.tsx`:
 - Users sign in with email + password via `supabase.auth.signInWithPassword()`
 - Supabase Auth handles password hashing, JWT issuance, and session management
-- Session persisted via Supabase (httpOnly cookies/localStorage managed by the SDK)
-- Access tokens auto-refresh (~1hr access token, ~7 days refresh token)
-- On login, user profile (name, role, office) fetched from `users` table
+- **Sessions are NOT persisted** (`persistSession: false`) - users must log in each visit
+- This eliminates stale token refresh deadlocks that previously caused blank screens on page load
+- JWT auto-refreshes during an active session but is lost on page refresh/close
+- On login, `onAuthStateChange` fires `SIGNED_IN`, profile fetched from `users` table
+- Two Supabase clients: `supabase` (main, carries auth state) and `supabaseAnon` (never has auth, used for surveys)
 - `auth.uid()` in Supabase matches `users.id` (same UUID), enabling RLS policies
 - Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
-- 17 users across Austin, San Antonio, and Dallas offices
+- 20 users across Austin, San Antonio, Dallas, and Houston offices
 - Login page at `/login`, accessed via "Team Sign In" button
 - Upon login, internal views appear in navigation
 - RLS policies enforce access: public tables readable by anyone, internal tables require auth
-- Migration script: `scripts/migrate-to-supabase-auth.ts` (requires `SUPABASE_SERVICE_ROLE_KEY`)
-- RLS policies: `scripts/apply-rls-policies.sql`
+- Confidential projects blocked from direct URL access for unauthenticated users (`resolveProjectIdentifier` checks `is_confidential`)
 - Will migrate to Azure SSO in the future
 
 ### Data Architecture
@@ -123,8 +124,11 @@ Project dashboards are built from composable blocks stored in the `project_block
 3. `components/blocks/types.ts` — TypeScript interfaces for all block types and data shapes
 4. `views/projects/DynamicProjectDashboard.tsx` — loads config and renders `ProjectDashboard`
 
-**Available block types (21):**
-`section`, `stat-grid`, `bar-chart`, `donut-chart`, `line-chart`, `comparison-table`, `image-gallery`, `text-content`, `timeline`, `key-findings`, `sources`, `tool-comparison`, `case-study-card`, `workflow-steps`, `scenario-bar-chart`, `cost-builder`, `survey-rating`, `feedback-summary`, `quotes`, `activity-rings`, `product-options`
+**Available block types (22):**
+`section`, `stat-grid`, `bar-chart`, `donut-chart`, `line-chart`, `comparison-table`, `image-gallery`, `text-content`, `timeline`, `key-findings`, `sources`, `tool-comparison`, `case-study-card`, `workflow-steps`, `scenario-bar-chart`, `cost-builder`, `survey-rating`, `feedback-summary`, `quotes`, `activity-rings`, `product-options`, `survey-map`
+
+- `survey-map`: Interactive map analytics block with 3D/satellite toggle, pin markers, IDW-interpolated sentiment contour overlay, question filter, and response stats. Uses Mapbox GL JS.
+- `line-chart`: Multi-series line chart with animated path drawing, hover tooltips, and axis labels. Built with SVG and Framer Motion.
 
 **Block data is DB-only** — no block content lives in code. To add/modify blocks, update the `project_blocks` table in Supabase. See `docs/R&B-Adding-a-New-Project.md` for the full guide including all block type JSON schemas.
 
@@ -144,11 +148,19 @@ Project dashboards are built from composable blocks stored in the `project_block
 - **Config:** `src/config/storage.ts` — `getStorageUrl()` transforms local paths to Supabase URLs
 - **Usage:** Block data can reference images as full URLs (pass-through) or local paths (transformed by `getStorageUrl`)
 
+### Navigation
+
+The top navbar (`TopNavbar.tsx`) has a hover-expand dropdown system:
+- **Explore dropdown**: left column has hardcoded featured items, right column shows projects grouped by year **dynamically loaded from DB**
+- **Public users** see: campus, explore, contact, about
+- **Authenticated users** additionally see: repository, pitch
+- Project list in explore dropdown respects `is_confidential` - public users only see non-confidential projects
+
 ### Component Organization
 
 **System/** - Core infrastructure
 - `ThemeManager.tsx` - Pfluger brand colors and theme utilities
-- `AuthContext.tsx` - Authentication state management
+- `AuthContext.tsx` - Authentication state management (non-persistent sessions)
 - `LoginModal.tsx` - Login UI component
 
 **Views/** - Top-level page components
@@ -241,7 +253,7 @@ src/
 ├── services/
 │   └── projects.ts                      # PROJECT_METADATA + block loader
 ├── config/
-│   ├── supabase.ts                      # Supabase client
+│   ├── supabase.ts                      # Supabase clients (supabase + supabaseAnon)
 │   ├── storage.ts                       # getStorageUrl() helper
 │   └── mapbox.ts                        # Mapbox access token
 ├── data/
@@ -304,12 +316,12 @@ The Research Campus map (ResearchMap.tsx) uses Mapbox GL JS with:
 
 ### Confidential Projects
 
-Projects X25-RB09, X25-RB10, and X25-RB11 are marked confidential:
-- Gray gradient background
-- Dashed border
-- Lock icon instead of category icon
-- "CONFIDENTIAL" badge in lists
-- Special styling in detail panels
+Projects marked `is_confidential = true` (e.g. X25-RB09, X25-RB10, X25-RB11, X00-DEMO, X25-RB02, X26-RB08):
+- **Hidden from public views**: filtered out by `loadProjects()` query (`is_confidential = false`)
+- **Blocked from direct URL access**: `resolveProjectIdentifier()` checks `is_confidential` and returns null for unauthenticated users
+- **Hidden from nav**: explore dropdown dynamically loads from DB, only showing non-confidential projects for public users
+- **Authenticated users** see all projects including confidential in nav and can access via URL
+- Gray gradient background, dashed border, lock icon, "CONFIDENTIAL" badge in lists
 
 ### Color System
 
@@ -357,7 +369,7 @@ When implementing features:
 
 ### Project Data Updates
 
-To add/modify research projects, update the Supabase `projects` and `project_blocks` tables. See `docs/R&B-Adding-a-New-Project.md` for the full guide including schema, all 21 block type JSON schemas, valid field values, RAG fields, and SQL templates.
+To add/modify research projects, update the Supabase `projects` and `project_blocks` tables. See `docs/R&B-Adding-a-New-Project.md` for the full guide including schema, all 22 block type JSON schemas, valid field values, RAG fields, and SQL templates.
 
 ### Future Enhancements (Planned)
 

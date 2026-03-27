@@ -129,7 +129,7 @@ INSERT INTO "public"."projects" (
 |--------|------|----------|-------|
 | `id` | text | yes | Unique block ID, e.g. `x26-rb01-section-intro` |
 | `project_id` | text | yes | FK to `projects.id` — must exist first |
-| `block_type` | text | yes | One of 21 block types (see below) |
+| `block_type` | text | yes | One of 22 block types (see below) |
 | `block_order` | int | yes | Sequential display order starting at 1 |
 | `data` | jsonb | yes | Block-specific JSON content (see schemas below) |
 | `summary` | text | no | RAG: short summary for AI search |

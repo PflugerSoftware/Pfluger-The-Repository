@@ -28,12 +28,17 @@ function getCategoryImage(category: string): string {
   return `https://images.unsplash.com/photo-${imageMap[category] || '1497366216548-37526070297c'}?w=800`;
 }
 
-export async function loadProjects(): Promise<ResearchProject[]> {
-  const { data, error } = await supabase
+export async function loadProjects(includeConfidential = false): Promise<ResearchProject[]> {
+  let query = supabase
     .from('projects')
     .select('id, title, description, category, phase, latitude, longitude, start_date, completion_date, office, image_url')
-    .eq('is_confidential', false)
     .order('start_date', { ascending: false });
+
+  if (!includeConfidential) {
+    query = query.eq('is_confidential', false);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error loading projects from Supabase:', error);

@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, LogOut } from 'lucide-react';
 import { useAuth } from '../System/AuthContext';
+import { useProjects } from '../../context/ProjectsContext';
+import { loadProjects } from '../../data/loadProjects';
+import type { ResearchProject } from '../../data/loadProjects';
 import { getInitials } from '../../lib/utils';
 
 interface SubItem {
@@ -21,35 +24,6 @@ interface NavSection {
 interface TopNavbarProps {
   onLogoClick: () => void;
 }
-
-// Work items organized by year
-const WORK_BY_YEAR = [
-  {
-    year: '2026',
-    projects: [
-      { id: 'X26-RB01', title: 'Midland Furniture Pilot' },
-      { id: 'X26-RB08', title: 'Lee College Campus Survey' }
-    ]
-  },
-  {
-    year: '2025',
-    projects: [
-      { id: 'X25-RB01', title: 'Sanctuary Spaces' },
-      { id: 'X25-RB02', title: 'Modulizer Part 2' },
-      { id: 'X25-RB03', title: 'A4LE Design Awards' },
-      { id: 'X25-RB05', title: 'Mass Timber' },
-      { id: 'X25-RB06', title: 'Timberlyne Study' },
-      { id: 'X25-RB08', title: 'Modulizer Part 1' },
-      { id: 'X25-RB13', title: 'CTE Design Echos' }
-    ]
-  },
-  {
-    year: '2024',
-    projects: [
-      { id: 'X24-RB01', title: 'Immersive Learning' }
-    ]
-  },
-];
 
 const EXPLORE_ITEMS = [
   'Mass Timber',
@@ -116,8 +90,36 @@ const REPO_SECTION: NavSection = {
 
 export function TopNavbar({ onLogoClick }: TopNavbarProps) {
   const { logout, isAuthenticated, user } = useAuth();
+  const { projects: publicProjects } = useProjects();
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [allProjects, setAllProjects] = useState<ResearchProject[]>([]);
+
+  // When authenticated, load all projects (including confidential)
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadProjects(true).then(setAllProjects);
+    } else {
+      setAllProjects([]);
+    }
+  }, [isAuthenticated]);
+
+  const navProjects = isAuthenticated ? allProjects : publicProjects;
+
+  // Build work-by-year from projects, sorted by year descending
+  const workByYear = useMemo(() => {
+    const yearMap = new Map<string, { id: string; title: string }[]>();
+    for (const p of navProjects) {
+      const match = p.id.match(/^X(\d{2})-/);
+      if (!match) continue;
+      const year = `20${match[1]}`;
+      if (!yearMap.has(year)) yearMap.set(year, []);
+      yearMap.get(year)!.push({ id: p.id, title: p.title });
+    }
+    return [...yearMap.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([year, projs]) => ({ year, projects: projs }));
+  }, [navProjects]);
 
   const handleAuthClick = () => {
     if (isAuthenticated) {
@@ -278,7 +280,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                     <div className="flex-1">
                       <p className="text-xs text-gray-500 mb-4 tracking-wide">work</p>
                       <div className="flex gap-10">
-                        {WORK_BY_YEAR.map((yearGroup, yi) => (
+                        {workByYear.map((yearGroup, yi) => (
                           <motion.div
                             key={yearGroup.year}
                             initial={{ opacity: 0, x: -10 }}

@@ -37,6 +37,7 @@ import { showcaseConfig } from './data/projects/X00-block-showcase/project/showc
 function ProjectOverlay() {
   const { projectId: identifier } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [resolvedId, setResolvedId] = useState<string | null>(null);
   const [resolving, setResolving] = useState(true);
 
@@ -45,7 +46,7 @@ function ProjectOverlay() {
       navigate('/');
       return;
     }
-    resolveProjectIdentifier(identifier).then(id => {
+    resolveProjectIdentifier(identifier, isAuthenticated).then(id => {
       if (id) {
         setResolvedId(id);
       } else {

@@ -170,24 +170,37 @@ export async function getProjectConfig(projectId: string): Promise<ProjectConfig
 
 // Resolve a URL identifier (project ID or slug) to a project ID
 // Returns the project ID if found, null if not found
-export async function resolveProjectIdentifier(identifier: string): Promise<string | null> {
-  // Fast path: check if it's a known project ID
+// When isAuthenticated is false, confidential projects return null
+export async function resolveProjectIdentifier(identifier: string, isAuthenticated = false): Promise<string | null> {
+  // Try to resolve the identifier to a project ID
+  let projectId: string | null = null;
+
   if (identifier in PROJECT_METADATA) {
-    return identifier;
+    projectId = identifier;
+  } else {
+    // Slug lookup
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id')
+      .eq('slug', identifier)
+      .single();
+
+    if (error || !data) return null;
+    projectId = data.id;
   }
 
-  // Slow path: query Supabase for a matching slug
-  const { data, error } = await supabase
-    .from('projects')
-    .select('id')
-    .eq('slug', identifier)
-    .single();
+  // Check confidentiality for unauthenticated users
+  if (!isAuthenticated && projectId) {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('is_confidential')
+      .eq('id', projectId)
+      .single();
 
-  if (error || !data) {
-    return null;
+    if (error || data?.is_confidential) return null;
   }
 
-  return data.id;
+  return projectId;
 }
 
 // Get all available project IDs
