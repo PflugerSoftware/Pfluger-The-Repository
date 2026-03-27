@@ -57,7 +57,11 @@ export default function Login({ onSuccess }: LoginProps) {
               exit={{ opacity: 0 }}
             >
               <h1 className="text-3xl font-bold text-white text-center">Sign In</h1>
+<<<<<<< HEAD
               <p className="text-gray-500 text-center mt-2 mb-10">Ezra will email you a login link</p>
+=======
+              <p className="text-gray-500 text-center mt-2 mb-10">We'll email you a login link</p>
+>>>>>>> f21ffcfc1594c7cbb48a17e55c97c04c189ce4e1
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <input
