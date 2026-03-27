@@ -40,7 +40,8 @@ export type BlockType =
   | 'feedback-summary'
   | 'quotes'
   | 'activity-rings'
-  | 'product-options';
+  | 'product-options'
+  | 'survey-map';
 
 // Maps each BlockType to its corresponding data interface
 export type BlockDataMap = {
@@ -65,6 +66,7 @@ export type BlockDataMap = {
   'quotes': QuotesData;
   'activity-rings': ActivityRingsData;
   'product-options': ProductOptionsData;
+  'survey-map': SurveyMapData;
 };
 
 // Discriminated union: narrows `data` type based on `type` field
@@ -409,4 +411,13 @@ export interface ProductOptionsData {
   lines: ProductLine[];
   columns?: 2 | 3 | 4;
   showSpecs?: boolean;
+}
+
+// Survey Map Block - live analytics map with pins/heatmap
+export interface SurveyMapData {
+  survey_id: string;
+  map_center_lat: number;
+  map_center_lng: number;
+  map_zoom: number;
+  default_view?: 'pins' | 'heatmap';
 }

@@ -27,6 +27,7 @@ const AboutProcess = lazy(() => import('./views/About/AboutProcess'));
 const AboutAI = lazy(() => import('./views/About/AboutAI'));
 const AboutTools = lazy(() => import('./views/About/AboutTools'));
 const AboutSources = lazy(() => import('./views/About/AboutSources'));
+const SurveyPage = lazy(() => import('./views/Survey/SurveyPage'));
 
 // Project dashboards (used in overlay route)
 import { ProjectDashboard, DynamicProjectDashboard } from './views/projects';
@@ -204,12 +205,29 @@ function AppContent() {
   );
 }
 
+/** Routes survey paths to full-screen layout (no navbar), everything else to AppContent */
+function AppRoutes() {
+  const location = useLocation();
+
+  if (location.pathname.startsWith('/survey/')) {
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-background"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
+        <Routes>
+          <Route path="/survey/:slug" element={<SurveyPage />} />
+        </Routes>
+      </Suspense>
+    );
+  }
+
+  return <AppContent />;
+}
+
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          <AppContent />
+          <AppRoutes />
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>

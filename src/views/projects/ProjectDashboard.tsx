@@ -41,7 +41,7 @@ export default function ProjectDashboard({ config, onBack }: ProjectDashboardPro
       <main className="py-8">
         {config.blocks.map((block) => {
           // Full-bleed blocks render without container constraints
-          const isFullBleed = block.type === 'image-gallery';
+          const isFullBleed = block.type === 'image-gallery' || block.type === 'survey-map';
           // Extended blocks need overflow visible for peek effect
           const isExtended = block.type === 'case-study-card';
 

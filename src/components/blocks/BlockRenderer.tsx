@@ -22,6 +22,7 @@ const FeedbackSummaryBlock = lazy(() => import('./FeedbackSummaryBlock').then(m 
 const QuotesBlock = lazy(() => import('./QuotesBlock').then(m => ({ default: m.QuotesBlock })));
 const ActivityRingsBlock = lazy(() => import('./ActivityRingsBlock').then(m => ({ default: m.ActivityRingsBlock })));
 const ProductOptionsBlock = lazy(() => import('./ProductOptionsBlock').then(m => ({ default: m.ProductOptionsBlock })));
+const SurveyMapBlock = lazy(() => import('./SurveyMapBlock').then(m => ({ default: m.SurveyMapBlock })));
 
 const BlockFallback = () => (
   <div className="h-24 bg-card/50 rounded-xl animate-pulse" />
@@ -74,6 +75,8 @@ export function BlockRenderer({ block }: BlockRendererProps) {
         return <ActivityRingsBlock data={block.data} />;
       case 'product-options':
         return <ProductOptionsBlock data={block.data} />;
+      case 'survey-map':
+        return <SurveyMapBlock data={block.data} />;
       case 'line-chart':
         return (
           <div className="p-4 bg-card border border-card rounded-xl text-gray-400 text-sm">

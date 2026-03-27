@@ -2,7 +2,61 @@
 
 **Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
-## Handoff Notes (Mar 26, 2026)
+## Handoff Notes (Mar 27, 2026)
+
+**Latest Deploy:** https://repository.pflugerarchitects.com
+
+### Survey System - Generic Map-Based Surveys
+
+Built a reusable survey engine that supports map-based and non-map questions. First deployment: **X26-RB08 Lee College Campus Survey**.
+
+**Survey Page** (`/survey/:slug`):
+- Full-screen Mapbox map with floating glass sidebar
+- Step-through questions with progress bar
+- Map questions let users drop pins (green/yellow/red) with notes
+- Non-map questions dim the map and focus the sidebar
+- Collects first name + role (student/parent/teacher/staff/other)
+- No login required - write-only RLS for anonymous users
+- All text inputs sanitized via DOMPurify (XSS prevention)
+- Live at: `/survey/LeeCollegeMapSurveySpring2026`
+
+**Survey Map Block** (new block type: `survey-map`):
+- Analytics view on the project dashboard
+- Interactive map with pins/heatmap toggle
+- Glass sidebar with live stats: response counts, role breakdown, pin sentiment, answer distributions
+- Filter by question - all graphs update dynamically
+- Fetches live data from survey tables
+
+**Database** (5 new tables):
+- `surveys` - survey config (title, slug, map center, active flag)
+- `survey_questions` - question definitions (type, options, map-based, max pins/selections)
+- `survey_responses` - respondent records (name, role, completion tracking)
+- `survey_answers` - answer data (choices array or free text)
+- `survey_pins` - map pins (lat/lng, green/yellow/red, notes)
+- RLS: anonymous INSERT only on responses/answers/pins, authenticated SELECT for team
+
+**URL Structure:**
+```
+/survey/:slug    -> Full-screen survey (no navbar, public)
+/explore/X26-RB08 -> Project dashboard with survey-map analytics block
+```
+
+**Files Added:**
+- `supabase/migrations/20260327_create_survey_tables.sql`
+- `src/services/surveyService.ts`
+- `src/views/Survey/SurveyPage.tsx` + 7 sub-components
+- `src/components/blocks/SurveyMapBlock.tsx`
+
+**Files Modified:**
+- `src/App.tsx` - survey route outside navbar layout
+- `src/components/blocks/types.ts` - survey-map block type
+- `src/components/blocks/BlockRenderer.tsx` - survey-map case
+- `src/services/projects.ts` - X26-RB08 metadata
+- `src/views/projects/ProjectDashboard.tsx` - full-bleed for survey-map
+
+---
+
+## Previous Handoff Notes (Mar 26, 2026)
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
 
@@ -69,6 +123,7 @@ Public Routes:
 /campus                        → Research Campus Map
 /explore                       → Portfolio Gallery
 /explore/:projectId            → Project Dashboard (e.g., /explore/X25-RB01)
+/survey/:slug                  → Survey Page (e.g., /survey/LeeCollegeMapSurveySpring2026)
 /contact                       → Contact Form
 /about                         → About R&B
 /about/research&benchmarking   → R&B Overview

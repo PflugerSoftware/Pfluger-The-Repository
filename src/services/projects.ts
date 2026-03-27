@@ -103,6 +103,16 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
     totalHours: 20,
     accentColor: '#B5BD00',
   },
+  'X26-RB08': {
+    id: 'X26-RB08',
+    title: 'Lee College Campus Survey',
+    code: 'X26-RB08',
+    subtitle: 'Interactive Campus Life Map Survey',
+    category: 'campus-life',
+    researcher: 'Alexander Wickes',
+    totalHours: 40,
+    accentColor: '#B5BD00',
+  },
 };
 
 // Database block row type
