@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { fetchUserProfile, signIn, signOut, onAuthStateChange, type UserProfile } from '../../services/auth';
+import { fetchUserProfile, sendMagicLink, signOut, onAuthStateChange, type UserProfile } from '../../services/auth';
 
 type User = UserProfile;
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  sendLink: (email: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -19,7 +19,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { data: { subscription } } = onAuthStateChange(
       async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
+          // Clear magic link tokens from URL so logout actually works
+          if (window.location.hash.includes('access_token')) {
+            window.history.replaceState(null, '', window.location.pathname);
+          }
           const profile = await fetchUserProfile(session.user.email || '');
           if (profile) {
             setUser(profile);
@@ -37,31 +41,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    try {
-      const { data, error } = await signIn(email, password);
-
-      if (error) {
-        return { success: false, error: error.message };
-      }
-
-      if (!data.user) {
-        return { success: false, error: 'Login failed' };
-      }
-
-      const profile = await fetchUserProfile(data.user.email || '');
-      if (!profile) {
-        await signOut();
-        return { success: false, error: 'Account not found in team directory' };
-      }
-
-      setUser(profile);
-      setIsAuthenticated(true);
-      return { success: true };
-    } catch (err) {
-      console.error('Login error:', err);
-      return { success: false, error: 'An unexpected error occurred' };
+  const sendLink = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    const { error } = await sendMagicLink(email);
+    if (error) {
+      return { success: false, error: error.message };
     }
+    return { success: true };
   };
 
   const logout = async () => {
@@ -71,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, sendLink, logout }}>
       {children}
     </AuthContext.Provider>
   );

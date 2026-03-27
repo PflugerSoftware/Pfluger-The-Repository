@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { LogIn, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../components/System/AuthContext';
 
 interface LoginProps {
@@ -8,25 +7,36 @@ interface LoginProps {
 }
 
 export default function Login({ onSuccess }: LoginProps) {
-  const { login } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { isAuthenticated, sendLink } = useAuth();
+  const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  if (isAuthenticated) {
+    onSuccess();
+    return null;
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setIsLoading(true);
 
-    const result = await login(username, password);
+    const cleanEmail = email.toLowerCase().trim();
 
-    if (result.success) {
-      onSuccess();
-    } else {
-      setError(result.error || 'Invalid email or password');
+    if (!cleanEmail.endsWith('@pflugerarchitects.com')) {
+      setError('Please use your Pfluger Architects email');
+      return;
     }
 
+    setIsLoading(true);
+    const result = await sendLink(cleanEmail);
+
+    if (result.success) {
+      setSent(true);
+    } else {
+      setError(result.error || 'Failed to send login link');
+    }
     setIsLoading(false);
   };
 
@@ -36,80 +46,65 @@ export default function Login({ onSuccess }: LoginProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
+        className="w-full max-w-sm"
       >
-        <div className="bg-card border border-card rounded-lg p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-sky-500/10 mb-4">
-              <LogIn className="w-6 h-6 text-sky-500" />
-            </div>
-            <h1 className="text-2xl font-bold text-white">Team Sign In</h1>
-            <p className="text-gray-400 mt-2">Access internal features</p>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1.5">
-                Email
-              </label>
-              <input
-                id="username"
-                type="email"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-2.5 bg-background border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                placeholder="Enter your email"
-                required
-                autoComplete="username"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2.5 bg-background border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all"
-                placeholder="Enter password"
-                required
-                autoComplete="current-password"
-              />
-            </div>
-
-            {/* Error message */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-red-400 text-sm"
-              >
-                <AlertCircle className="w-4 h-4" />
-                <span>{error}</span>
-              </motion.div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-2.5 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-500/50 text-white font-medium rounded-md transition-colors flex items-center justify-center gap-2"
+        <AnimatePresence mode="wait">
+          {!sent ? (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4" />
-                  Sign In
-                </>
-              )}
-            </button>
-          </form>
-        </div>
+              <h1 className="text-3xl font-bold text-white text-center">Sign In</h1>
+              <p className="text-gray-500 text-center mt-2 mb-10">We'll email you a login link</p>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-transparent border-b border-gray-700 text-white placeholder-gray-600 focus:outline-none focus:border-sky-500 transition-colors text-center"
+                  placeholder="you@pflugerarchitects.com"
+                  required
+                  autoComplete="email"
+                  autoFocus
+                />
+
+                {error && (
+                  <p className="text-red-400 text-sm text-center">{error}</p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full py-3 bg-white text-black font-medium rounded-full hover:bg-gray-200 disabled:opacity-40 transition-all"
+                >
+                  {isLoading ? 'Sending...' : 'Continue'}
+                </button>
+              </form>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="sent"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center"
+            >
+              <h1 className="text-3xl font-bold text-white">Check Your Email</h1>
+              <p className="text-gray-500 mt-2 mb-10">
+                Login link sent to <span className="text-white">{email}</span>
+              </p>
+
+              <button
+                onClick={() => { setSent(false); setError(''); }}
+                className="px-6 py-2.5 bg-white/10 text-gray-300 text-sm font-medium rounded-full hover:bg-white/15 transition-all"
+              >
+                Use a different email
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
