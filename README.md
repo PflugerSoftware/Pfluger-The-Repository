@@ -2,7 +2,32 @@
 
 **Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
-## Handoff Notes (Jan 28, 2026)
+## Handoff Notes (Mar 26, 2026)
+
+**Latest Deploy:** https://repository.pflugerarchitects.com
+
+### Pitch System - Delete Pitch
+- Added delete button in the pitch review panel (editing mode)
+- Two-step confirmation to prevent accidental deletes
+- Deletes the pitch record while preserving the Ezra chat session
+- Wired through PitchReviewPanel, usePitchData, and PitchSubmission
+
+### Session Stability Fixes
+- Evict stale Supabase sessions before client init to prevent AbortError on page load
+- Fix black screen caused by stale session tokens after extended idle
+- Decoupled scope from methodology in pitch system (any methodology can pair with any scope tier)
+
+### EzraRevit - Native Claude Tool Use
+- Migrated from custom planToolUse Haiku call to Claude native tool_use API
+- Consolidated 4 synthesis functions into one Sonnet call with tools enabled
+- Extracted tool definitions into tools.ts (add/remove tools without touching index.ts)
+- Generated Supabase DB types (types.gen.ts), wired through typed client, fixed all 19 type errors
+- Renamed tools to noun-first convention (materials_search, families_search, etc.)
+- Added 10 update items to next-steps (revisions, sheets, phases, element semantics, etc.)
+
+---
+
+## Previous Handoff Notes (Jan 28, 2026)
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
 
@@ -882,7 +907,8 @@ Each category has a dedicated color:
   - [x] All pitch data stored in Supabase `pitches` table
   - [x] Ezra chat history persisted to `pitch_ai_sessions` table
   - [x] Review comments persisted to `pitch_comments` table
-  - [ ] Admin dashboard to view all pitches and statuses (pending)
+  - [x] Delete pitch from review panel editing mode with confirmation
+  - [x] Admin dashboard to view all pitches and statuses
 
 - [ ] **Analytics Dashboard**
   - Real metrics instead of placeholder stats
