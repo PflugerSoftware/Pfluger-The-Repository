@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { supabase } from '../config/supabase';
+import { supabaseAnon } from '../config/supabase';
 
 // ============================================
 // Types
@@ -118,7 +118,7 @@ export function sanitizeText(input: string, maxLength: number = MAX_TEXT_LENGTH)
 
 /** Fetch survey config by slug */
 export async function getSurveyBySlug(slug: string): Promise<Survey | null> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAnon
     .from('surveys')
     .select('*')
     .eq('slug', slug)
@@ -131,7 +131,7 @@ export async function getSurveyBySlug(slug: string): Promise<Survey | null> {
 
 /** Fetch ordered questions for a survey */
 export async function getSurveyQuestions(surveyId: string): Promise<SurveyQuestion[]> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAnon
     .from('survey_questions')
     .select('*')
     .eq('survey_id', surveyId)
@@ -146,7 +146,7 @@ export async function submitSurveyResponse(
   submission: SurveySubmission
 ): Promise<{ responseId: string } | null> {
   // 1. Create the response record
-  const { data: response, error: responseError } = await supabase
+  const { data: response, error: responseError } = await supabaseAnon
     .from('survey_responses')
     .insert({
       survey_id: submission.surveyId,
@@ -167,7 +167,7 @@ export async function submitSurveyResponse(
 
   // 2. Insert all answers
   for (const answer of submission.answers) {
-    const { data: answerRow, error: answerError } = await supabase
+    const { data: answerRow, error: answerError } = await supabaseAnon
       .from('survey_answers')
       .insert({
         response_id: responseId,
@@ -201,7 +201,7 @@ export async function submitSurveyResponse(
         note: pin.note ? sanitizeText(pin.note, MAX_NOTE_LENGTH) : null,
       }));
 
-      const { error: pinError } = await supabase
+      const { error: pinError } = await supabaseAnon
         .from('survey_pins')
         .insert(pinRows);
 
@@ -223,7 +223,7 @@ export async function getSurveyPins(
   surveyId: string,
   questionId?: string | null
 ): Promise<SurveyPin[]> {
-  let query = supabase
+  let query = supabaseAnon
     .from('survey_pins')
     .select('*')
     .eq('survey_id', surveyId)
@@ -240,7 +240,7 @@ export async function getSurveyPins(
 
 /** Fetch survey response stats */
 export async function getSurveyStats(surveyId: string): Promise<SurveyStats> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAnon
     .from('survey_responses')
     .select('id, role, completed_at')
     .eq('survey_id', surveyId);
@@ -267,7 +267,7 @@ export async function getSurveyStats(surveyId: string): Promise<SurveyStats> {
 
 /** Fetch answer distribution for a specific question */
 export async function getQuestionResults(questionId: string): Promise<AnswerDistribution> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAnon
     .from('survey_answers')
     .select('answer_text, answer_choices')
     .eq('question_id', questionId);
@@ -323,7 +323,7 @@ export async function getSurveyQuestionsWithCounts(
 ): Promise<Array<SurveyQuestion & { answerCount: number }>> {
   const questions = await getSurveyQuestions(surveyId);
 
-  const { data: answers, error } = await supabase
+  const { data: answers, error } = await supabaseAnon
     .from('survey_answers')
     .select('question_id')
     .eq('survey_id', surveyId);

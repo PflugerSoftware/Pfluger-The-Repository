@@ -27,7 +27,8 @@ const WORK_BY_YEAR = [
   {
     year: '2026',
     projects: [
-      { id: 'X26-RB01', title: 'Midland Furniture Pilot' }
+      { id: 'X26-RB01', title: 'Midland Furniture Pilot' },
+      { id: 'X26-RB08', title: 'Lee College Campus Survey' }
     ]
   },
   {
@@ -39,7 +40,7 @@ const WORK_BY_YEAR = [
       { id: 'X25-RB05', title: 'Mass Timber' },
       { id: 'X25-RB06', title: 'Timberlyne Study' },
       { id: 'X25-RB08', title: 'Modulizer Part 1' },
-      { id: 'X25-RB13', title: 'Modulizer Part 3' }
+      { id: 'X25-RB13', title: 'CTE Design Echos' }
     ]
   },
   {
@@ -273,16 +274,17 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                       </div>
                     </div>
 
-                    {/* Right column - Work by year */}
+                    {/* Right columns - Work by year (horizontal) */}
                     <div className="flex-1">
                       <p className="text-xs text-gray-500 mb-4 tracking-wide">work</p>
-                      <div className="space-y-4">
+                      <div className="flex gap-10">
                         {WORK_BY_YEAR.map((yearGroup, yi) => (
                           <motion.div
                             key={yearGroup.year}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: yi * 0.05 }}
+                            className="min-w-0"
                           >
                             <p className="text-sm text-gray-400 mb-1">{yearGroup.year}</p>
                             <div className="space-y-0.5 pl-3 border-l border-gray-700">
@@ -295,7 +297,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                                   key={project.id}
                                   to={`/explore/${project.id}`}
                                   onClick={handleLinkClick}
-                                  className="block text-sm text-gray-400 hover:text-white transition-colors py-0.5"
+                                  className="block text-sm text-gray-400 hover:text-white transition-colors py-0.5 whitespace-nowrap"
                                 >
                                   <span className="text-gray-600">{project.id}</span>
                                   <span className="mx-2">-</span>

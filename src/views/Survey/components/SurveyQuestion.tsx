@@ -32,6 +32,8 @@ export function SurveyQuestionView({
 }: SurveyQuestionProps) {
   const canProceed = () => {
     if (!question.required) return true;
+    // Map-based questions: pins count as a valid answer
+    if (question.is_map_based && (answer.pins?.length || 0) > 0) return true;
     if (question.question_type === 'multiple_choice') {
       return (answer.answerChoices?.length || 0) > 0;
     }
@@ -53,7 +55,7 @@ export function SurveyQuestionView({
       {/* Question header */}
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(8px)' }}>
             {question.is_map_based ? (
               <MapPin className="w-4 h-4 text-sky-400" />
             ) : (
@@ -119,7 +121,12 @@ export function SurveyQuestionView({
       <div className="px-6 py-4 flex gap-3">
         <button
           onClick={onBack}
-          className="flex items-center gap-1 px-4 py-3 rounded-xl text-sm text-gray-400 bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
+          className="flex items-center gap-1 px-4 py-3 rounded-xl text-sm text-gray-400 hover:text-gray-200 transition-all"
+          style={{
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+          }}
         >
           <ChevronLeft className="w-4 h-4" />
           Back

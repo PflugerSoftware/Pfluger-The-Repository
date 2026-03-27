@@ -85,11 +85,11 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
   },
   'X25-RB13': {
     id: 'X25-RB13',
-    title: 'The Modulizer Part 3',
+    title: 'CTE Design Echos',
     code: 'X25-RB13',
     subtitle: 'Flour Bluff CTE Center - Design Concept Survey Analysis',
     category: 'sustainability',
-    researcher: 'Agustin Salinas, Alex Wickes, Leah VanderSanden',
+    researcher: 'Leah VanderSanden, Alex Wickes',
     totalHours: 40,
     accentColor: '#00A9E0',
   },

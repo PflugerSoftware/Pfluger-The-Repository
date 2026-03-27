@@ -32,7 +32,7 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
       {/* Header */}
       <div className="px-6 pt-8 pb-6">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-sky-500/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0, 169, 224, 0.15)', backdropFilter: 'blur(8px)' }}>
             <MapPin className="w-5 h-5 text-sky-400" />
           </div>
           <div>
@@ -56,7 +56,12 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
             onChange={(e) => setFirstName(e.target.value)}
             maxLength={100}
             placeholder="Enter your first name"
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-gray-600 focus:border-sky-500/50 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 rounded-xl text-white placeholder:text-gray-600 focus:border-sky-500/50 focus:outline-none transition-colors"
+            style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
           />
         </div>
 
@@ -69,9 +74,14 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
                 onClick={() => setRole(r.value)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   role === r.value
-                    ? 'bg-sky-500/20 border border-sky-500/50 text-sky-300'
-                    : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
+                    ? 'text-sky-300'
+                    : 'text-gray-400 hover:text-gray-200'
                 }`}
+                style={{
+                  background: role === r.value ? 'rgba(0, 169, 224, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(8px)',
+                  border: role === r.value ? '1px solid rgba(0, 169, 224, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                }}
               >
                 {r.label}
               </button>

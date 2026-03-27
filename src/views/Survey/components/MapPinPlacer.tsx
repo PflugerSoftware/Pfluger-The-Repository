@@ -53,7 +53,12 @@ export function MapPinPlacer({
           key={index}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-3 bg-white/5 border border-white/10 rounded-xl space-y-2"
+          className="p-3 rounded-xl space-y-2"
+          style={{
+            background: 'rgba(255, 255, 255, 0.06)',
+            backdropFilter: 'blur(12px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

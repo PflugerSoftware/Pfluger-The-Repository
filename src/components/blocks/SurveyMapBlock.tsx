@@ -2,8 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Map, Layers, Eye, Filter, Users, MessageSquare } from 'lucide-react';
-import { MAPBOX_TOKEN } from '../../config/mapbox';
+import { Map, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite } from 'lucide-react';
+import { MAPBOX_TOKEN, MAPBOX_STYLES } from '../../config/mapbox';
 import {
   getSurveyPins,
   getSurveyStats,
@@ -36,7 +36,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   const [mapReady, setMapReady] = useState(false);
-  const [viewMode, setViewMode] = useState<'pins' | 'heatmap'>(data.default_view || 'pins');
+  const [showPins, setShowPins] = useState(true);
+  const [showContour, setShowContour] = useState(false);
+  const [mapMode, setMapMode] = useState<'3d' | 'satellite'>('3d');
   const [questions, setQuestions] = useState<Array<SurveyQuestion & { answerCount: number }>>([]);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [pins, setPins] = useState<SurveyPin[]>([]);
@@ -92,7 +94,10 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       zoom: data.map_zoom || 16,
       pitch: 30,
       antialias: true,
+      logoPosition: 'bottom-left',
+      attributionControl: false,
     });
+    m.addControl(new mapboxgl.AttributionControl({ compact: true }), 'bottom-left');
 
     m.on('style.load', () => {
       m.setConfigProperty('basemap', 'lightPreset', 'night');
@@ -113,13 +118,40 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     };
   }, [data.map_center_lat, data.map_center_lng, data.map_zoom]);
 
+  // Switch map style and camera when mapMode changes
+  useEffect(() => {
+    const m = mapRef.current;
+    if (!m || !mapReady) return;
+
+    const center: [number, number] = [data.map_center_lng, data.map_center_lat];
+    const zoom = data.map_zoom || 16;
+
+    if (mapMode === 'satellite') {
+      m.setStyle(MAPBOX_STYLES.satellite);
+      m.easeTo({ center, zoom, pitch: 0, bearing: 0, duration: 800 });
+    } else {
+      m.setStyle(MAPBOX_STYLES.standardNight);
+      m.easeTo({ center, zoom, pitch: 30, bearing: 0, duration: 800 });
+    }
+
+    // After style swap, re-apply night preset for 3D mode and re-render data layers
+    m.once('style.load', () => {
+      if (mapMode === '3d') {
+        m.setConfigProperty('basemap', 'lightPreset', 'night');
+        m.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
+      }
+      renderPinMarkers();
+      renderHeatmap();
+    });
+  }, [mapMode]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Render pins or heatmap
   const renderPinMarkers = useCallback(() => {
     // Clear existing markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (!mapRef.current || viewMode !== 'pins') return;
+    if (!mapRef.current || !showPins) return;
 
     for (const pin of pins) {
       const marker = new mapboxgl.Marker({
@@ -129,74 +161,182 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         .setLngLat([pin.longitude, pin.latitude])
         .addTo(mapRef.current);
 
-      if (pin.note) {
-        marker.setPopup(
-          new mapboxgl.Popup({ closeButton: false, maxWidth: '240px' }).setHTML(
-            `<div style="font-size:12px;color:#333;padding:2px"><strong style="color:#666">${pin.color}</strong><br/>${pin.note.replace(/</g, '&lt;')}</div>`
-          )
-        );
-        marker.getElement().addEventListener('mouseenter', () => marker.togglePopup());
-        marker.getElement().addEventListener('mouseleave', () => marker.togglePopup());
-      }
-
       markersRef.current.push(marker);
     }
-  }, [pins, viewMode]);
+  }, [pins, showPins]);
 
   const renderHeatmap = useCallback(() => {
     if (!mapRef.current || !mapReady) return;
 
-    // Remove existing heatmap layer/source
-    if (mapRef.current.getLayer('survey-heatmap')) {
-      mapRef.current.removeLayer('survey-heatmap');
+    // Clean up previous layers
+    const layerIds = ['survey-contour-fill', 'survey-contour-line'];
+    for (const id of layerIds) {
+      if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
     }
-    if (mapRef.current.getSource('survey-pins')) {
-      mapRef.current.removeSource('survey-pins');
+    if (mapRef.current.getSource('survey-contour')) {
+      mapRef.current.removeSource('survey-contour');
     }
 
-    if (viewMode !== 'heatmap' || pins.length === 0) return;
+    if (!showContour || pins.length < 3) return;
 
-    mapRef.current.addSource('survey-pins', {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: pins.map((pin) => ({
-          type: 'Feature' as const,
+    // Assign sentiment: green=1, yellow=0.5, red=0
+    const pts = pins.map((p) => ({
+      lng: p.longitude,
+      lat: p.latitude,
+      val: p.color === 'green' ? 1 : p.color === 'yellow' ? 0.5 : 0,
+    }));
+
+    // Convex hull (Graham scan)
+    function cross(o: { lng: number; lat: number }, a: { lng: number; lat: number }, b: { lng: number; lat: number }) {
+      return (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
+    }
+    const sorted = [...pts].sort((a, b) => a.lng - b.lng || a.lat - b.lat);
+    const lower: typeof pts = [];
+    for (const p of sorted) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+      lower.push(p);
+    }
+    const upper: typeof pts = [];
+    for (const p of sorted.reverse()) {
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+      upper.push(p);
+    }
+    upper.pop();
+    lower.pop();
+    const hull = [...lower, ...upper];
+
+    // Expand hull slightly for padding
+    const cx = hull.reduce((s, p) => s + p.lng, 0) / hull.length;
+    const cy = hull.reduce((s, p) => s + p.lat, 0) / hull.length;
+    const expandedHull = hull.map((p) => ({
+      lng: cx + (p.lng - cx) * 1.15,
+      lat: cy + (p.lat - cy) * 1.15,
+    }));
+
+    // Build grid within bounding box
+    const minLng = Math.min(...expandedHull.map((p) => p.lng));
+    const maxLng = Math.max(...expandedHull.map((p) => p.lng));
+    const minLat = Math.min(...expandedHull.map((p) => p.lat));
+    const maxLat = Math.max(...expandedHull.map((p) => p.lat));
+    const gridRes = 40;
+    const stepLng = (maxLng - minLng) / gridRes;
+    const stepLat = (maxLat - minLat) / gridRes;
+
+    // Point-in-polygon test
+    function insideHull(lng: number, lat: number) {
+      let inside = false;
+      for (let i = 0, j = expandedHull.length - 1; i < expandedHull.length; j = i++) {
+        const xi = expandedHull[i].lng, yi = expandedHull[i].lat;
+        const xj = expandedHull[j].lng, yj = expandedHull[j].lat;
+        if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
+          inside = !inside;
+        }
+      }
+      return inside;
+    }
+
+    // IDW interpolation
+    function idw(lng: number, lat: number): number {
+      let wSum = 0;
+      let vSum = 0;
+      const power = 2;
+      for (const p of pts) {
+        const dx = (p.lng - lng) * 111320 * Math.cos((lat * Math.PI) / 180);
+        const dy = (p.lat - lat) * 110540;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 1) return p.val;
+        const w = 1 / Math.pow(dist, power);
+        wSum += w;
+        vSum += w * p.val;
+      }
+      return wSum > 0 ? vSum / wSum : 0.5;
+    }
+
+    // Generate grid cells as GeoJSON polygons
+    const features: GeoJSON.Feature[] = [];
+    for (let i = 0; i < gridRes; i++) {
+      for (let j = 0; j < gridRes; j++) {
+        const cLng = minLng + (i + 0.5) * stepLng;
+        const cLat = minLat + (j + 0.5) * stepLat;
+        if (!insideHull(cLng, cLat)) continue;
+
+        const val = idw(cLng, cLat);
+        const x0 = minLng + i * stepLng;
+        const x1 = x0 + stepLng;
+        const y0 = minLat + j * stepLat;
+        const y1 = y0 + stepLat;
+
+        features.push({
+          type: 'Feature',
           geometry: {
-            type: 'Point' as const,
-            coordinates: [pin.longitude, pin.latitude],
+            type: 'Polygon',
+            coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]],
           },
-          properties: { color: pin.color },
-        })),
+          properties: { sentiment: val },
+        });
+      }
+    }
+
+    mapRef.current.addSource('survey-contour', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features },
+    });
+
+    mapRef.current.addLayer({
+      id: 'survey-contour-fill',
+      type: 'fill',
+      source: 'survey-contour',
+      paint: {
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'sentiment'],
+          0, '#ef4444',
+          0.25, '#f97316',
+          0.5, '#fbbf24',
+          0.75, '#a3e635',
+          1, '#10b981',
+        ],
+        'fill-opacity': 0.6,
+        'fill-emissive-strength': 1,
       },
     });
 
     mapRef.current.addLayer({
-      id: 'survey-heatmap',
-      type: 'heatmap',
-      source: 'survey-pins',
+      id: 'survey-contour-line',
+      type: 'line',
+      source: 'survey-contour',
       paint: {
-        'heatmap-weight': 1,
-        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 12, 1, 18, 3],
-        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 12, 15, 18, 30],
-        'heatmap-color': [
+        'line-color': [
           'interpolate',
           ['linear'],
-          ['heatmap-density'],
-          0, 'rgba(0,0,0,0)',
-          0.2, '#3b82f6',
-          0.4, '#8b5cf6',
-          0.6, '#f59e0b',
-          0.8, '#ef4444',
-          1, '#ffffff',
+          ['get', 'sentiment'],
+          0, '#ef4444',
+          0.5, '#fbbf24',
+          1, '#10b981',
         ],
-        'heatmap-opacity': 0.8,
+        'line-width': 0.3,
+        'line-opacity': 0.3,
       },
     });
-  }, [pins, viewMode, mapReady]);
+  }, [pins, showContour, mapReady]);
 
   // Re-render when pins or viewMode change
   useEffect(() => {
+    // Always clear markers first to prevent ghosting
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    // Clear contour layers if present
+    if (mapRef.current) {
+      for (const id of ['survey-contour-fill', 'survey-contour-line']) {
+        if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
+      }
+      if (mapRef.current.getSource('survey-contour')) {
+        mapRef.current.removeSource('survey-contour');
+      }
+    }
+
     renderPinMarkers();
     renderHeatmap();
   }, [renderPinMarkers, renderHeatmap]);
@@ -231,29 +371,53 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             <h3 className="text-sm font-semibold text-white">Survey Analytics</h3>
           </div>
 
-          {/* View toggle */}
+          {/* Layer toggles */}
+          <div className="space-y-1.5">
+            <label className="flex items-center gap-2.5 px-1 py-1 cursor-pointer group">
+              <Eye className={`w-3 h-3 ${showPins ? 'text-sky-300' : 'text-gray-500'}`} />
+              <span className={`text-xs font-medium flex-1 ${showPins ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Pins</span>
+              <button
+                onClick={() => setShowPins((v) => !v)}
+                className={`w-8 h-4 rounded-full relative transition-colors ${showPins ? 'bg-sky-500' : 'bg-white/10'}`}
+              >
+                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${showPins ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              </button>
+            </label>
+            <label className="flex items-center gap-2.5 px-1 py-1 cursor-pointer group">
+              <Layers className={`w-3 h-3 ${showContour ? 'text-sky-300' : 'text-gray-500'}`} />
+              <span className={`text-xs font-medium flex-1 ${showContour ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Contour</span>
+              <button
+                onClick={() => setShowContour((v) => !v)}
+                className={`w-8 h-4 rounded-full relative transition-colors ${showContour ? 'bg-sky-500' : 'bg-white/10'}`}
+              >
+                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${showContour ? 'translate-x-4' : 'translate-x-0.5'}`} />
+              </button>
+            </label>
+          </div>
+
+          {/* Map mode toggle */}
           <div className="flex gap-1 bg-white/5 rounded-lg p-1">
             <button
-              onClick={() => setViewMode('pins')}
+              onClick={() => setMapMode('3d')}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                viewMode === 'pins'
+                mapMode === '3d'
                   ? 'bg-sky-500/20 text-sky-300'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Eye className="w-3 h-3" />
-              Pins
+              <Building2 className="w-3 h-3" />
+              3D
             </button>
             <button
-              onClick={() => setViewMode('heatmap')}
+              onClick={() => setMapMode('satellite')}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                viewMode === 'heatmap'
+                mapMode === 'satellite'
                   ? 'bg-sky-500/20 text-sky-300'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
-              <Layers className="w-3 h-3" />
-              Heatmap
+              <Satellite className="w-3 h-3" />
+              Satellite
             </button>
           </div>
 
@@ -266,11 +430,12 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             <select
               value={selectedQuestionId || ''}
               onChange={(e) => setSelectedQuestionId(e.target.value || null)}
-              className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500/50 appearance-none cursor-pointer"
+              className="w-full px-3 py-2 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500/50 cursor-pointer"
+              style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}
             >
-              <option value="">All Questions</option>
+              <option value="" style={{ background: '#1e1e1e', color: '#fff' }}>All Questions</option>
               {questions.map((q) => (
-                <option key={q.id} value={q.id}>
+                <option key={q.id} value={q.id} style={{ background: '#1e1e1e', color: '#fff' }}>
                   Q{q.question_order}: {q.question_text.slice(0, 40)}
                   {q.question_text.length > 40 ? '...' : ''} ({q.answerCount})
                 </option>
