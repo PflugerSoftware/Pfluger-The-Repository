@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase';
+import { supabase, supabaseAnon } from '../config/supabase';
 
 export interface UserProfile {
   id: string;
@@ -26,8 +26,14 @@ export async function fetchUserProfile(email: string): Promise<UserProfile | nul
   };
 }
 
-export async function signIn(email: string, password: string) {
-  return supabase.auth.signInWithPassword({ email, password });
+/** Send a magic link to the user's email */
+export async function sendMagicLink(email: string) {
+  return supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.origin,
+    },
+  });
 }
 
 export async function signOut() {

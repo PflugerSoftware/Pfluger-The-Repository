@@ -75,19 +75,20 @@ The Repository operates in two modes controlled by authentication state:
 
 ### Authentication Flow
 
-Authentication uses **Supabase Auth** with non-persistent sessions, managed through `AuthContext.tsx`:
-- Users sign in with email + password via `supabase.auth.signInWithPassword()`
-- Supabase Auth handles password hashing, JWT issuance, and session management
-- **Sessions are NOT persisted** (`persistSession: false`) - users must log in each visit
-- This eliminates stale token refresh deadlocks that previously caused blank screens on page load
-- JWT auto-refreshes during an active session but is lost on page refresh/close
-- On login, `onAuthStateChange` fires `SIGNED_IN`, profile fetched from `users` table
+Authentication uses **Supabase Auth** with magic link (passwordless) sign-in, managed through `AuthContext.tsx`:
+- Users enter their email on `/login`, receive a magic link via `supabase.auth.signInWithOtp()`
+- Only emails that exist in the `users` table can request a link (checked before sending)
+- Only `@pflugerarchitects.com` emails accepted (client-side domain check)
+- Magic link redirects back to the app, Supabase client detects the token via `detectSessionInUrl: true`
+- URL hash tokens are cleaned up after sign-in to prevent logout issues
+- **Sessions are NOT persisted** (`persistSession: false`) - users request a new link each visit
+- On sign-in, `onAuthStateChange` fires `SIGNED_IN`, profile fetched from `users` table
 - Two Supabase clients: `supabase` (main, carries auth state) and `supabaseAnon` (never has auth, used for surveys)
 - `auth.uid()` in Supabase matches `users.id` (same UUID), enabling RLS policies
 - Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
-- 20 users across Austin, San Antonio, Dallas, and Houston offices
-- Login page at `/login`, accessed via "Team Sign In" button
-- Upon login, internal views appear in navigation
+- Admin can generate magic links for any user via `supabase.auth.admin.generateLink()`
+- ~107 users across Austin, San Antonio, Dallas, Houston, and Corpus Christi offices
+- Email template configured in Supabase Dashboard > Authentication > Email Templates > Magic Link
 - RLS policies enforce access: public tables readable by anyone, internal tables require auth
 - Confidential projects blocked from direct URL access for unauthenticated users (`resolveProjectIdentifier` checks `is_confidential`)
 - Will migrate to Azure SSO in the future
@@ -206,10 +207,11 @@ Each category has dedicated color and Lucide icon:
 **Authentication Pattern:**
 ```typescript
 // AuthContext provides user with id, username, name, role
-const { user, isAuthenticated, login, logout } = useAuth();
+const { user, isAuthenticated, sendLink, logout } = useAuth();
 // user.id is the Supabase Auth UUID (same as users.id in the DB)
 // Protected routes use <ProtectedRoute> wrapper
 // Supabase client auto-includes JWT in all requests when logged in
+// sendLink(email) sends a magic link - no passwords
 ```
 
 **Project Loading:**
@@ -355,8 +357,8 @@ secondary: {
 
 To test both modes:
 1. **Public Mode**: Visit app without logging in
-2. **Internal Mode**: Click "Team Sign In" at `/login`, use any email from the `users` table + password `123456Softwares!`
-3. **Admin Mode**: Use `software@pflugerarchitects.com` + same password
+2. **Internal Mode**: Click "Team Sign In" at `/login`, enter any email from the `users` table to receive a magic link
+3. **Admin Mode**: Use `software@pflugerarchitects.com` or generate a magic link for any user via `supabase.auth.admin.generateLink()`
 
 Authentication is handled by Supabase Auth. The Supabase JS client automatically includes the JWT in all requests when a session exists. RLS policies on all tables enforce access control server-side.
 
