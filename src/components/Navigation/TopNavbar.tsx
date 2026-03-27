@@ -129,7 +129,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
 
   const visibleSections = isAuthenticated
     ? [...NAV_SECTIONS.slice(0, 2), REPO_SECTION, ...NAV_SECTIONS.slice(2)]
-    : NAV_SECTIONS.filter(s => s.id !== 'pitch' && s.id !== 'campus' && s.id !== 'explore');
+    : NAV_SECTIONS.filter(s => s.id !== 'pitch');
 
   const isExpanded = hoveredId !== null;
   const activeSection = visibleSections.find(s => s.id === hoveredId);
