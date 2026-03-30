@@ -6,6 +6,70 @@
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
 
+### Magic Link Authentication
+- Replaced password auth with passwordless magic link sign-in (`signInWithOtp`)
+- Minimal Apple-style login page - email input, pill button, "Ezra will email you a login link"
+- Only `@pflugerarchitects.com` emails accepted
+- Sessions not persisted (`persistSession: false`) - users request a new link each visit
+- Fixes blank screen bug caused by stale Supabase token refresh deadlocks
+- URL hash tokens cleaned after sign-in to prevent logout issues
+- Custom branded email template with Ezra CTA card
+- Added `supabaseAnon` client for anonymous operations (surveys) separate from auth client
+- 107 users across Austin (34), San Antonio (25), Dallas (24), Houston (13), Corpus Christi (7)
+
+### Survey System Enhancements
+- Survey entry page now uses top-down satellite map style
+- Glass frosted panels on survey sidebar and input components
+- Fixed `canProceed` logic for map-based questions (pins count as valid answer)
+- Fixed RLS policies for anonymous survey submission (added INSERT + SELECT for anon role)
+- All survey operations use `supabaseAnon` client to avoid auth state conflicts
+
+### Survey Map Block - Contour Visualization
+- Replaced heatmap with IDW-interpolated sentiment contour map
+- Convex hull boundary from pin locations, expanded 15% for padding
+- 40x40 grid, each cell colored by inverse-distance-weighted sentiment (green/yellow/red)
+- `fill-emissive-strength: 1` for glow on 3D night map
+- 3D buildings mode / satellite top-down toggle with camera reset
+- Independent pin and contour layer toggles (can show both simultaneously)
+- Mapbox attribution tucked behind sidebar (bottom-left)
+
+### New Block: LineChartBlock
+- Multi-series animated line chart with SVG and Framer Motion
+- Hover tooltips, axis labels, auto-scaling, legend
+- Wired into BlockRenderer (was placeholder before)
+
+### Lee College Project Dashboard (X26-RB08)
+- 9 blocks: About section, text intro, Campus Map header, survey-map, stat grid, overview text, Conjecture section, line chart, sources
+- Project image set from Supabase Storage
+- Added to explore nav dropdown
+
+### Dynamic Explore Navigation
+- Explore dropdown now loads projects from DB grouped by year (no more hardcoded list)
+- Year columns displayed horizontally (2026, 2025, 2024)
+- Authenticated users see all projects including confidential
+- Public users only see non-confidential projects
+
+### Confidential Project Access Control
+- `resolveProjectIdentifier` checks `is_confidential` flag
+- Unauthenticated users redirected to home when accessing confidential project URLs directly
+- X00-DEMO, X25-RB02, X26-RB08 marked confidential
+- Campus and explore pages now visible in nav for public users (were hidden before)
+
+### About AI Page Rewrite
+- Rewrote generic "Use of AI" page to feature Ezra
+- Capabilities grid, RAG pipeline walkthrough, technical details
+- Linked from magic link email CTA card
+
+### Other Changes
+- X25-RB13 renamed from "Modulizer Part 3" to "CTE Design Echos", researchers updated to Leah VanDerSanden, Alex Wickes
+- Fixed broken image URL for X25-RB13 gallery block
+- Removed dead `getSession()` export from auth.ts
+- Mapbox token added to `.env`
+
+---
+
+## Previous Handoff Notes (Mar 27, 2026 - AM)
+
 ### Survey System - Generic Map-Based Surveys
 
 Built a reusable survey engine that supports map-based and non-map questions. First deployment: **X26-RB08 Lee College Campus Survey**.
@@ -33,26 +97,7 @@ Built a reusable survey engine that supports map-based and non-map questions. Fi
 - `survey_responses` - respondent records (name, role, completion tracking)
 - `survey_answers` - answer data (choices array or free text)
 - `survey_pins` - map pins (lat/lng, green/yellow/red, notes)
-- RLS: anonymous INSERT only on responses/answers/pins, authenticated SELECT for team
-
-**URL Structure:**
-```
-/survey/:slug    -> Full-screen survey (no navbar, public)
-/explore/X26-RB08 -> Project dashboard with survey-map analytics block
-```
-
-**Files Added:**
-- `supabase/migrations/20260327_create_survey_tables.sql`
-- `src/services/surveyService.ts`
-- `src/views/Survey/SurveyPage.tsx` + 7 sub-components
-- `src/components/blocks/SurveyMapBlock.tsx`
-
-**Files Modified:**
-- `src/App.tsx` - survey route outside navbar layout
-- `src/components/blocks/types.ts` - survey-map block type
-- `src/components/blocks/BlockRenderer.tsx` - survey-map case
-- `src/services/projects.ts` - X26-RB08 metadata
-- `src/views/projects/ProjectDashboard.tsx` - full-bleed for survey-map
+- RLS: anonymous INSERT + SELECT on responses/answers/pins, authenticated SELECT for team
 
 ---
 
