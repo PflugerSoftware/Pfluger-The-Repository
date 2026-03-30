@@ -8,13 +8,8 @@ interface MapPinPlacerProps {
   onUpdatePin: (index: number, pin: SurveySubmissionPin) => void;
   onRemovePin: (index: number) => void;
   isPlacingPin: boolean;
+  categoryColor: string;
 }
-
-const PIN_COLORS = [
-  { value: 'green' as const, hex: '#10b981', label: 'Positive' },
-  { value: 'yellow' as const, hex: '#fbbf24', label: 'Neutral' },
-  { value: 'red' as const, hex: '#ef4444', label: 'Negative' },
-];
 
 export function MapPinPlacer({
   pins,
@@ -22,6 +17,7 @@ export function MapPinPlacer({
   onUpdatePin,
   onRemovePin,
   isPlacingPin,
+  categoryColor,
 }: MapPinPlacerProps) {
   const canAddMore = pins.length < maxPins;
 
@@ -32,11 +28,11 @@ export function MapPinPlacer({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
-            isPlacingPin
-              ? 'bg-sky-500/20 text-sky-300'
-              : 'bg-white/5 text-gray-400'
-          }`}
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
+          style={{
+            background: isPlacingPin ? `${categoryColor}20` : 'rgba(255, 255, 255, 0.05)',
+            color: isPlacingPin ? categoryColor : 'rgba(156, 163, 175, 1)',
+          }}
         >
           <MousePointerClick className="w-4 h-4 shrink-0" />
           <span>
@@ -57,15 +53,12 @@ export function MapPinPlacer({
           style={{
             background: 'rgba(255, 255, 255, 0.06)',
             backdropFilter: 'blur(12px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: `1px solid ${categoryColor}30`,
           }}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MapPin
-                className="w-4 h-4"
-                style={{ color: PIN_COLORS.find((c) => c.value === pin.color)?.hex }}
-              />
+              <MapPin className="w-4 h-4" style={{ color: categoryColor }} />
               <span className="text-xs text-gray-400">Pin {index + 1}</span>
             </div>
             <button
@@ -76,27 +69,6 @@ export function MapPinPlacer({
             </button>
           </div>
 
-          {/* Color picker */}
-          <div className="flex gap-2">
-            {PIN_COLORS.map((c) => (
-              <button
-                key={c.value}
-                onClick={() => onUpdatePin(index, { ...pin, color: c.value })}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs transition-all ${
-                  pin.color === c.value
-                    ? 'bg-white/10 border border-white/20'
-                    : 'bg-white/5 border border-transparent hover:bg-white/10'
-                }`}
-              >
-                <div
-                  className="w-2.5 h-2.5 rounded-full"
-                  style={{ backgroundColor: c.hex }}
-                />
-                {c.label}
-              </button>
-            ))}
-          </div>
-
           {/* Note */}
           <textarea
             value={pin.note || ''}
@@ -104,7 +76,14 @@ export function MapPinPlacer({
             maxLength={500}
             rows={2}
             placeholder="Add a note (optional)..."
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-xs placeholder:text-gray-600 focus:border-sky-500/50 focus:outline-none transition-colors resize-none"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-xs placeholder:text-gray-600 focus:outline-none transition-colors resize-none"
+            style={{ borderColor: `${categoryColor}30` }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = `${categoryColor}60`;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = `${categoryColor}30`;
+            }}
           />
         </motion.div>
       ))}

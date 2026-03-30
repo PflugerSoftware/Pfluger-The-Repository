@@ -8,18 +8,19 @@ interface SurveyIntroProps {
   onStart: (firstName: string, role: string) => void;
 }
 
-const ROLES = [
-  { value: 'student', label: 'Student' },
-  { value: 'parent', label: 'Parent' },
-  { value: 'teacher', label: 'Teacher' },
-  { value: 'staff', label: 'Staff' },
-  { value: 'other', label: 'Other' },
+const DEFAULT_ROLES = [
+  'Student',
+  'Parent',
+  'Teacher',
+  'Staff',
+  'Other',
 ];
 
 export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
   const [firstName, setFirstName] = useState('');
   const [role, setRole] = useState('');
 
+  const roles = survey.roles && survey.roles.length > 0 ? survey.roles : DEFAULT_ROLES;
   const canStart = firstName.trim().length > 0 && role.length > 0;
 
   return (
@@ -47,7 +48,7 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
       </div>
 
       {/* Form */}
-      <div className="flex-1 px-6 space-y-5">
+      <div className="flex-1 px-6 space-y-5 overflow-y-auto">
         <div>
           <label className="block text-sm text-gray-400 mb-2">First Name</label>
           <input
@@ -67,23 +68,23 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
 
         <div>
           <label className="block text-sm text-gray-400 mb-2">I am a...</label>
-          <div className="grid grid-cols-2 gap-2">
-            {ROLES.map((r) => (
+          <div className="grid grid-cols-1 gap-2">
+            {roles.map((r) => (
               <button
-                key={r.value}
-                onClick={() => setRole(r.value)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                  role === r.value
+                key={r}
+                onClick={() => setRole(r)}
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
+                  role === r
                     ? 'text-sky-300'
                     : 'text-gray-400 hover:text-gray-200'
                 }`}
                 style={{
-                  background: role === r.value ? 'rgba(0, 169, 224, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  background: role === r ? 'rgba(0, 169, 224, 0.15)' : 'rgba(255, 255, 255, 0.05)',
                   backdropFilter: 'blur(8px)',
-                  border: role === r.value ? '1px solid rgba(0, 169, 224, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  border: role === r ? '1px solid rgba(0, 169, 224, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
-                {r.label}
+                {r}
               </button>
             ))}
           </div>

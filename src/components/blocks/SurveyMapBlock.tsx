@@ -2,29 +2,22 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Map, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite } from 'lucide-react';
+import { Map as MapIcon, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite } from 'lucide-react';
 import { MAPBOX_TOKEN, MAPBOX_STYLES } from '../../config/mapbox';
+import { getCategoryConfig } from '../../config/surveyCategories';
 import {
   getSurveyPins,
   getSurveyStats,
   getSurveyQuestionsWithCounts,
   getQuestionResults,
-  getPinStats,
 } from '../../services/surveyService';
 import type {
   SurveyPin,
   SurveyQuestion,
   SurveyStats,
   AnswerDistribution,
-  PinStats,
 } from '../../services/surveyService';
 import type { SurveyMapData } from './types';
-
-const PIN_COLORS: Record<string, string> = {
-  green: '#10b981',
-  yellow: '#fbbf24',
-  red: '#ef4444',
-};
 
 interface SurveyMapBlockProps {
   data: SurveyMapData;
@@ -43,9 +36,14 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
   const [pins, setPins] = useState<SurveyPin[]>([]);
   const [stats, setStats] = useState<SurveyStats | null>(null);
-  const [pinStats, setPinStats] = useState<PinStats>({ total: 0, green: 0, yellow: 0, red: 0 });
   const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Build question -> category lookup for pin coloring
+  const questionCategoryMap: Record<string, string | null> = {};
+  for (const q of questions) {
+    questionCategoryMap[q.id] = q.category;
+  }
 
   // Load initial data
   useEffect(() => {
@@ -58,7 +56,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       setQuestions(questionsData);
       setStats(statsData);
       setPins(pinsData);
-      setPinStats(getPinStats(pinsData));
       setLoading(false);
     }
     load();
@@ -69,7 +66,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     async function reload() {
       const pinsData = await getSurveyPins(data.survey_id, selectedQuestionId);
       setPins(pinsData);
-      setPinStats(getPinStats(pinsData));
 
       if (selectedQuestionId) {
         const dist = await getQuestionResults(selectedQuestionId);
@@ -134,7 +130,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       m.easeTo({ center, zoom, pitch: 30, bearing: 0, duration: 800 });
     }
 
-    // After style swap, re-apply night preset for 3D mode and re-render data layers
     m.once('style.load', () => {
       if (mapMode === '3d') {
         m.setConfigProperty('basemap', 'lightPreset', 'night');
@@ -145,30 +140,37 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     });
   }, [mapMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Render pins or heatmap
+  // Render pins colored by category
   const renderPinMarkers = useCallback(() => {
-    // Clear existing markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
     if (!mapRef.current || !showPins) return;
 
     for (const pin of pins) {
+      const cat = questionCategoryMap[pin.question_id] || null;
+      const config = getCategoryConfig(cat);
+
       const marker = new mapboxgl.Marker({
-        color: PIN_COLORS[pin.color] || '#10b981',
+        color: config.color,
         scale: 0.7,
       })
         .setLngLat([pin.longitude, pin.latitude])
         .addTo(mapRef.current);
 
+      if (pin.note) {
+        marker.setPopup(
+          new mapboxgl.Popup({ closeButton: false }).setText(pin.note)
+        );
+      }
+
       markersRef.current.push(marker);
     }
-  }, [pins, showPins]);
+  }, [pins, showPins, questionCategoryMap]);
 
   const renderHeatmap = useCallback(() => {
     if (!mapRef.current || !mapReady) return;
 
-    // Clean up previous layers
     const layerIds = ['survey-contour-fill', 'survey-contour-line'];
     for (const id of layerIds) {
       if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
@@ -179,11 +181,11 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
     if (!showContour || pins.length < 3) return;
 
-    // Assign sentiment: green=1, yellow=0.5, red=0
+    // For contour, use pin density (all pins equal weight)
     const pts = pins.map((p) => ({
       lng: p.longitude,
       lat: p.latitude,
-      val: p.color === 'green' ? 1 : p.color === 'yellow' ? 0.5 : 0,
+      val: 1,
     }));
 
     // Convex hull (Graham scan)
@@ -205,7 +207,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     lower.pop();
     const hull = [...lower, ...upper];
 
-    // Expand hull slightly for padding
     const cx = hull.reduce((s, p) => s + p.lng, 0) / hull.length;
     const cy = hull.reduce((s, p) => s + p.lat, 0) / hull.length;
     const expandedHull = hull.map((p) => ({
@@ -213,7 +214,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       lat: cy + (p.lat - cy) * 1.15,
     }));
 
-    // Build grid within bounding box
     const minLng = Math.min(...expandedHull.map((p) => p.lng));
     const maxLng = Math.max(...expandedHull.map((p) => p.lng));
     const minLat = Math.min(...expandedHull.map((p) => p.lat));
@@ -222,7 +222,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     const stepLng = (maxLng - minLng) / gridRes;
     const stepLat = (maxLat - minLat) / gridRes;
 
-    // Point-in-polygon test
     function insideHull(lng: number, lat: number) {
       let inside = false;
       for (let i = 0, j = expandedHull.length - 1; i < expandedHull.length; j = i++) {
@@ -235,7 +234,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       return inside;
     }
 
-    // IDW interpolation
     function idw(lng: number, lat: number): number {
       let wSum = 0;
       let vSum = 0;
@@ -249,10 +247,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         wSum += w;
         vSum += w * p.val;
       }
-      return wSum > 0 ? vSum / wSum : 0.5;
+      return wSum > 0 ? vSum / wSum : 0;
     }
 
-    // Generate grid cells as GeoJSON polygons
     const features: GeoJSON.Feature[] = [];
     for (let i = 0; i < gridRes; i++) {
       for (let j = 0; j < gridRes; j++) {
@@ -272,7 +269,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             type: 'Polygon',
             coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]],
           },
-          properties: { sentiment: val },
+          properties: { density: val },
         });
       }
     }
@@ -287,17 +284,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       type: 'fill',
       source: 'survey-contour',
       paint: {
-        'fill-color': [
-          'interpolate',
-          ['linear'],
-          ['get', 'sentiment'],
-          0, '#ef4444',
-          0.25, '#f97316',
-          0.5, '#fbbf24',
-          0.75, '#a3e635',
-          1, '#10b981',
-        ],
-        'fill-opacity': 0.6,
+        'fill-color': '#00A9E0',
+        'fill-opacity': ['interpolate', ['linear'], ['get', 'density'], 0, 0.05, 1, 0.4],
         'fill-emissive-strength': 1,
       },
     });
@@ -307,27 +295,18 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       type: 'line',
       source: 'survey-contour',
       paint: {
-        'line-color': [
-          'interpolate',
-          ['linear'],
-          ['get', 'sentiment'],
-          0, '#ef4444',
-          0.5, '#fbbf24',
-          1, '#10b981',
-        ],
+        'line-color': '#00A9E0',
         'line-width': 0.3,
-        'line-opacity': 0.3,
+        'line-opacity': 0.2,
       },
     });
   }, [pins, showContour, mapReady]);
 
   // Re-render when pins or viewMode change
   useEffect(() => {
-    // Always clear markers first to prevent ghosting
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    // Clear contour layers if present
     if (mapRef.current) {
       for (const id of ['survey-contour-fill', 'survey-contour-line']) {
         if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
@@ -342,6 +321,13 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   }, [renderPinMarkers, renderHeatmap]);
 
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId);
+
+  // Build category breakdown from pins
+  const categoryBreakdown: Record<string, number> = {};
+  for (const pin of pins) {
+    const cat = questionCategoryMap[pin.question_id] || 'unknown';
+    categoryBreakdown[cat] = (categoryBreakdown[cat] || 0) + 1;
+  }
 
   return (
     <div className="relative h-[600px] rounded-2xl overflow-hidden border border-white/10">
@@ -367,7 +353,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         <div className="p-4 space-y-4">
           {/* Header */}
           <div className="flex items-center gap-2">
-            <Map className="w-4 h-4 text-sky-400" />
+            <MapIcon className="w-4 h-4 text-sky-400" />
             <h3 className="text-sm font-semibold text-white">Survey Analytics</h3>
           </div>
 
@@ -385,7 +371,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             </label>
             <label className="flex items-center gap-2.5 px-1 py-1 cursor-pointer group">
               <Layers className={`w-3 h-3 ${showContour ? 'text-sky-300' : 'text-gray-500'}`} />
-              <span className={`text-xs font-medium flex-1 ${showContour ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Contour</span>
+              <span className={`text-xs font-medium flex-1 ${showContour ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Density</span>
               <button
                 onClick={() => setShowContour((v) => !v)}
                 className={`w-8 h-4 rounded-full relative transition-colors ${showContour ? 'bg-sky-500' : 'bg-white/10'}`}
@@ -483,41 +469,44 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             </div>
           )}
 
-          {/* Pin color breakdown */}
-          {pinStats.total > 0 && (
+          {/* Category breakdown (replaces old green/yellow/red) */}
+          {pins.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-xs text-gray-500">Pin Sentiment</span>
+                <span className="text-xs text-gray-500">Pins by Principle</span>
               </div>
               <div className="space-y-1.5">
-                {[
-                  { label: 'Positive', color: '#10b981', count: pinStats.green },
-                  { label: 'Neutral', color: '#fbbf24', count: pinStats.yellow },
-                  { label: 'Negative', color: '#ef4444', count: pinStats.red },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center gap-2">
-                    <div
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-xs text-gray-400 flex-1">{item.label}</span>
-                    <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full rounded-full"
-                        style={{ backgroundColor: item.color }}
-                        initial={{ width: 0 }}
-                        animate={{
-                          width: `${pinStats.total > 0 ? (item.count / pinStats.total) * 100 : 0}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="text-xs text-gray-500 w-8 text-right">
-                      {item.count}
-                    </span>
-                  </div>
-                ))}
+                {Object.entries(categoryBreakdown)
+                  .sort(([, a], [, b]) => b - a)
+                  .map(([cat, count]) => {
+                    const config = getCategoryConfig(cat);
+                    return (
+                      <div key={cat} className="flex items-center gap-2">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: config.color }}
+                        />
+                        <span className="text-xs text-gray-400 flex-1 truncate">
+                          {config.label}
+                        </span>
+                        <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: config.color }}
+                            initial={{ width: 0 }}
+                            animate={{
+                              width: `${pins.length > 0 ? (count / pins.length) * 100 : 0}%`,
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs text-gray-500 w-8 text-right">
+                          {count}
+                        </span>
+                      </div>
+                    );
+                  })}
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">{pinStats.total} total pins</p>
+              <p className="text-[10px] text-gray-600 mt-1">{pins.length} total pins</p>
             </div>
           )}
 
@@ -529,7 +518,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                 <span className="text-xs text-gray-500">Answers</span>
               </div>
 
-              {distribution.questionType === 'multiple_choice' &&
+              {(distribution.questionType === 'multiple_choice' || distribution.questionType === 'likert_single') &&
                 Object.keys(distribution.choiceCounts).length > 0 && (
                   <div className="space-y-1.5">
                     {Object.entries(distribution.choiceCounts)
@@ -558,6 +547,29 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                   </div>
                 )}
 
+              {distribution.questionType === 'matrix_likert' &&
+                Object.keys(distribution.matrixCounts).length > 0 && (
+                  <div className="space-y-2">
+                    {Object.entries(distribution.matrixCounts).map(([subItem, ratings]) => (
+                      <div key={subItem} className="space-y-0.5">
+                        <span className="text-xs text-gray-300 block truncate">{subItem}</span>
+                        <div className="flex gap-0.5">
+                          {Object.entries(ratings)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([rating, count]) => (
+                              <div
+                                key={rating}
+                                className="h-1.5 bg-sky-500/60 rounded-full"
+                                style={{ flex: count }}
+                                title={`${rating}: ${count}`}
+                              />
+                            ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
               {distribution.questionType === 'open_ended' &&
                 distribution.openEndedAnswers.length > 0 && (
                   <div className="space-y-1.5 max-h-40 overflow-y-auto">
@@ -580,7 +592,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           )}
 
           {/* Empty state */}
-          {!loading && pinStats.total === 0 && stats?.totalResponses === 0 && (
+          {!loading && pins.length === 0 && stats?.totalResponses === 0 && (
             <div className="text-center py-6">
               <p className="text-xs text-gray-500">No responses yet</p>
             </div>

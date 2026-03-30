@@ -1,9 +1,13 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, MapPin, MessageSquare } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, MessageSquare, MousePointerClick, X } from 'lucide-react';
 import type { SurveyQuestion as SurveyQuestionType, SurveySubmissionAnswer } from '../../../services/surveyService';
+import { getCategoryConfig } from '../../../config/surveyCategories';
 import { MultipleChoiceInput } from './MultipleChoiceInput';
 import { OpenEndedInput } from './OpenEndedInput';
 import { MapPinPlacer } from './MapPinPlacer';
+import { MatrixLikertInput } from './MatrixLikertInput';
+import { RankingInput } from './RankingInput';
 
 interface SurveyQuestionProps {
   question: SurveyQuestionType;
@@ -30,18 +34,42 @@ export function SurveyQuestionView({
   isSubmitting,
   isPlacingPin,
 }: SurveyQuestionProps) {
+  const [showPinPanel, setShowPinPanel] = useState(false);
+  const category = getCategoryConfig(question.category);
+
   const canProceed = () => {
     if (!question.required) return true;
-    // Map-based questions: pins count as a valid answer
-    if (question.is_map_based && (answer.pins?.length || 0) > 0) return true;
-    if (question.question_type === 'multiple_choice') {
-      return (answer.answerChoices?.length || 0) > 0;
+
+    // Map-based questions (Part 1): pins count as a valid answer
+    if (question.is_map_based) {
+      return (answer.pins?.length || 0) > 0;
     }
-    if (question.question_type === 'open_ended') {
-      return (answer.answerText?.trim().length || 0) > 0;
+
+    switch (question.question_type) {
+      case 'multiple_choice':
+      case 'likert_single':
+        return (answer.answerChoices?.length || 0) > 0;
+      case 'open_ended':
+        return (answer.answerText?.trim().length || 0) > 0;
+      case 'matrix_likert':
+        // All sub-items must be rated
+        return (
+          question.sub_items != null &&
+          Object.keys(answer.answerMatrix || {}).length >= question.sub_items.length
+        );
+      case 'ranking':
+        // All items must be ranked
+        return (
+          question.options != null &&
+          (answer.answerRanking?.length || 0) >= question.options.length
+        );
+      default:
+        return true;
     }
-    return true;
   };
+
+  // Part 2 questions with allow_pin show an optional pin toggle
+  const showOptionalPin = !question.is_map_based && question.allow_pin;
 
   return (
     <motion.div
@@ -55,15 +83,23 @@ export function SurveyQuestionView({
       {/* Question header */}
       <div className="px-6 pt-6 pb-4">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.08)', backdropFilter: 'blur(8px)' }}>
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{ background: category.lightColor }}
+          >
             {question.is_map_based ? (
-              <MapPin className="w-4 h-4 text-sky-400" />
+              <MapPin className="w-4 h-4" style={{ color: category.color }} />
             ) : (
-              <MessageSquare className="w-4 h-4 text-sky-400" />
+              <MessageSquare className="w-4 h-4" style={{ color: category.color }} />
             )}
           </div>
-          <span className="text-xs text-gray-500 uppercase tracking-wider">
-            Question {questionNumber} of {totalQuestions}
+          <div className="flex-1">
+            <span className="text-xs uppercase tracking-wider" style={{ color: category.color }}>
+              {category.label}
+            </span>
+          </div>
+          <span className="text-xs text-gray-600">
+            {questionNumber}/{totalQuestions}
           </span>
         </div>
         <h2 className="text-lg font-semibold text-white leading-snug">
@@ -71,17 +107,18 @@ export function SurveyQuestionView({
         </h2>
         {question.is_map_based && (
           <p className="text-xs text-gray-500 mt-2">
-            Tap the map to drop a pin, then select a color and add a note.
+            Tap the map to drop pins. Add an optional note to each.
           </p>
         )}
       </div>
 
       {/* Answer area */}
-      <div className="flex-1 px-6 overflow-y-auto">
+      <div className="flex-1 px-6 overflow-y-auto pb-2">
+        {/* Part 1: Map-based pin placement */}
         {question.is_map_based && (
           <MapPinPlacer
             pins={answer.pins || []}
-            maxPins={question.max_pins || 3}
+            maxPins={question.max_pins || 10}
             onUpdatePin={(index, pin) => {
               const newPins = [...(answer.pins || [])];
               newPins[index] = pin;
@@ -93,27 +130,107 @@ export function SurveyQuestionView({
               onUpdateAnswer({ ...answer, pins: newPins });
             }}
             isPlacingPin={isPlacingPin}
+            categoryColor={category.color}
           />
         )}
 
-        {question.question_type === 'multiple_choice' && question.options && (
-          <div className={question.is_map_based ? 'mt-4' : ''}>
-            <MultipleChoiceInput
-              options={question.options}
-              selected={answer.answerChoices || []}
-              maxSelections={question.max_selections}
-              onChange={(choices) =>
-                onUpdateAnswer({ ...answer, answerChoices: choices })
-              }
-            />
-          </div>
-        )}
+        {/* Multiple choice */}
+        {(question.question_type === 'multiple_choice' || question.question_type === 'likert_single') &&
+          question.options && (
+            <div className={question.is_map_based ? 'mt-4' : ''}>
+              <MultipleChoiceInput
+                options={question.options}
+                selected={answer.answerChoices || []}
+                maxSelections={question.question_type === 'likert_single' ? 1 : question.max_selections}
+                onChange={(choices) =>
+                  onUpdateAnswer({ ...answer, answerChoices: choices })
+                }
+              />
+            </div>
+          )}
 
+        {/* Open ended */}
         {question.question_type === 'open_ended' && (
           <OpenEndedInput
             value={answer.answerText || ''}
             onChange={(text) => onUpdateAnswer({ ...answer, answerText: text })}
           />
+        )}
+
+        {/* Matrix / Likert */}
+        {question.question_type === 'matrix_likert' &&
+          question.sub_items &&
+          question.scale_labels && (
+            <MatrixLikertInput
+              subItems={question.sub_items}
+              scaleLabels={question.scale_labels}
+              selected={answer.answerMatrix || {}}
+              onChange={(matrix) =>
+                onUpdateAnswer({ ...answer, answerMatrix: matrix })
+              }
+              categoryColor={category.color}
+            />
+          )}
+
+        {/* Ranking */}
+        {question.question_type === 'ranking' && question.options && (
+          <RankingInput
+            options={question.options}
+            ranked={answer.answerRanking || []}
+            onChange={(ranking) =>
+              onUpdateAnswer({ ...answer, answerRanking: ranking })
+            }
+            categoryColor={category.color}
+          />
+        )}
+
+        {/* Optional pin panel for Part 2 questions */}
+        {showOptionalPin && (
+          <div className="mt-4">
+            {!showPinPanel ? (
+              <button
+                onClick={() => setShowPinPanel(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white transition-all bg-white/5 border border-white/10 hover:bg-white/8"
+              >
+                <MousePointerClick className="w-3.5 h-3.5" />
+                Pin a location on the map (optional)
+              </button>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" style={{ color: category.color }} />
+                    Map Pin (optional)
+                  </span>
+                  <button
+                    onClick={() => {
+                      setShowPinPanel(false);
+                      onUpdateAnswer({ ...answer, pins: [] });
+                    }}
+                    className="p-1 text-gray-500 hover:text-red-400 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <MapPinPlacer
+                  pins={answer.pins || []}
+                  maxPins={1}
+                  onUpdatePin={(index, pin) => {
+                    const newPins = [...(answer.pins || [])];
+                    newPins[index] = pin;
+                    onUpdateAnswer({ ...answer, pins: newPins });
+                  }}
+                  onRemovePin={(index) => {
+                    const newPins = [...(answer.pins || [])];
+                    newPins.splice(index, 1);
+                    onUpdateAnswer({ ...answer, pins: newPins });
+                  }}
+                  isPlacingPin={(answer.pins?.length || 0) < 1}
+                  categoryColor={category.color}
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -134,11 +251,19 @@ export function SurveyQuestionView({
         <button
           onClick={onNext}
           disabled={!canProceed() || isSubmitting}
-          className={`flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all ${
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm transition-all"
+          style={
             canProceed() && !isSubmitting
-              ? 'bg-sky-500 text-white hover:bg-sky-400'
-              : 'bg-white/5 text-gray-600 cursor-not-allowed'
-          }`}
+              ? {
+                  background: category.color,
+                  color: '#fff',
+                }
+              : {
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  color: 'rgba(107, 114, 128, 1)',
+                  cursor: 'not-allowed',
+                }
+          }
         >
           {isSubmitting ? (
             <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

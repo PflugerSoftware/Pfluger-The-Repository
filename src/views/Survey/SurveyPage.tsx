@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN } from '../../config/mapbox';
+import { getCategoryConfig } from '../../config/surveyCategories';
 import {
   getSurveyBySlug,
   getSurveyQuestions,
@@ -20,13 +21,7 @@ import { SurveyIntro } from './components/SurveyIntro';
 import { SurveyQuestionView } from './components/SurveyQuestion';
 import { SurveyThankYou } from './components/SurveyThankYou';
 
-type Phase = 'loading' | 'intro' | 'question' | 'submitting' | 'thankyou' | 'error';
-
-const PIN_COLOR_MAP: Record<string, string> = {
-  green: '#10b981',
-  yellow: '#fbbf24',
-  red: '#ef4444',
-};
+type Phase = 'loading' | 'intro' | 'section-intro' | 'question' | 'submitting' | 'thankyou' | 'error';
 
 export default function SurveyPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -48,11 +43,18 @@ export default function SurveyPage() {
   const [mapReady, setMapReady] = useState(false);
   const [mapDimmed, setMapDimmed] = useState(false);
 
+  // Track which section we last showed
+  const [lastShownCategory, setLastShownCategory] = useState<string | null>(null);
+
   const currentQuestion = questions[currentIndex] || null;
+  const currentCategory = currentQuestion ? getCategoryConfig(currentQuestion.category) : null;
+
   const currentAnswer = currentQuestion
     ? answers.get(currentQuestion.id) || {
         questionId: currentQuestion.id,
         answerChoices: [],
+        answerMatrix: {},
+        answerRanking: [],
         pins: [],
       }
     : null;
@@ -118,15 +120,19 @@ export default function SurveyPage() {
   // Handle map click for pin placement
   const handleMapClick = useCallback(
     (e: mapboxgl.MapMouseEvent) => {
-      if (!currentQuestion?.is_map_based || !currentAnswer) return;
+      if (!currentQuestion || !currentAnswer) return;
 
-      const maxPins = currentQuestion.max_pins || 3;
+      // Only handle clicks for map-based questions or questions with allow_pin that have the panel open
+      const isMapQuestion = currentQuestion.is_map_based;
+      const isOptionalPin = currentQuestion.allow_pin;
+      if (!isMapQuestion && !isOptionalPin) return;
+
+      const maxPins = isMapQuestion ? (currentQuestion.max_pins || 10) : 1;
       if ((currentAnswer.pins?.length || 0) >= maxPins) return;
 
       const newPin: SurveySubmissionPin = {
         latitude: e.lngLat.lat,
         longitude: e.lngLat.lng,
-        color: 'green',
       };
 
       const updatedAnswer: SurveySubmissionAnswer = {
@@ -146,7 +152,11 @@ export default function SurveyPage() {
   // Attach/detach map click handler
   useEffect(() => {
     if (!map.current || !mapReady) return;
-    if (phase !== 'question' || !currentQuestion?.is_map_based) return;
+    if (phase !== 'question') return;
+
+    const shouldListen =
+      currentQuestion?.is_map_based || currentQuestion?.allow_pin;
+    if (!shouldListen) return;
 
     map.current.on('click', handleMapClick);
     map.current.getCanvas().style.cursor = 'crosshair';
@@ -159,17 +169,17 @@ export default function SurveyPage() {
     };
   }, [phase, currentQuestion, handleMapClick, mapReady]);
 
-  // Sync markers with current answer pins
+  // Sync markers with current answer pins (using category color)
   useEffect(() => {
     // Clear existing markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (!map.current || !currentAnswer?.pins) return;
+    if (!map.current || !currentAnswer?.pins || !currentCategory) return;
 
     for (const pin of currentAnswer.pins) {
       const marker = new mapboxgl.Marker({
-        color: PIN_COLOR_MAP[pin.color] || '#10b981',
+        color: currentCategory.color,
         scale: 0.85,
       })
         .setLngLat([pin.longitude, pin.latitude])
@@ -185,24 +195,56 @@ export default function SurveyPage() {
 
       markersRef.current.push(marker);
     }
-  }, [currentAnswer?.pins]);
+  }, [currentAnswer?.pins, currentCategory]);
 
   // Dim/undim map based on current question type
   useEffect(() => {
     if (phase === 'question' && currentQuestion) {
-      setMapDimmed(!currentQuestion.is_map_based);
+      setMapDimmed(!currentQuestion.is_map_based && !currentQuestion.allow_pin);
     } else if (phase === 'intro') {
       setMapDimmed(false);
+    } else if (phase === 'section-intro') {
+      setMapDimmed(true);
     } else {
       setMapDimmed(true);
     }
   }, [phase, currentQuestion]);
+
+  // Check if we need a section intro when moving to a new question
+  const checkSectionTransition = useCallback(
+    (targetIndex: number) => {
+      const targetQuestion = questions[targetIndex];
+      if (!targetQuestion?.category) return false;
+
+      // Show section intro if entering a new category
+      if (targetQuestion.category !== lastShownCategory) {
+        setLastShownCategory(targetQuestion.category);
+        setCurrentIndex(targetIndex);
+        setPhase('section-intro');
+        return true;
+      }
+      return false;
+    },
+    [questions, lastShownCategory]
+  );
 
   // Navigation handlers
   const handleStart = (name: string, r: string) => {
     setFirstName(name);
     setRole(r);
     setCurrentIndex(0);
+
+    // Check if first question needs a section intro
+    const firstQ = questions[0];
+    if (firstQ?.category) {
+      setLastShownCategory(firstQ.category);
+      setPhase('section-intro');
+    } else {
+      setPhase('question');
+    }
+  };
+
+  const handleSectionContinue = () => {
     setPhase('question');
   };
 
@@ -220,7 +262,11 @@ export default function SurveyPage() {
       // Clear markers before moving to next question
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
-      setCurrentIndex((i) => i + 1);
+
+      const nextIndex = currentIndex + 1;
+      if (!checkSectionTransition(nextIndex)) {
+        setCurrentIndex(nextIndex);
+      }
     } else {
       // Submit
       setPhase('submitting');
@@ -235,6 +281,8 @@ export default function SurveyPage() {
             questionId: q.id,
             answerText: a?.answerText,
             answerChoices: a?.answerChoices,
+            answerMatrix: a?.answerMatrix,
+            answerRanking: a?.answerRanking,
             pins: a?.pins,
           };
         }),
@@ -255,6 +303,7 @@ export default function SurveyPage() {
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       setCurrentIndex((i) => i - 1);
+      setPhase('question');
     } else {
       setPhase('intro');
     }
@@ -284,7 +333,7 @@ export default function SurveyPage() {
         }}
       >
         {/* Progress bar */}
-        {phase === 'question' && (
+        {(phase === 'question' || phase === 'section-intro') && (
           <div className="px-6 pt-4">
             <SurveyProgress
               current={currentIndex + 1}
@@ -310,6 +359,39 @@ export default function SurveyPage() {
               />
             )}
 
+            {phase === 'section-intro' && currentCategory && (
+              <motion.div
+                key={`section-${currentQuestion?.category}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="flex flex-col items-center justify-center h-full px-8 text-center"
+              >
+                <div
+                  className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
+                  style={{ background: currentCategory.lightColor }}
+                >
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ background: currentCategory.color }}
+                  />
+                </div>
+                <h2 className="text-xl font-bold text-white mb-2">
+                  {currentCategory.label}
+                </h2>
+                <p className="text-sm text-gray-400 mb-8 leading-relaxed max-w-xs">
+                  {currentCategory.description}
+                </p>
+                <button
+                  onClick={handleSectionContinue}
+                  className="px-8 py-3 rounded-xl font-medium text-sm text-white transition-all hover:brightness-110"
+                  style={{ background: currentCategory.color }}
+                >
+                  Continue
+                </button>
+              </motion.div>
+            )}
+
             {(phase === 'question' || phase === 'submitting') &&
               currentQuestion &&
               currentAnswer && (
@@ -328,7 +410,7 @@ export default function SurveyPage() {
                     phase === 'question' &&
                     !!currentQuestion.is_map_based &&
                     (currentAnswer.pins?.length || 0) <
-                      (currentQuestion.max_pins || 3)
+                      (currentQuestion.max_pins || 10)
                   }
                 />
               )}

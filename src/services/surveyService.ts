@@ -5,6 +5,22 @@ import { supabaseAnon } from '../config/supabase';
 // Types
 // ============================================
 
+export type QuestionType =
+  | 'multiple_choice'
+  | 'open_ended'
+  | 'matrix_likert'
+  | 'ranking'
+  | 'likert_single';
+
+export type SurveyCategory =
+  | 'about-you'
+  | 'people-centered'
+  | 'future-evolution'
+  | 'build-for-opportunity'
+  | 'community-engagement'
+  | 'enduring-identity'
+  | 'barriers';
+
 export interface Survey {
   id: string;
   project_id: string;
@@ -15,6 +31,7 @@ export interface Survey {
   map_center_lat: number | null;
   map_center_lng: number | null;
   map_zoom: number;
+  roles: string[] | null;
 }
 
 export interface SurveyQuestion {
@@ -23,11 +40,15 @@ export interface SurveyQuestion {
   project_id: string;
   question_order: number;
   question_text: string;
-  question_type: 'multiple_choice' | 'open_ended';
+  question_type: QuestionType;
+  category: SurveyCategory | null;
   is_map_based: boolean;
+  allow_pin: boolean;
   max_pins: number | null;
   options: string[] | null;
   max_selections: number | null;
+  sub_items: string[] | null;
+  scale_labels: string[] | null;
   required: boolean;
 }
 
@@ -40,7 +61,6 @@ export interface SurveyPin {
   project_id: string;
   latitude: number;
   longitude: number;
-  color: 'green' | 'yellow' | 'red';
   note: string | null;
   created_at: string;
 }
@@ -58,7 +78,6 @@ export interface SurveyResponse {
 export interface SurveySubmissionPin {
   latitude: number;
   longitude: number;
-  color: 'green' | 'yellow' | 'red';
   note?: string;
 }
 
@@ -66,6 +85,8 @@ export interface SurveySubmissionAnswer {
   questionId: string;
   answerText?: string;
   answerChoices?: string[];
+  answerMatrix?: Record<string, string>;
+  answerRanking?: string[];
   pins?: SurveySubmissionPin[];
 }
 
@@ -85,17 +106,16 @@ export interface SurveyStats {
 
 export interface AnswerDistribution {
   questionId: string;
-  questionType: 'multiple_choice' | 'open_ended';
+  questionType: QuestionType;
   choiceCounts: Record<string, number>;
   openEndedAnswers: string[];
+  matrixCounts: Record<string, Record<string, number>>;
   totalAnswers: number;
 }
 
-export interface PinStats {
+export interface PinCategoryStats {
   total: number;
-  green: number;
-  yellow: number;
-  red: number;
+  byCategory: Record<string, number>;
 }
 
 // ============================================
@@ -178,6 +198,8 @@ export async function submitSurveyResponse(
           ? sanitizeText(answer.answerText, MAX_TEXT_LENGTH)
           : null,
         answer_choices: answer.answerChoices || null,
+        answer_matrix: answer.answerMatrix || null,
+        answer_ranking: answer.answerRanking || null,
       })
       .select('id')
       .single();
@@ -187,7 +209,7 @@ export async function submitSurveyResponse(
       continue;
     }
 
-    // 3. Insert pins for this answer (if map-based)
+    // 3. Insert pins for this answer (if any)
     if (answer.pins && answer.pins.length > 0) {
       const pinRows = answer.pins.map((pin) => ({
         answer_id: answerRow.id,
@@ -197,7 +219,6 @@ export async function submitSurveyResponse(
         project_id: submission.projectId,
         latitude: pin.latitude,
         longitude: pin.longitude,
-        color: pin.color,
         note: pin.note ? sanitizeText(pin.note, MAX_NOTE_LENGTH) : null,
       }));
 
@@ -218,7 +239,7 @@ export async function submitSurveyResponse(
 // Authenticated (team) - Analytics
 // ============================================
 
-/** Fetch all pins for a survey, optionally filtered by question */
+/** Fetch all pins for a survey, optionally filtered by question or category */
 export async function getSurveyPins(
   surveyId: string,
   questionId?: string | null
@@ -269,7 +290,7 @@ export async function getSurveyStats(surveyId: string): Promise<SurveyStats> {
 export async function getQuestionResults(questionId: string): Promise<AnswerDistribution> {
   const { data, error } = await supabaseAnon
     .from('survey_answers')
-    .select('answer_text, answer_choices')
+    .select('answer_text, answer_choices, answer_matrix')
     .eq('question_id', questionId);
 
   if (error || !data) {
@@ -278,13 +299,16 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
       questionType: 'multiple_choice',
       choiceCounts: {},
       openEndedAnswers: [],
+      matrixCounts: {},
       totalAnswers: 0,
     };
   }
 
   const choiceCounts: Record<string, number> = {};
   const openEndedAnswers: string[] = [];
+  const matrixCounts: Record<string, Record<string, number>> = {};
   let isOpenEnded = false;
+  let isMatrix = false;
 
   for (const row of data) {
     if (row.answer_choices && Array.isArray(row.answer_choices)) {
@@ -296,25 +320,48 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
       openEndedAnswers.push(row.answer_text);
       isOpenEnded = true;
     }
+    if (row.answer_matrix && typeof row.answer_matrix === 'object') {
+      isMatrix = true;
+      for (const [subItem, rating] of Object.entries(row.answer_matrix as Record<string, string>)) {
+        if (!matrixCounts[subItem]) matrixCounts[subItem] = {};
+        matrixCounts[subItem][rating] = (matrixCounts[subItem][rating] || 0) + 1;
+      }
+    }
   }
+
+  const questionType: QuestionType = isMatrix
+    ? 'matrix_likert'
+    : isOpenEnded
+      ? 'open_ended'
+      : 'multiple_choice';
 
   return {
     questionId,
-    questionType: isOpenEnded ? 'open_ended' : 'multiple_choice',
+    questionType,
     choiceCounts,
     openEndedAnswers,
+    matrixCounts,
     totalAnswers: data.length,
   };
 }
 
-/** Get pin color breakdown stats */
-export function getPinStats(pins: SurveyPin[]): PinStats {
-  return {
-    total: pins.length,
-    green: pins.filter((p) => p.color === 'green').length,
-    yellow: pins.filter((p) => p.color === 'yellow').length,
-    red: pins.filter((p) => p.color === 'red').length,
-  };
+/** Get pin stats grouped by category (via question join) */
+export async function getPinCategoryStats(
+  surveyId: string,
+  questions: SurveyQuestion[]
+): Promise<PinCategoryStats> {
+  const pins = await getSurveyPins(surveyId);
+  const questionCategoryMap = new Map(
+    questions.map((q) => [q.id, q.category || 'unknown'])
+  );
+
+  const byCategory: Record<string, number> = {};
+  for (const pin of pins) {
+    const cat = questionCategoryMap.get(pin.question_id) || 'unknown';
+    byCategory[cat] = (byCategory[cat] || 0) + 1;
+  }
+
+  return { total: pins.length, byCategory };
 }
 
 /** Fetch all questions with answer counts for the filter dropdown */
