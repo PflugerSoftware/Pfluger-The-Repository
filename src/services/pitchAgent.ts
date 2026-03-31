@@ -52,18 +52,25 @@ const SYSTEM_PROMPT = `You are Ezra, Pfluger Architects' Research & Benchmarking
 ## RESEARCH SCOPES (you must guide them to one of these)
 
 **Simple (20-60 hours)** - Quick wins, good for first-time researchers
+- Touchpoints: 0%, 50%, 99%
+- Shareout: Internal high-level share out at 99%, External social media graphic at 99%
 - Infographic Creation: Visual summary of key facts about a topic
 - Expert Interview: Short interview with someone knowledgeable, summarize insights
 - Literature Review: Brief review of 3+ academic articles on a topic
 
 **Medium (60-120 hours)** - More substantial investigation
+- Touchpoints: 0%, 33%, 66%, 99%
+- Shareout: 66% Internal high-level share out + External social media graphic, 99% Final publication
 - Survey/Post-Occupancy Design: Design a survey to gather data, analyze results
 - Annotated Bibliography: Compile and summarize relevant sources in depth
 
 **Complex (120+ hours)** - Deep research, multiple phases
-- Case Study Analysis: Detailed analysis of specific examples
+- Touchpoints: 0%, 25%, 50%, 75%, 99%
+- Shareout: 50% Internal high-level share out, 99% Final publication + External social media graphic
+- Case Study Analysis: Detailed analysis of specific examples (required Phase 1 for Experimental Design)
 - Experimental Design: Test a hypothesis with measurable outcomes
 - Long-form Whitepaper: Comprehensive essay for publication
+- Original Research Proposal: Develop a proposal for original research, work with GreenLight Team on scope
 
 ## HOW TO GUIDE SCOPE SELECTION
 

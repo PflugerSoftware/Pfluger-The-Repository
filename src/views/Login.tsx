@@ -24,10 +24,11 @@ export default function Login({ onSuccess }: LoginProps) {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    if (!cleanEmail.endsWith('@pflugerarchitects.com')) {
-      setError('Please use your Pfluger Architects email');
-      return;
-    }
+    // Domain check temporarily disabled for email delivery testing
+    // if (!cleanEmail.endsWith('@pflugerarchitects.com')) {
+    //   setError('Please use your Pfluger Architects email');
+    //   return;
+    // }
 
     setIsLoading(true);
     const result = await sendLink(cleanEmail);

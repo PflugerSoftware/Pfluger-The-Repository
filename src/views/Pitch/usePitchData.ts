@@ -26,28 +26,60 @@ import {
   type User as DbUser,
 } from '../../services/pitchService';
 
-// Scope tiers define hour/week ranges
-export const SCOPE_TIERS: Record<string, { hours: [number, number]; weeks: [number, number] }> = {
-  simple:  { hours: [20, 60],   weeks: [5, 15] },
-  medium:  { hours: [60, 120],  weeks: [15, 30] },
-  complex: { hours: [120, 200], weeks: [30, 50] },
+// Scope tiers define hour/week ranges, touchpoints, and shareout milestones
+export const SCOPE_TIERS: Record<string, {
+  hours: [number, number];
+  weeks: [number, number];
+  touchpoints: number[];
+  shareout: string;
+  methods: string[];
+}> = {
+  simple: {
+    hours: [20, 60],
+    weeks: [5, 15],
+    touchpoints: [0, 50, 99],
+    shareout: 'Internal high-level share out at 99%, External social media graphic at 99%',
+    methods: [
+      'Infographic Creation',
+      'Expert Interview',
+      'Literature Review',
+    ],
+  },
+  medium: {
+    hours: [60, 120],
+    weeks: [15, 30],
+    touchpoints: [0, 33, 66, 99],
+    shareout: '66% Internal high-level share out + External social media graphic, 99% Final publication',
+    methods: [
+      'Survey/Post-Occupancy Design',
+      'Annotated Bibliography',
+    ],
+  },
+  complex: {
+    hours: [120, 200],
+    weeks: [30, 50],
+    touchpoints: [0, 25, 50, 75, 99],
+    shareout: '50% Internal high-level share out, 99% Final publication + External social media graphic',
+    methods: [
+      'Case Study Analysis',
+      'Experimental Design',
+      'Long-form Whitepaper',
+      'Original Research Proposal',
+    ],
+  },
 };
 
-// Methodologies are independent of scope - any can pair with any scope
-export const METHODOLOGIES = [
-  'Infographic Creation',
-  'Expert Interview',
-  'Literature Review',
-  'Survey/Post-Occupancy Design',
-  'Annotated Bibliography',
-  'Case Study Analysis',
-  'Experimental Design',
-  'Long-form Whitepaper',
-];
+// Flat list of all methodologies (used by dropdowns that show all options)
+export const METHODOLOGIES = Object.values(SCOPE_TIERS).flatMap(t => t.methods);
+
+// Get methods available for a specific scope
+export const getMethodsForScope = (scope: string): string[] => {
+  return SCOPE_TIERS[scope]?.methods ?? METHODOLOGIES;
+};
 
 // All combinations of scope + methodology (used by PitchBuilder progress sidebar)
 export const RESEARCH_METHODS = Object.entries(SCOPE_TIERS).flatMap(([scope, info]) =>
-  METHODOLOGIES.map(m => ({
+  info.methods.map(m => ({
     value: `${scope}|${m}`,
     scope,
     methodology: m,

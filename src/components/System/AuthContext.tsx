@@ -20,8 +20,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = onAuthStateChange(
       async (event, session) => {
         if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-          // Clear magic link tokens from URL so logout actually works
-          if (window.location.hash.includes('access_token')) {
+          // Clear auth tokens from URL so logout actually works
+          // PKCE flow uses ?code= param, legacy flow uses #access_token hash
+          if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
             window.history.replaceState(null, '', window.location.pathname);
           }
           const profile = await fetchUserProfile(session.user.email || '');
