@@ -75,21 +75,16 @@ The Repository operates in two modes controlled by authentication state:
 
 ### Authentication Flow
 
-Authentication uses **Supabase Auth** with magic link (passwordless) sign-in, managed through `AuthContext.tsx`:
-- Users enter their email on `/login`, receive a magic link via `supabase.auth.signInWithOtp()`
-- Only emails that exist in the `users` table can request a link (checked before sending)
+Authentication uses a **shared password** with client-side session persistence via `localStorage`, managed through `AuthContext.tsx` and `services/auth.ts`:
+- Users enter their email and password on `/login`
 - Only `@pflugerarchitects.com` emails accepted (client-side domain check)
-- Magic link redirects back to the app, Supabase client detects the token via `detectSessionInUrl: true`
-- URL hash tokens are cleaned up after sign-in to prevent logout issues
-- **Sessions are NOT persisted** (`persistSession: false`) - users request a new link each visit
-- On sign-in, `onAuthStateChange` fires `SIGNED_IN`, profile fetched from `users` table
-- Two Supabase clients: `supabase` (main, carries auth state) and `supabaseAnon` (never has auth, used for surveys)
-- `auth.uid()` in Supabase matches `users.id` (same UUID), enabling RLS policies
+- Password checked client-side against shared password, then user profile fetched from `users` table
+- Session stored in `localStorage` (`ezra-auth`) - persists across page reloads until logout
+- Two Supabase clients: `supabase` (main) and `supabaseAnon` (for public operations like surveys)
+- No Supabase Auth sessions - RLS uses `anon` role with public read policies
 - Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
-- Admin can generate magic links for any user via `supabase.auth.admin.generateLink()`
 - ~107 users across Austin, San Antonio, Dallas, Houston, and Corpus Christi offices
-- Email template configured in Supabase Dashboard > Authentication > Email Templates > Magic Link
-- RLS policies enforce access: public tables readable by anyone, internal tables require auth
+- RLS policies: public tables readable by anyone, survey tables have public read/insert
 - Confidential projects blocked from direct URL access for unauthenticated users (`resolveProjectIdentifier` checks `is_confidential`)
 - Will migrate to Azure SSO in the future
 
@@ -128,7 +123,7 @@ Project dashboards are built from composable blocks stored in the `project_block
 **Available block types (22):**
 `section`, `stat-grid`, `bar-chart`, `donut-chart`, `line-chart`, `comparison-table`, `image-gallery`, `text-content`, `timeline`, `key-findings`, `sources`, `tool-comparison`, `case-study-card`, `workflow-steps`, `scenario-bar-chart`, `cost-builder`, `survey-rating`, `feedback-summary`, `quotes`, `activity-rings`, `product-options`, `survey-map`
 
-- `survey-map`: Interactive map analytics block with 3D/satellite toggle, pin markers, IDW-interpolated sentiment contour overlay, question filter, and response stats. Uses Mapbox GL JS.
+- `survey-map`: Interactive map analytics block with 3D/satellite toggle, category-colored pin markers, IDW color-blending heatmap (category colors for all-view, sentiment green/yellow/red for filtered view), campus boundary clip with dashed outline, question and category filters, and response stats. Uses Mapbox GL JS. Pins have a `sentiment` field (good/ok/bad). Survey pins are draggable on the survey-taking page.
 - `line-chart`: Multi-series line chart with animated path drawing, hover tooltips, and axis labels. Built with SVG and Framer Motion.
 
 **Block data is DB-only** — no block content lives in code. To add/modify blocks, update the `project_blocks` table in Supabase. See `docs/R&B-Adding-a-New-Project.md` for the full guide including all block type JSON schemas.
@@ -207,11 +202,10 @@ Each category has dedicated color and Lucide icon:
 **Authentication Pattern:**
 ```typescript
 // AuthContext provides user with id, username, name, role
-const { user, isAuthenticated, sendLink, logout } = useAuth();
-// user.id is the Supabase Auth UUID (same as users.id in the DB)
+const { user, isAuthenticated, login, logout } = useAuth();
+// user.id is from the users table in the DB
 // Protected routes use <ProtectedRoute> wrapper
-// Supabase client auto-includes JWT in all requests when logged in
-// sendLink(email) sends a magic link - no passwords
+// login(email, password) checks shared password then fetches user profile
 ```
 
 **Project Loading:**
@@ -357,17 +351,16 @@ secondary: {
 
 To test both modes:
 1. **Public Mode**: Visit app without logging in
-2. **Internal Mode**: Click "Team Sign In" at `/login`, enter any email from the `users` table to receive a magic link
-3. **Admin Mode**: Use `software@pflugerarchitects.com` or generate a magic link for any user via `supabase.auth.admin.generateLink()`
+2. **Internal Mode**: Click "Team Sign In" at `/login`, enter a `@pflugerarchitects.com` email from the `users` table with the shared password
+3. **Admin Mode**: Use `software@pflugerarchitects.com` with the shared password
 
-Authentication is handled by Supabase Auth. The Supabase JS client automatically includes the JWT in all requests when a session exists. RLS policies on all tables enforce access control server-side.
+Authentication is client-side with shared password and localStorage persistence. No Supabase Auth sessions.
 
 When implementing features:
 - Use `useAuth()` hook to check `isAuthenticated` and get `user` (with `id`, `username`, `name`, `role`)
-- `user.id` is the Supabase Auth UUID, same as `users.id` in the database
+- `user.id` is from the `users` table in the database
 - Use `<ProtectedRoute>` wrapper for auth-required routes
-- RLS policies enforce data access server-side. No need for client-side data filtering for security.
-- Edge functions should verify the JWT from the `Authorization` header for authenticated endpoints
+- RLS policies use `anon` role with public read access on most tables
 
 ### Project Data Updates
 

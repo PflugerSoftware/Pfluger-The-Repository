@@ -62,6 +62,7 @@ export interface SurveyPin {
   latitude: number;
   longitude: number;
   note: string | null;
+  sentiment: 'good' | 'ok' | 'bad' | null;
   created_at: string;
 }
 
@@ -79,6 +80,7 @@ export interface SurveySubmissionPin {
   latitude: number;
   longitude: number;
   note?: string;
+  sentiment?: 'good' | 'ok' | 'bad';
 }
 
 export interface SurveySubmissionAnswer {
@@ -220,6 +222,7 @@ export async function submitSurveyResponse(
         latitude: pin.latitude,
         longitude: pin.longitude,
         note: pin.note ? sanitizeText(pin.note, MAX_NOTE_LENGTH) : null,
+        sentiment: pin.sentiment || null,
       }));
 
       const { error: pinError } = await supabaseAnon

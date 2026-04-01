@@ -169,18 +169,22 @@ export default function SurveyPage() {
     };
   }, [phase, currentQuestion, handleMapClick, mapReady]);
 
-  // Sync markers with current answer pins (using category color)
+  // Sync markers with current answer pins (using category color, draggable)
   useEffect(() => {
     // Clear existing markers
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (!map.current || !currentAnswer?.pins || !currentCategory) return;
+    if (!map.current || !currentAnswer?.pins || !currentCategory || !currentQuestion) return;
 
-    for (const pin of currentAnswer.pins) {
+    for (let idx = 0; idx < currentAnswer.pins.length; idx++) {
+      const pin = currentAnswer.pins[idx];
+      const pinIndex = idx;
+
       const marker = new mapboxgl.Marker({
         color: currentCategory.color,
         scale: 0.85,
+        draggable: true,
       })
         .setLngLat([pin.longitude, pin.latitude])
         .addTo(map.current);
@@ -193,9 +197,26 @@ export default function SurveyPage() {
         );
       }
 
+      marker.on('dragend', () => {
+        const lngLat = marker.getLngLat();
+        setAnswers((prev) => {
+          const next = new Map(prev);
+          const existing = next.get(currentQuestion.id);
+          if (!existing?.pins) return next;
+          const updatedPins = [...existing.pins];
+          updatedPins[pinIndex] = {
+            ...updatedPins[pinIndex],
+            latitude: lngLat.lat,
+            longitude: lngLat.lng,
+          };
+          next.set(currentQuestion.id, { ...existing, pins: updatedPins });
+          return next;
+        });
+      });
+
       markersRef.current.push(marker);
     }
-  }, [currentAnswer?.pins, currentCategory]);
+  }, [currentAnswer?.pins, currentCategory, currentQuestion]);
 
   // Dim/undim map based on current question type
   useEffect(() => {

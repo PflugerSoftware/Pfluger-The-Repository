@@ -19,6 +19,37 @@ import type {
 } from '../../services/surveyService';
 import type { SurveyMapData } from './types';
 
+// Lee College campus boundary from KMZ
+const CAMPUS_BOUNDARY: [number, number][] = [
+  [-94.98003392626333, 29.73728390164641],
+  [-94.98026680778955, 29.7362245466406],
+  [-94.97994758091579, 29.73611213706491],
+  [-94.98023472889521, 29.73555965639588],
+  [-94.9810798632486, 29.73531616858645],
+  [-94.98032373607042, 29.73408650959582],
+  [-94.97846727829557, 29.73490870425564],
+  [-94.97825036631228, 29.73442691557635],
+  [-94.97820252185326, 29.73399353001699],
+  [-94.97817777978511, 29.73369660299584],
+  [-94.97837071625727, 29.73343632524895],
+  [-94.9785631114835, 29.73324782208751],
+  [-94.9787643811968, 29.73305054214907],
+  [-94.97900367844501, 29.732737735653],
+  [-94.97908014186132, 29.73249723692],
+  [-94.97908202874716, 29.73215094952845],
+  [-94.97899875661199, 29.73177970826987],
+  [-94.97891759401598, 29.73143657617207],
+  [-94.978849751857, 29.73120875106844],
+  [-94.97876152855817, 29.73091136273915],
+  [-94.97862050796223, 29.73051933538711],
+  [-94.9785102529823, 29.73013790710168],
+  [-94.97849210149494, 29.72981890315342],
+  [-94.97433973735936, 29.72987949759868],
+  [-94.97213767519371, 29.73507213633389],
+  [-94.9783129221989, 29.73708615842378],
+  [-94.98003392626333, 29.73728390164641],
+];
+
 interface SurveyMapBlockProps {
   data: SurveyMapData;
 }
@@ -34,6 +65,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const [mapMode, setMapMode] = useState<'3d' | 'satellite'>('3d');
   const [questions, setQuestions] = useState<Array<SurveyQuestion & { answerCount: number }>>([]);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [pins, setPins] = useState<SurveyPin[]>([]);
   const [stats, setStats] = useState<SurveyStats | null>(null);
   const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
@@ -44,6 +76,14 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   for (const q of questions) {
     questionCategoryMap[q.id] = q.category;
   }
+
+  // Unique categories present in questions
+  const availableCategories = [...new Set(questions.map((q) => q.category).filter(Boolean))] as string[];
+
+  // Filter pins by selected category
+  const filteredPins = selectedCategory
+    ? pins.filter((p) => questionCategoryMap[p.question_id] === selectedCategory)
+    : pins;
 
   // Load initial data
   useEffect(() => {
@@ -101,6 +141,28 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     });
 
     m.on('load', () => {
+      // Add campus boundary outline
+      if (!m.getSource('campus-boundary')) {
+        m.addSource('campus-boundary', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [CAMPUS_BOUNDARY] },
+            properties: {},
+          },
+        });
+        m.addLayer({
+          id: 'campus-boundary-line',
+          type: 'line',
+          source: 'campus-boundary',
+          paint: {
+            'line-color': '#ffffff',
+            'line-width': 2,
+            'line-dasharray': [4, 3],
+            'line-opacity': 0.6,
+          },
+        });
+      }
       setMapReady(true);
     });
 
@@ -135,6 +197,28 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         m.setConfigProperty('basemap', 'lightPreset', 'night');
         m.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
       }
+      // Re-add boundary after style switch
+      if (!m.getSource('campus-boundary')) {
+        m.addSource('campus-boundary', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [CAMPUS_BOUNDARY] },
+            properties: {},
+          },
+        });
+        m.addLayer({
+          id: 'campus-boundary-line',
+          type: 'line',
+          source: 'campus-boundary',
+          paint: {
+            'line-color': '#ffffff',
+            'line-width': 2,
+            'line-dasharray': [4, 3],
+            'line-opacity': 0.6,
+          },
+        });
+      }
       renderPinMarkers();
       renderHeatmap();
     });
@@ -147,7 +231,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
     if (!mapRef.current || !showPins) return;
 
-    for (const pin of pins) {
+    for (const pin of filteredPins) {
       const cat = questionCategoryMap[pin.question_id] || null;
       const config = getCategoryConfig(cat);
 
@@ -166,67 +250,63 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
       markersRef.current.push(marker);
     }
-  }, [pins, showPins, questionCategoryMap]);
+  }, [filteredPins, showPins, questionCategoryMap]);
 
   const renderHeatmap = useCallback(() => {
     if (!mapRef.current || !mapReady) return;
+    if (!mapRef.current.isStyleLoaded()) return;
 
-    const layerIds = ['survey-contour-fill', 'survey-contour-line'];
-    for (const id of layerIds) {
-      if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
+    // Clean up previous layers/sources
+    const style = mapRef.current.getStyle();
+    if (style?.layers) {
+      for (const layer of style.layers) {
+        if (layer.id.startsWith('survey-contour-')) {
+          mapRef.current.removeLayer(layer.id);
+        }
+      }
     }
-    if (mapRef.current.getSource('survey-contour')) {
-      mapRef.current.removeSource('survey-contour');
+    if (style?.sources) {
+      for (const srcId of Object.keys(style.sources)) {
+        if (srcId.startsWith('survey-contour-')) {
+          mapRef.current.removeSource(srcId);
+        }
+      }
     }
 
-    if (!showContour || pins.length < 3) return;
+    if (!showContour || filteredPins.length < 3) return;
 
-    // For contour, use pin density (all pins equal weight)
-    const pts = pins.map((p) => ({
-      lng: p.longitude,
-      lat: p.latitude,
-      val: 1,
-    }));
-
-    // Convex hull (Graham scan)
-    function cross(o: { lng: number; lat: number }, a: { lng: number; lat: number }, b: { lng: number; lat: number }) {
-      return (a.lng - o.lng) * (b.lat - o.lat) - (a.lat - o.lat) * (b.lng - o.lng);
+    // Parse hex color to [r, g, b]
+    function hexToRgb(hex: string): [number, number, number] {
+      const h = hex.replace('#', '');
+      return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
     }
-    const sorted = [...pts].sort((a, b) => a.lng - b.lng || a.lat - b.lat);
-    const lower: typeof pts = [];
-    for (const p of sorted) {
-      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
-      lower.push(p);
+    function rgbToHex(r: number, g: number, b: number): string {
+      return '#' + [r, g, b].map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
     }
-    const upper: typeof pts = [];
-    for (const p of sorted.reverse()) {
-      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
-      upper.push(p);
-    }
-    upper.pop();
-    lower.pop();
-    const hull = [...lower, ...upper];
 
-    const cx = hull.reduce((s, p) => s + p.lng, 0) / hull.length;
-    const cy = hull.reduce((s, p) => s + p.lat, 0) / hull.length;
-    const expandedHull = hull.map((p) => ({
-      lng: cx + (p.lng - cx) * 1.15,
-      lat: cy + (p.lat - cy) * 1.15,
-    }));
+    const SENTIMENT_COLORS: Record<string, string> = { good: '#22C55E', ok: '#EAB308', bad: '#EF4444' };
+    const useSentiment = !!selectedQuestionId || !!selectedCategory;
 
-    const minLng = Math.min(...expandedHull.map((p) => p.lng));
-    const maxLng = Math.max(...expandedHull.map((p) => p.lng));
-    const minLat = Math.min(...expandedHull.map((p) => p.lat));
-    const maxLat = Math.max(...expandedHull.map((p) => p.lat));
-    const gridRes = 40;
-    const stepLng = (maxLng - minLng) / gridRes;
-    const stepLat = (maxLat - minLat) / gridRes;
+    // Assign a color to each pin
+    const coloredPins = filteredPins.map((pin) => {
+      let color: string;
+      if (useSentiment && pin.sentiment) {
+        // Filtered view: sentiment gradient (green-yellow-red)
+        color = SENTIMENT_COLORS[pin.sentiment] || '#9CA3AF';
+      } else {
+        // All questions/categories: category color blend
+        const cat = questionCategoryMap[pin.question_id] || null;
+        color = getCategoryConfig(cat).color;
+      }
+      return { lng: pin.longitude, lat: pin.latitude, rgb: hexToRgb(color) };
+    });
 
-    function insideHull(lng: number, lat: number) {
+    // Point-in-polygon test against campus boundary
+    function insideCampus(lng: number, lat: number): boolean {
       let inside = false;
-      for (let i = 0, j = expandedHull.length - 1; i < expandedHull.length; j = i++) {
-        const xi = expandedHull[i].lng, yi = expandedHull[i].lat;
-        const xj = expandedHull[j].lng, yj = expandedHull[j].lat;
+      for (let i = 0, j = CAMPUS_BOUNDARY.length - 1; i < CAMPUS_BOUNDARY.length; j = i++) {
+        const xi = CAMPUS_BOUNDARY[i][0], yi = CAMPUS_BOUNDARY[i][1];
+        const xj = CAMPUS_BOUNDARY[j][0], yj = CAMPUS_BOUNDARY[j][1];
         if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
           inside = !inside;
         }
@@ -234,30 +314,60 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       return inside;
     }
 
-    function idw(lng: number, lat: number): number {
-      let wSum = 0;
-      let vSum = 0;
-      const power = 2;
-      for (const p of pts) {
-        const dx = (p.lng - lng) * 111320 * Math.cos((lat * Math.PI) / 180);
-        const dy = (p.lat - lat) * 110540;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 1) return p.val;
-        const w = 1 / Math.pow(dist, power);
-        wSum += w;
-        vSum += w * p.val;
-      }
-      return wSum > 0 ? vSum / wSum : 0;
-    }
+    // Use campus boundary bounding box so heatmap fills the whole campus
+    const bLngs = CAMPUS_BOUNDARY.map((c) => c[0]);
+    const bLats = CAMPUS_BOUNDARY.map((c) => c[1]);
+    const minLng = Math.min(...bLngs);
+    const maxLng = Math.max(...bLngs);
+    const minLat = Math.min(...bLats);
+    const maxLat = Math.max(...bLats);
+    const gridRes = 160;
+    const stepLng = (maxLng - minLng) / gridRes;
+    const stepLat = (maxLat - minLat) / gridRes;
 
+    if (stepLng === 0 || stepLat === 0) return;
+
+    // IDW color blend: for each grid cell, blend all pin colors by inverse-distance weight
+    const power = 2;
     const features: GeoJSON.Feature[] = [];
+
     for (let i = 0; i < gridRes; i++) {
       for (let j = 0; j < gridRes; j++) {
         const cLng = minLng + (i + 0.5) * stepLng;
         const cLat = minLat + (j + 0.5) * stepLat;
-        if (!insideHull(cLng, cLat)) continue;
 
-        const val = idw(cLng, cLat);
+        // Clip to campus boundary
+        if (!insideCampus(cLng, cLat)) continue;
+
+        let wSum = 0;
+        let rSum = 0, gSum = 0, bSum = 0;
+
+        for (const p of coloredPins) {
+          const dx = (p.lng - cLng) * 111320 * Math.cos((cLat * Math.PI) / 180);
+          const dy = (p.lat - cLat) * 110540;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const w = 1 / Math.pow(Math.max(dist, 1), power);
+          wSum += w;
+          rSum += w * p.rgb[0];
+          gSum += w * p.rgb[1];
+          bSum += w * p.rgb[2];
+        }
+
+        // Fade opacity by distance from nearest pin
+        const maxDist = 300; // meters
+        const closestDist = Math.min(
+          ...coloredPins.map((p) => {
+            const dx = (p.lng - cLng) * 111320 * Math.cos((cLat * Math.PI) / 180);
+            const dy = (p.lat - cLat) * 110540;
+            return Math.sqrt(dx * dx + dy * dy);
+          })
+        );
+        if (closestDist > maxDist) continue;
+
+        const blendedColor = rgbToHex(rSum / wSum, gSum / wSum, bSum / wSum);
+        // Opacity falls off with distance from nearest pin
+        const opacity = Math.max(0, 1 - closestDist / maxDist);
+
         const x0 = minLng + i * stepLng;
         const x1 = x0 + stepLng;
         const y0 = minLat + j * stepLat;
@@ -269,50 +379,50 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             type: 'Polygon',
             coordinates: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]],
           },
-          properties: { density: val },
+          properties: { color: blendedColor, opacity: opacity * 0.45 },
         });
       }
     }
 
-    mapRef.current.addSource('survey-contour', {
+    if (features.length === 0) return;
+
+    mapRef.current.addSource('survey-contour-blend', {
       type: 'geojson',
       data: { type: 'FeatureCollection', features },
     });
 
     mapRef.current.addLayer({
-      id: 'survey-contour-fill',
+      id: 'survey-contour-fill-blend',
       type: 'fill',
-      source: 'survey-contour',
+      source: 'survey-contour-blend',
       paint: {
-        'fill-color': '#00A9E0',
-        'fill-opacity': ['interpolate', ['linear'], ['get', 'density'], 0, 0.05, 1, 0.4],
+        'fill-color': ['get', 'color'],
+        'fill-opacity': ['get', 'opacity'],
         'fill-emissive-strength': 1,
       },
     });
-
-    mapRef.current.addLayer({
-      id: 'survey-contour-line',
-      type: 'line',
-      source: 'survey-contour',
-      paint: {
-        'line-color': '#00A9E0',
-        'line-width': 0.3,
-        'line-opacity': 0.2,
-      },
-    });
-  }, [pins, showContour, mapReady]);
+  }, [filteredPins, showContour, mapReady, questionCategoryMap, selectedQuestionId, selectedCategory]);
 
   // Re-render when pins or viewMode change
   useEffect(() => {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (mapRef.current) {
-      for (const id of ['survey-contour-fill', 'survey-contour-line']) {
-        if (mapRef.current.getLayer(id)) mapRef.current.removeLayer(id);
+    if (mapRef.current && mapRef.current.isStyleLoaded()) {
+      const style = mapRef.current.getStyle();
+      if (style?.layers) {
+        for (const layer of style.layers) {
+          if (layer.id.startsWith('survey-contour-')) {
+            mapRef.current.removeLayer(layer.id);
+          }
+        }
       }
-      if (mapRef.current.getSource('survey-contour')) {
-        mapRef.current.removeSource('survey-contour');
+      if (style?.sources) {
+        for (const srcId of Object.keys(style.sources)) {
+          if (srcId.startsWith('survey-contour-')) {
+            mapRef.current.removeSource(srcId);
+          }
+        }
       }
     }
 
@@ -322,9 +432,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId);
 
-  // Build category breakdown from pins
+  // Build category breakdown from filtered pins
   const categoryBreakdown: Record<string, number> = {};
-  for (const pin of pins) {
+  for (const pin of filteredPins) {
     const cat = questionCategoryMap[pin.question_id] || 'unknown';
     categoryBreakdown[cat] = (categoryBreakdown[cat] || 0) + 1;
   }
@@ -343,7 +453,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
       {/* Glass sidebar */}
       <div
-        className="absolute top-3 left-3 bottom-3 w-80 z-10 rounded-xl overflow-y-auto"
+        className="absolute top-3 left-3 bottom-3 w-80 z-10 rounded-xl overflow-y-auto scrollbar-thin"
         style={{
           background: 'rgba(24, 16, 25, 0.9)',
           backdropFilter: 'blur(20px)',
@@ -429,25 +539,40 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             </select>
           </div>
 
+          {/* Category filter */}
+          {availableCategories.length > 1 && (
+            <div>
+              <div className="flex items-center gap-1.5 mb-2">
+                <Filter className="w-3 h-3 text-gray-500" />
+                <span className="text-xs text-gray-500">Filter by Category</span>
+              </div>
+              <select
+                value={selectedCategory || ''}
+                onChange={(e) => setSelectedCategory(e.target.value || null)}
+                className="w-full px-3 py-2 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500/50 cursor-pointer"
+                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}
+              >
+                <option value="" style={{ background: '#1e1e1e', color: '#fff' }}>All Categories</option>
+                {availableCategories.map((cat) => {
+                  const config = getCategoryConfig(cat);
+                  return (
+                    <option key={cat} value={cat} style={{ background: '#1e1e1e', color: '#fff' }}>
+                      {config.label}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+          )}
+
           {/* Response stats */}
           {stats && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <Users className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">Responses</span>
+                <span className="text-xs text-gray-500">{stats.totalResponses} Responses</span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="p-2.5 bg-white/5 rounded-lg">
-                  <p className="text-lg font-bold text-white">{stats.totalResponses}</p>
-                  <p className="text-[10px] text-gray-500">Total</p>
-                </div>
-                <div className="p-2.5 bg-white/5 rounded-lg">
-                  <p className="text-lg font-bold text-white">{stats.completedResponses}</p>
-                  <p className="text-[10px] text-gray-500">Completed</p>
-                </div>
-              </div>
-              {/* Role breakdown */}
-              <div className="mt-2 space-y-1">
+              <div className="space-y-1">
                 {Object.entries(stats.roleBreakdown).map(([role, count]) => (
                   <div key={role} className="flex items-center justify-between">
                     <span className="text-xs text-gray-400 capitalize">{role}</span>
@@ -470,7 +595,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           )}
 
           {/* Category breakdown (replaces old green/yellow/red) */}
-          {pins.length > 0 && (
+          {filteredPins.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-xs text-gray-500">Pins by Principle</span>
@@ -482,10 +607,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                     const config = getCategoryConfig(cat);
                     return (
                       <div key={cat} className="flex items-center gap-2">
-                        <div
-                          className="w-2.5 h-2.5 rounded-full shrink-0"
-                          style={{ backgroundColor: config.color }}
-                        />
                         <span className="text-xs text-gray-400 flex-1 truncate">
                           {config.label}
                         </span>
@@ -495,7 +616,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                             style={{ backgroundColor: config.color }}
                             initial={{ width: 0 }}
                             animate={{
-                              width: `${pins.length > 0 ? (count / pins.length) * 100 : 0}%`,
+                              width: `${filteredPins.length > 0 ? (count / filteredPins.length) * 100 : 0}%`,
                             }}
                           />
                         </div>
@@ -506,7 +627,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                     );
                   })}
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">{pins.length} total pins</p>
+              <p className="text-[10px] text-gray-600 mt-1">{filteredPins.length} total pins</p>
             </div>
           )}
 
@@ -592,7 +713,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           )}
 
           {/* Empty state */}
-          {!loading && pins.length === 0 && stats?.totalResponses === 0 && (
+          {!loading && filteredPins.length === 0 && stats?.totalResponses === 0 && (
             <div className="text-center py-6">
               <p className="text-xs text-gray-500">No responses yet</p>
             </div>
