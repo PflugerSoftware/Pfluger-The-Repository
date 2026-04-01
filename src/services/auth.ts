@@ -7,7 +7,14 @@ export interface UserProfile {
   role: 'admin' | 'researcher' | 'contributor' | 'viewer';
 }
 
-export async function fetchUserProfile(email: string): Promise<UserProfile | null> {
+// Shared password for all users (will migrate to Azure SSO)
+const SHARED_PASSWORD = '123456Softwares!';
+
+export async function login(email: string, password: string): Promise<{ user: UserProfile | null; error?: string }> {
+  if (password !== SHARED_PASSWORD) {
+    return { user: null, error: 'Invalid password' };
+  }
+
   const { data, error } = await supabase
     .from('users')
     .select('id, email, name, role')
@@ -15,33 +22,15 @@ export async function fetchUserProfile(email: string): Promise<UserProfile | nul
     .single();
 
   if (error || !data) {
-    return null;
+    return { user: null, error: 'User not found' };
   }
 
   return {
-    id: data.id,
-    username: data.email,
-    name: data.name,
-    role: data.role as UserProfile['role'],
-  };
-}
-
-/** Send a magic link to the user's email */
-export async function sendMagicLink(email: string) {
-  return supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.origin,
+    user: {
+      id: data.id,
+      username: data.email,
+      name: data.name,
+      role: data.role as UserProfile['role'],
     },
-  });
-}
-
-export async function signOut() {
-  return supabase.auth.signOut();
-}
-
-export function onAuthStateChange(
-  callback: Parameters<typeof supabase.auth.onAuthStateChange>[0]
-) {
-  return supabase.auth.onAuthStateChange(callback);
+  };
 }

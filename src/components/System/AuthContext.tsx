@@ -1,13 +1,13 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { fetchUserProfile, sendMagicLink, signOut, onAuthStateChange, type UserProfile } from '../../services/auth';
+import { login as authLogin, type UserProfile } from '../../services/auth';
 
 type User = UserProfile;
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  sendLink: (email: string) => Promise<{ success: boolean; error?: string }>;
-  logout: () => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,47 +17,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = onAuthStateChange(
-      async (event, session) => {
-        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session?.user) {
-          // Clear auth tokens from URL so logout actually works
-          // PKCE flow uses ?code= param, legacy flow uses #access_token hash
-          if (window.location.hash.includes('access_token') || window.location.search.includes('code=')) {
-            window.history.replaceState(null, '', window.location.pathname);
-          }
-          const profile = await fetchUserProfile(session.user.email || '');
-          if (profile) {
-            setUser(profile);
-            setIsAuthenticated(true);
-          }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setIsAuthenticated(false);
-        }
-      }
-    );
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    const savedAuth = localStorage.getItem('ezra-auth');
+    if (savedAuth) {
+      const authData = JSON.parse(savedAuth);
+      setIsAuthenticated(true);
+      setUser(authData.user);
+    }
   }, []);
 
-  const sendLink = async (email: string): Promise<{ success: boolean; error?: string }> => {
-    const { error } = await sendMagicLink(email);
-    if (error) {
-      return { success: false, error: error.message };
-    }
-    return { success: true };
+  const login = async (email: string, password: string): Promise<boolean> => {
+    const result = await authLogin(email, password);
+    if (!result.user) return false;
+
+    setIsAuthenticated(true);
+    setUser(result.user);
+    localStorage.setItem('ezra-auth', JSON.stringify({
+      isAuthenticated: true,
+      user: result.user,
+    }));
+    return true;
   };
 
-  const logout = async () => {
-    await signOut();
-    setUser(null);
+  const logout = () => {
     setIsAuthenticated(false);
+    setUser(null);
+    localStorage.removeItem('ezra-auth');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, sendLink, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

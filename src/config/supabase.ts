@@ -7,14 +7,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-  },
-});
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /** Anon-only client for public operations (surveys). Never carries auth state. */
 export const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey, {
