@@ -1,7 +1,7 @@
 # Pfluger Research & Benchmarking Knowledge Base
 
-**Framework Version**: 2025.4
-**Last Updated**: 2025-11-18
+**Framework Version**: 2026.1
+**Last Updated**: 2026-04-01
 **Purpose**: Complete operational reference for Pfluger R&B department
 **Scope**: Vision, processes, methodology, projects, tools, billing, partners
 **Primary Use**: AI agent knowledge retrieval and process execution
@@ -235,7 +235,7 @@ The intent of research at Pfluger is to enhance our work and its impact on the e
 
 ### 2.1.1 Call for Pitches Process
 
-The research process starts with a call for pitches. With the focus of Experiential Learning, researchers are to complete the pitch form addressing a supplied idea (in a call for pitches) or address an idea they are interested in.
+The research process starts with a call for pitches. With the focus of Experiential Learning, researchers submit pitches through The Repository (repository.pflugerarchitects.com), either selecting a pre-approved GreenLit topic or pitching their own idea with Ezra AI guidance (see Section 3.2.4).
 
 **Supplied Gaps**: Strategically picked in alignment with current or coming online projects and have identified research partners.
 
@@ -315,7 +315,7 @@ Clearly indicate the expected relationship, specifying conditions or thresholds 
 
 **Timeline**: 20-60 hours
 **Touchpoints**: 0%, 50%, 99%
-**Shareout**: Internal high level share out at 99%, External - social media graphic with qucik fact at 99%
+**Shareout**: Internal high level share out at 99%, External - social media graphic with quick fact at 99%
 
 **Available Methods:**
 
@@ -345,8 +345,8 @@ Clearly indicate the expected relationship, specifying conditions or thresholds 
 **Timeline**: 60-120 hours
 **Touchpoints**: 0%, 33%, 66%, 99%
 **Shareout**: 
-33% Internal high level share out at 66%, External - social media graphic with qucik fact
-99% Final publicaiton
+33% Internal high level share out at 66%, External - social media graphic with quick fact
+99% Final publication
 
 **Available Methods:**
 
@@ -370,7 +370,7 @@ Clearly indicate the expected relationship, specifying conditions or thresholds 
 **Touchpoints**: 0%, 25%, 50%, 75%, 99%
 **Shareout**: 
 50% Internal high level share out. 
-99% Final publicaiton, External - social media graphic with qucik fact
+99% Final publication, External - social media graphic with quick fact
 
 **Available Methods:**
 
@@ -522,7 +522,9 @@ Reflect on limitations or unanswered questions in your study and propose directi
 
 # SECTION 3: PITCH & APPROVAL PROCESS
 
-## 3.1 Pitch Form Questions
+## 3.1 Pitch Questions
+
+These are the core questions a pitch must address. When using The Repository's Ezra pitch builder (Section 3.2.4), Ezra guides the researcher through these topics conversationally rather than as a static form.
 
 ### 3.1.1 Core Pitch Questions
 
@@ -549,6 +551,8 @@ What R&B groups does your pitch align to?
 - Immersive Learning
 - Psychology
 - Sustainability
+- Documentation
+- Recognition
 
 ### 3.1.2 Pitch Form Components
 
@@ -570,9 +574,9 @@ The following components should be addressed in developing a successful research
 
 ### 3.2.1 Timeline & Response
 
-Once a form is submitted, the GreenLight submission team will assist in filling any gaps in the pitch. The response time is 2 weeks. The research idea may also need to be aligned with Pfluger's goals of experiential learning.
+Once a pitch is submitted through The Repository, the GreenLight team will review it and assist in filling any gaps. The response time is 2 weeks. The research idea may also need to be aligned with Pfluger's goals of experiential learning.
 
-The GreenLight team will respond with comments, and the applicant will then have the option to review the pitch and continue with the research process.
+The GreenLight team will respond with comments directly on the pitch in The Repository, and the applicant will then have the option to revise the pitch and resubmit.
 
 Depending on the level of funding needed or billable time set aside, there may be a period between the submission GreenLight and the commencement of the research. It will be the researcher's responsibility to coordinate timelines with the active Project Managers and Project Architects for active project schedules as active project deliverables take preference over research deliverables.
 
@@ -588,13 +592,36 @@ The GreenLight Team will assist with:
 - Assisting in identifying the needed research resources
 - Assisting in publication resources and services
 - Obtaining, supplying, and facilitating the needed research resources
-- Overview on how to submit the pitch form, ETAs on responses, who does the approval, and how the timeline is coordinated with the project team leadership on progress and touchpoints
+- Overview on how to submit a pitch through The Repository, ETAs on responses, who does the approval, and how the timeline is coordinated with the project team leadership on progress and touchpoints
+
+### 3.2.4 Ezra AI Pitch Builder (Primary Submission Method)
+
+Researchers submit pitches through The Repository web app (repository.pflugerarchitects.com) using the AI-guided pitch builder powered by Ezra (Claude Sonnet). From the "Submit Pitch" page, researchers choose between selecting a pre-approved GreenLit topic or pitching their own idea with Ezra's guidance.
+
+**Ezra's 5-Step Conversational Flow**:
+1. **Understand the Idea** - What is the research about and why does it matter?
+2. **Clarify the Goal** - What is the deliverable and who is the audience?
+3. **Recommend Scope & Methodology** - Ezra suggests Simple/Medium/Complex scope and appropriate research methods
+4. **Fill in Details** - Timeline, partners, project alignment, R&B group
+5. **Summarize for Submission** - Ezra compiles the pitch for GreenLight review
+
+**Data Collected Through Ezra**:
+- `research_idea` - The core research question/topic
+- `alignment` - Current project, prospected project, or thought leadership
+- `project_name` - Linked architectural project (if applicable)
+- `partner` - External organization/partner
+- `methodology` - Research method
+- `scope_tier` - Simple, Medium, or Complex
+- `impact` - Expected deliverable and success metrics
+- `timeline` - Duration estimate
+
+Ezra has context on all existing Pfluger research projects and the R&B framework, so it can reference related work and guide alignment with experiential learning focus. All conversations are saved and linked to the pitch for GreenLight Team review.
 
 ### 3.2.3 Additional Support
 
 The GreenLight team will also assist in setting up touchpoints and goals in Lattice and connect the researcher to others in parallel or associated research topics.
 
-While the AI Research Assistant will help align the research pitch form and focus the research with the core values and vision of the R&B initiative, further alignment may be required in the submission and approval process by the Green Light team.
+While Ezra helps align the research pitch and focus the research with the core values and vision of the R&B initiative, further alignment may be required in the submission and approval process by the GreenLight team.
 
 ## 3.3 Complete Research Workflow (Pitch to Publication)
 
@@ -603,13 +630,19 @@ This is the end-to-end operational workflow for R&B research projects from initi
 ### Phase 1: Pitch Submission & Approval
 
 **1.1 Pitch Initiation**
-- Researcher submits pitch via pitch form OR selects from strategic gaps identified in call for pitches
-- Pitch addresses all core questions (Section 3.1.1) and components (Section 3.1.2)
+- Researcher logs into The Repository (repository.pflugerarchitects.com) and navigates to "Submit Pitch"
+- Two paths available:
+  - **Choose a GreenLit Topic** - Select from pre-approved research topics (fast-track)
+  - **Pitch Your Own Idea** - Develop a custom pitch with Ezra AI guidance
+- Ezra walks the researcher through a 5-step conversational flow (see Section 3.2.4), helping refine the research question, recommend scope and methodology, and compile the pitch
+- Pitch is saved as a draft until the researcher submits it for review
 
 **1.2 GreenLight Review**
-- GreenLight Team reviews pitch within 2-week timeframe
-- Team provides feedback, requests revisions, or approves pitch
-- If revisions needed, researcher updates and resubmits
+- Submitted pitches appear in The Repository for the GreenLight Team to review
+- GreenLight Team reviews pitch within 2-week timeframe, with access to the full Ezra conversation history
+- Team provides comments directly on the pitch, requests revisions, or approves
+- If revisions needed (`revise` status), researcher updates and resubmits through The Repository
+- Approved pitches receive `greenlit` status
 
 **1.3 Approval & Alignment**
 - Pitch approved and aligned to architectural project (if applicable)
@@ -646,7 +679,7 @@ admin
 - Example: `RB-X25-RB01-Sanctuary-Spaces`
 - Repository linked to corresponding Egnyte folder
 - Managed through alex.wickes@pflugerarchitects.com (transitioning to dedicated R&B account)
-- Project is made private, researhcer is added to the project
+- Project is made private, researcher is added to the project
 - Initial commit includes:
   - README with project overview
   - Approved pitch document
@@ -717,7 +750,7 @@ admin
 - Graphics, infographics, visualizations finalized
 - APA citations verified
 - Publication standards met
-- Final rearch document created in `/02_docs/`
+- Final research document created in `/02_docs/`
 - Final commit and tag in GitHub
 
 **4.4 Presentation documented**
@@ -725,7 +758,7 @@ admin
 - Graphics, infographics, visualizations finalized
 - APA citations verified
 - Publication standards met
-- Final rearch document created in `/02_docs/`
+- Final research document created in `/02_docs/`
 - Final commit and tag in GitHub
 
 ### Phase 5: Publication & Integration & Shareouts
@@ -767,12 +800,13 @@ admin
 - Repository archived with all materials
 - Lessons learned captured for framework improvement
 
-**5.6 application or tool development**
-- development of a new tool to assist in the research problem
-- share out of the tool to other user
-- db to be located on BlueHost
-- final webhost on subdomanie on Bluehost xx.pflugerarchitects.com
-- usernames, passwords, envs, api keys to be tracked in project folder, included in gitignore.
+**5.6 Application or Tool Development**
+- Development of a new tool to assist in the research problem
+- Share out of the tool to other users
+- The Repository platform is hosted on Cloudflare Pages with Supabase backend
+- Pfluger Vision is hosted on Bluehost with PHP/MySQL backend
+- Production URL: `repository.pflugerarchitects.com`
+- Usernames, passwords, envs, API keys to be tracked in project folder, included in .gitignore
 
 ### Phase 6: Ongoing Impact
 
@@ -1017,7 +1051,7 @@ Pfluger partnerships work top down. Pfluger realizes that research is not a nati
 
 During the submission process, research partners are asked to be documented. If there are no known ones, the approval team will curate one applicable to the research scope and intensity.
 
-## 5.2 Research Partners & Resources alex wickes needs to update the csv
+## 5.2 Research Partners & Resources
 
 **Master Resource File**: `/Shared/Shared Resources/RESEARCH AND BENCHMARKING/02_Research and Benchmarking Resources/02_Resources/RB Research Partners and Resources.csv`
 
@@ -1063,7 +1097,7 @@ External Partners may require funding. Depending on the involvement of an extern
 
 # SECTION 6: PROJECT STRUCTURE & TRACKING
 
-## 6.1 Billing Code Structure alex wickes needs to add in the training number
+## 6.1 Billing Code Structure
 
 ### 6.1.1 General Research Overhead (X25_RB00)
 
@@ -1219,7 +1253,7 @@ External Partners may require funding. Depending on the involvement of an extern
 ### X25-RB08: The Modulizer Part 1
 **Status**: Complete, awaiting marketing review.
 **Shareout Potential**: Internal Able, External yes
-**Share out daets**:
+**Share out dates**:
 **Touchpoints**:
 **Researcher**: Agustin Gonzalez (with computational design support from Laura Goff)
 **Research Type**: Mid-Level: Literature Review (approx. 60 hours)
@@ -1404,24 +1438,35 @@ The root level R&B Knowlege base markdown files contains all working knowlege of
 - Feature branches for experimental directions or major revisions
 - Pull requests for collaborative review before merging significant changes
 
-### 7.1.3 Custom Research Web Application (Ezra)
+### 7.1.3 Custom Research Web Application (The Repository / Ezra)
 
-**STATUS: UNDER DEVELOPMENT - PARTIALLY CONCEPTUAL**
+**STATUS: LIVE**
 
-**Note**: The custom R&B web application (codename: Ezra) is currently under active development. Some features described below are conceptual and subject to change during development.
+**Production URL**: `repository.pflugerarchitects.com`
+**Host**: Cloudflare Pages
+**Backend**: Supabase (PostgreSQL + Storage + Edge Functions)
+**Source Code**: `Pfluger-The-Repo` GitHub repository
 
-**Purpose**: Public-facing access to published R&B research
+The Repository is the public-facing and internal research platform for R&B. It operates in two modes:
 
-**Source**: GitHub repositories (pulls published content)
+**Public Mode (No Login Required)**:
+- Research Campus - Interactive Mapbox 3D map of all research projects
+- Gallery - Showcase of completed research with project dashboards
+- Collaborate - Contact form for partnerships
 
-**Functionality** (Planned):
-- Browse completed research projects
-- Search by topic, methodology, or R&B group category
-- Download published deliverables
-- View research team and partners
-- Track research lineage and continuing opportunities
+**Internal Mode (Pfluger Team Login Required)**:
+- All public features plus:
+- Research Hub - Dashboard with metrics
+- Submit Pitch - AI-assisted research proposal form (Ezra pitch builder)
+- Analytics - Detailed insights and KPIs
 
-**Development Status**: Active development in progress. Final feature set and deployment timeline to be determined.
+**Ezra AI Assistant**: Ezra is the AI assistant embedded in the platform. It serves two roles:
+1. **Pitch Builder** - Guides researchers through a conversational 5-step flow to develop their research pitch (see Section 3.2.4)
+2. **Research Search** - Queries published project block content via RAG fields to answer questions about completed research
+
+**Project Dashboards**: Each research project gets a dashboard built from composable "blocks" stored in the database. Blocks are the final home for research data. See Section 7.2 for the block system reference.
+
+**Technology Stack**: React 18, TypeScript, Vite, Tailwind CSS, Mapbox GL JS, Supabase, Framer Motion, Radix UI
 
 ### 7.1.4 SharePoint (Published Research Portal)
 
@@ -1489,6 +1534,107 @@ The root level R&B Knowlege base markdown files contains all working knowlege of
 - [ ] Bill research hours appropriately (billing code 090) with reference to research project code
 - [ ] Update research project file with integration outcomes
 - [ ] Assess impact for future research direction
+
+## 7.2 Block System - Where Research Data Ends Up
+
+Research findings are ultimately published as project dashboards in The Repository. Each dashboard is built from composable **blocks** - modular content components stored in the Supabase `project_blocks` table. Understanding what block types exist helps guide what data to collect during research.
+
+Block creation is a post-processing step handled separately (see `docs/R&B-Adding-a-New-Project.md` for full JSON schemas and SQL templates). The goal during research is to collect data in a form that maps cleanly into these block types.
+
+### 7.2.1 Available Block Types (22)
+
+**Structural**
+- `section` - Section divider with title. Breaks dashboard into named parts.
+- `text-content` - Markdown-rendered text. Supports headers, bold, bullets, paragraphs. Use for narrative overviews, methodology descriptions, or analysis writeups.
+
+**Metrics & Statistics**
+- `stat-grid` - Grid of key metrics (label, value, detail, trend). Collect headline numbers with context - e.g., "321 students surveyed across 4 campuses, trending up."
+- `key-findings` - Icon-based finding cards. Collect top 3-5 insights as title/value/detail triplets.
+
+**Charts & Data Visualization**
+- `bar-chart` - Horizontal bar charts. Supports single, multi-bar, and grouped modes. Collect labeled numeric values with optional grouping.
+- `donut-chart` - Circular chart with center label. Collect labeled segments that sum to a total.
+- `line-chart` - Multi-series line chart with animation. Collect time-series or sequential data points per series.
+- `scenario-bar-chart` - Cost scenario comparison. Collect scenario names with total cost and cost-per-SF.
+- `activity-rings` - Apple-style concentric rings in a grid. Collect 1-3 percentage metrics per item, grouped by vendor/category.
+
+**Tables & Comparisons**
+- `comparison-table` - Side-by-side feature matrix. Collect column headers and row data with optional highlight rows.
+- `tool-comparison` - Rating rings with pros/cons cards. Collect tool name, rating (0-100), price, category, pros, and cons.
+- `product-options` - Product line showcase with specs. Collect product names, prices, spec labels/values, and optional cost breakdowns.
+- `cost-builder` - Interactive budget builder with toggleable add/deduct alternates. Collect base total, area, and alternates with amounts.
+
+**Survey & Feedback**
+- `survey-rating` - 1-5 star rating distribution. Collect rating counts per level, total responses, and average.
+- `feedback-summary` - Split positive/negative theme list with activity rings. Collect themes with mention counts and descriptions for both positives and concerns.
+- `quotes` - Testimonial/quote cards. Collect verbatim quotes with optional author, source, and rating.
+- `survey-map` - Interactive map with pin markers and heatmap for spatial survey data. Collect pin locations (lat/lng), categories, and sentiment per response.
+
+**Case Studies & Process**
+- `case-study-card` - Expandable project/case study cards. Collect title, description, tags, metrics, strategies, and optional details (location, architect, year, building type, team).
+- `workflow-steps` - Numbered process steps. Collect step title, status, findings, deliverables, and outcomes.
+
+**Timeline & Sources**
+- `timeline` - Project event timeline (horizontal or vertical). Collect dated events with status (complete/in-progress/pending).
+- `sources` - Citation list. Collect numbered sources with title, author, and optional URL.
+
+**Media**
+- `image-gallery` - Responsive image grid with lightbox. Collect images with alt text and captions. Images stored in Supabase Storage.
+
+### 7.2.2 Research Methodology to Block Type Mapping
+
+When guiding research, keep in mind what blocks the data will eventually populate:
+
+**Survey / Post-Occupancy Research** - Collect:
+- Headline statistics (respondent counts, averages) -> `stat-grid`
+- Rating distributions per question -> `survey-rating`
+- Positive and negative themes with mention counts -> `feedback-summary`
+- Verbatim responses worth highlighting -> `quotes`
+- Comparison data across groups -> `bar-chart`, `comparison-table`
+- Top insights distilled to title/value/detail -> `key-findings`
+- If spatial: pin locations with categories and sentiment -> `survey-map`
+
+**Literature Review / Annotated Bibliography** - Collect:
+- Narrative synthesis of findings -> `text-content`
+- Top insights as title/value/detail -> `key-findings`
+- All cited sources with author and URL -> `sources`
+- Comparison across sources or approaches -> `comparison-table`
+
+**Case Study Analysis** - Collect:
+- Per-study: title, description, tags, metrics, strategies -> `case-study-card`
+- Supporting images with captions -> `image-gallery`
+- Research process documentation -> `workflow-steps`
+- Cross-case comparison data -> `comparison-table`, `bar-chart`
+
+**Experimental Design / Building Performance** - Collect:
+- Headline metrics (EUI, SDA, cost deltas) -> `stat-grid`
+- Performance data across options -> `bar-chart`, `line-chart`
+- Top findings -> `key-findings`
+- Process phases with findings per step -> `workflow-steps`
+- Before/after or option comparisons -> `comparison-table`
+- Simulation images or diagrams -> `image-gallery`
+
+**Tool / Product Comparison** - Collect:
+- Per-tool: name, rating, price, category, pros, cons -> `tool-comparison`
+- Per-product: name, price, specs, cost breakdown -> `product-options`
+- Multi-metric comparisons -> `activity-rings`
+
+**Cost Analysis / Feasibility** - Collect:
+- Scenario names with totals and cost-per-SF -> `scenario-bar-chart`
+- Base cost with add/deduct alternates -> `cost-builder`
+- Budget breakdowns -> `donut-chart`
+- Headline cost figures -> `stat-grid`
+
+### 7.2.3 RAG Fields for Ezra Search
+
+Each block can have RAG (Retrieval-Augmented Generation) fields that power Ezra's ability to search and cite research content. During research, collecting clear conclusions and tagging themes helps populate these fields later:
+
+- **summary** - 1-2 sentence description of what the block contains
+- **tags** - Searchable topic tags (project ID, category, key themes)
+- **searchable_text** - Full readable prose version of the block's data (no JSON)
+- **conclusions** - Specific, citable takeaways with numbers (e.g., "46.6% of students preferred Chair 3 for comfort")
+
+When writing up research findings, capture clear conclusion statements with specific data points - these become the `conclusions` array that Ezra can directly surface in responses.
 
 ---
 
@@ -1601,7 +1747,7 @@ Launch presentation components:
 **2026 Budget Allocation**:
 - 2000 research hours approved
 - 5 Claude AI accounts (research1-5@pflugerarchitects.com)
-- Infrastructure costs (Mapbox, Cloudflare, GitHub, Bluehost)
+- Infrastructure costs (Mapbox, Cloudflare, GitHub, Supabase, Bluehost for Pfluger Vision)
 
 **Expansion Activities**:
 - Firm-wide announcement of R&B framework availability
@@ -1611,7 +1757,7 @@ Launch presentation components:
 - Template and process documentation refinement
 - Expanded GitHub organization structure for scaling
 - Integration activation for SharePoint, Vantage Point, Open Asset
-- Custom research web application (Ezra) finalization and launch
+- The Repository web application (Ezra) live at repository.pflugerarchitects.com - ongoing feature development
 
 **Success Metrics** (tracked quarterly):
 - Number of research pitches submitted
@@ -1641,7 +1787,7 @@ Launch presentation components:
 ### 8.2.4 Marketing Integration
 
 Marketing department activation includes:
-- Custom research web application (Ezra) launch - finalize front face tied to Vision
+- The Repository web application (Ezra) - ongoing development tied to Vision
 - SharePoint "Pfluger Journal" concept implementation
 - Research highlight integration into firm newsletter
 - Social media content generation from completed research
