@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN } from '../../config/mapbox';
-import { getCategoryConfig } from '../../config/surveyCategories';
+import { getSectionConfig, getSentimentColor } from '../../config/surveyCategories';
 import {
   getSurveyBySlug,
   getSurveyQuestions,
@@ -44,10 +44,10 @@ export default function SurveyPage() {
   const [mapDimmed, setMapDimmed] = useState(false);
 
   // Track which section we last showed
-  const [lastShownCategory, setLastShownCategory] = useState<string | null>(null);
+  const [lastShownSection, setLastShownSection] = useState<string | null>(null);
 
   const currentQuestion = questions[currentIndex] || null;
-  const currentCategory = currentQuestion ? getCategoryConfig(currentQuestion.category) : null;
+  const currentSection = currentQuestion ? getSectionConfig(survey?.sections, currentQuestion.category) : null;
 
   const currentAnswer = currentQuestion
     ? answers.get(currentQuestion.id) || {
@@ -106,6 +106,56 @@ export default function SurveyPage() {
     });
 
     m.on('load', () => {
+      // Site boundary - glowing red outline (if survey has boundary data)
+      if (survey.boundary_polygon && survey.boundary_polygon.length > 2) {
+        m.addSource('campus-boundary', {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [survey.boundary_polygon] },
+            properties: {},
+          },
+        });
+        // Outer glow
+        m.addLayer({
+          id: 'campus-boundary-glow',
+          type: 'line',
+          source: 'campus-boundary',
+          paint: {
+            'line-color': '#EF4444',
+            'line-width': 10,
+            'line-opacity': 1,
+            'line-blur': 8,
+            'line-emissive-strength': 1,
+          },
+        });
+        // Inner glow
+        m.addLayer({
+          id: 'campus-boundary-glow-inner',
+          type: 'line',
+          source: 'campus-boundary',
+          paint: {
+            'line-color': '#EF4444',
+            'line-width': 5,
+            'line-opacity': 1,
+            'line-blur': 4,
+            'line-emissive-strength': 1,
+          },
+        });
+        // Core line
+        m.addLayer({
+          id: 'campus-boundary-line',
+          type: 'line',
+          source: 'campus-boundary',
+          paint: {
+            'line-color': '#EF4444',
+            'line-width': 2,
+            'line-opacity': 1,
+            'line-emissive-strength': 1,
+          },
+        });
+      }
+
       setMapReady(true);
     });
 
@@ -133,6 +183,7 @@ export default function SurveyPage() {
       const newPin: SurveySubmissionPin = {
         latitude: e.lngLat.lat,
         longitude: e.lngLat.lng,
+        sentiment: 'ok',
       };
 
       const updatedAnswer: SurveySubmissionAnswer = {
@@ -175,14 +226,14 @@ export default function SurveyPage() {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    if (!map.current || !currentAnswer?.pins || !currentCategory || !currentQuestion) return;
+    if (!map.current || !currentAnswer?.pins || !currentSection || !currentQuestion) return;
 
     for (let idx = 0; idx < currentAnswer.pins.length; idx++) {
       const pin = currentAnswer.pins[idx];
       const pinIndex = idx;
 
       const marker = new mapboxgl.Marker({
-        color: currentCategory.color,
+        color: getSentimentColor(pin.sentiment ?? null),
         scale: 0.85,
         draggable: true,
       })
@@ -216,7 +267,7 @@ export default function SurveyPage() {
 
       markersRef.current.push(marker);
     }
-  }, [currentAnswer?.pins, currentCategory, currentQuestion]);
+  }, [currentAnswer?.pins, currentSection, currentQuestion]);
 
   // Dim/undim map based on current question type
   useEffect(() => {
@@ -237,16 +288,20 @@ export default function SurveyPage() {
       const targetQuestion = questions[targetIndex];
       if (!targetQuestion?.category) return false;
 
-      // Show section intro if entering a new category
-      if (targetQuestion.category !== lastShownCategory) {
-        setLastShownCategory(targetQuestion.category);
+      // Check if this section has skipIntro set
+      const sectionConfig = getSectionConfig(survey?.sections, targetQuestion.category);
+      if (sectionConfig.skipIntro) return false;
+
+      // Show section intro if entering a new section
+      if (targetQuestion.category !== lastShownSection) {
+        setLastShownSection(targetQuestion.category);
         setCurrentIndex(targetIndex);
         setPhase('section-intro');
         return true;
       }
       return false;
     },
-    [questions, lastShownCategory]
+    [questions, lastShownSection, survey?.sections]
   );
 
   // Navigation handlers
@@ -255,10 +310,11 @@ export default function SurveyPage() {
     setRole(r);
     setCurrentIndex(0);
 
-    // Check if first question needs a section intro
+    // Check if first section needs an intro
     const firstQ = questions[0];
-    if (firstQ?.category) {
-      setLastShownCategory(firstQ.category);
+    const firstSectionConfig = firstQ ? getSectionConfig(survey?.sections, firstQ.category) : null;
+    if (firstQ?.category && firstSectionConfig && !firstSectionConfig.skipIntro) {
+      setLastShownSection(firstQ.category);
       setPhase('section-intro');
     } else {
       setPhase('question');
@@ -380,7 +436,7 @@ export default function SurveyPage() {
               />
             )}
 
-            {phase === 'section-intro' && currentCategory && (
+            {phase === 'section-intro' && currentSection && (
               <motion.div
                 key={`section-${currentQuestion?.category}`}
                 initial={{ opacity: 0, y: 20 }}
@@ -390,23 +446,23 @@ export default function SurveyPage() {
               >
                 <div
                   className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
-                  style={{ background: currentCategory.lightColor }}
+                  style={{ background: currentSection.lightColor }}
                 >
                   <div
                     className="w-3 h-3 rounded-full"
-                    style={{ background: currentCategory.color }}
+                    style={{ background: currentSection.color }}
                   />
                 </div>
                 <h2 className="text-xl font-bold text-white mb-2">
-                  {currentCategory.label}
+                  {currentSection.label}
                 </h2>
                 <p className="text-sm text-gray-400 mb-8 leading-relaxed max-w-xs">
-                  {currentCategory.description}
+                  {currentSection.description}
                 </p>
                 <button
                   onClick={handleSectionContinue}
                   className="px-8 py-3 rounded-xl font-medium text-sm text-white transition-all hover:brightness-110"
-                  style={{ background: currentCategory.color }}
+                  style={{ background: currentSection.color }}
                 >
                   Continue
                 </button>
@@ -433,6 +489,7 @@ export default function SurveyPage() {
                     (currentAnswer.pins?.length || 0) <
                       (currentQuestion.max_pins || 10)
                   }
+                  sections={survey?.sections}
                 />
               )}
 

@@ -4,13 +4,15 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map as MapIcon, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite } from 'lucide-react';
 import { MAPBOX_TOKEN, MAPBOX_STYLES } from '../../config/mapbox';
-import { getCategoryConfig } from '../../config/surveyCategories';
+import { getSentimentColor, SENTIMENT_CONFIG, SENTIMENT_NONE_COLOR } from '../../config/surveyCategories';
 import {
   getSurveyPins,
   getSurveyStats,
   getSurveyQuestionsWithCounts,
   getQuestionResults,
 } from '../../services/surveyService';
+import type { SurveySectionConfig } from '../../services/surveyService';
+import { supabaseAnon } from '../../config/supabase';
 import type {
   SurveyPin,
   SurveyQuestion,
@@ -18,37 +20,6 @@ import type {
   AnswerDistribution,
 } from '../../services/surveyService';
 import type { SurveyMapData } from './types';
-
-// Lee College campus boundary from KMZ
-const CAMPUS_BOUNDARY: [number, number][] = [
-  [-94.98003392626333, 29.73728390164641],
-  [-94.98026680778955, 29.7362245466406],
-  [-94.97994758091579, 29.73611213706491],
-  [-94.98023472889521, 29.73555965639588],
-  [-94.9810798632486, 29.73531616858645],
-  [-94.98032373607042, 29.73408650959582],
-  [-94.97846727829557, 29.73490870425564],
-  [-94.97825036631228, 29.73442691557635],
-  [-94.97820252185326, 29.73399353001699],
-  [-94.97817777978511, 29.73369660299584],
-  [-94.97837071625727, 29.73343632524895],
-  [-94.9785631114835, 29.73324782208751],
-  [-94.9787643811968, 29.73305054214907],
-  [-94.97900367844501, 29.732737735653],
-  [-94.97908014186132, 29.73249723692],
-  [-94.97908202874716, 29.73215094952845],
-  [-94.97899875661199, 29.73177970826987],
-  [-94.97891759401598, 29.73143657617207],
-  [-94.978849751857, 29.73120875106844],
-  [-94.97876152855817, 29.73091136273915],
-  [-94.97862050796223, 29.73051933538711],
-  [-94.9785102529823, 29.73013790710168],
-  [-94.97849210149494, 29.72981890315342],
-  [-94.97433973735936, 29.72987949759868],
-  [-94.97213767519371, 29.73507213633389],
-  [-94.9783129221989, 29.73708615842378],
-  [-94.98003392626333, 29.73728390164641],
-];
 
 interface SurveyMapBlockProps {
   data: SurveyMapData;
@@ -65,27 +36,17 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const [mapMode, setMapMode] = useState<'3d' | 'satellite'>('3d');
   const [questions, setQuestions] = useState<Array<SurveyQuestion & { answerCount: number }>>([]);
   const [selectedQuestionId, setSelectedQuestionId] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [pins, setPins] = useState<SurveyPin[]>([]);
   const [stats, setStats] = useState<SurveyStats | null>(null);
   const [distribution, setDistribution] = useState<AnswerDistribution | null>(null);
   const [loading, setLoading] = useState(true);
+  const [boundary, setBoundary] = useState<[number, number][] | null>(null);
+  const [sections, setSections] = useState<SurveySectionConfig[]>([]);
 
-  // Build question -> category lookup for pin coloring
-  const questionCategoryMap: Record<string, string | null> = {};
-  for (const q of questions) {
-    questionCategoryMap[q.id] = q.category;
-  }
+  // Only show map-relevant questions in the filter dropdown
+  const mapQuestions = questions.filter((q) => q.is_map_based || q.allow_pin);
 
-  // Unique categories present in questions
-  const availableCategories = [...new Set(questions.map((q) => q.category).filter(Boolean))] as string[];
-
-  // Filter pins by selected category
-  const filteredPins = selectedCategory
-    ? pins.filter((p) => questionCategoryMap[p.question_id] === selectedCategory)
-    : pins;
-
-  // Load initial data
+  // Load initial data (including survey boundary)
   useEffect(() => {
     async function load() {
       const [questionsData, statsData, pinsData] = await Promise.all([
@@ -96,6 +57,20 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       setQuestions(questionsData);
       setStats(statsData);
       setPins(pinsData);
+
+      // Fetch survey boundary + sections
+      const { data: surveyRow } = await supabaseAnon
+        .from('surveys')
+        .select('boundary_polygon, sections')
+        .eq('id', data.survey_id)
+        .single();
+      if (surveyRow?.boundary_polygon) {
+        setBoundary(surveyRow.boundary_polygon as [number, number][]);
+      }
+      if (surveyRow?.sections) {
+        setSections(surveyRow.sections as SurveySectionConfig[]);
+      }
+
       setLoading(false);
     }
     load();
@@ -141,28 +116,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     });
 
     m.on('load', () => {
-      // Add campus boundary outline
-      if (!m.getSource('campus-boundary')) {
-        m.addSource('campus-boundary', {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: { type: 'Polygon', coordinates: [CAMPUS_BOUNDARY] },
-            properties: {},
-          },
-        });
-        m.addLayer({
-          id: 'campus-boundary-line',
-          type: 'line',
-          source: 'campus-boundary',
-          paint: {
-            'line-color': '#ffffff',
-            'line-width': 2,
-            'line-dasharray': [4, 3],
-            'line-opacity': 0.6,
-          },
-        });
-      }
       setMapReady(true);
     });
 
@@ -198,45 +151,83 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         m.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
       }
       // Re-add boundary after style switch
-      if (!m.getSource('campus-boundary')) {
-        m.addSource('campus-boundary', {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            geometry: { type: 'Polygon', coordinates: [CAMPUS_BOUNDARY] },
-            properties: {},
-          },
-        });
-        m.addLayer({
-          id: 'campus-boundary-line',
-          type: 'line',
-          source: 'campus-boundary',
-          paint: {
-            'line-color': '#ffffff',
-            'line-width': 2,
-            'line-dasharray': [4, 3],
-            'line-opacity': 0.6,
-          },
-        });
-      }
+      addBoundaryToMap(m);
       renderPinMarkers();
       renderHeatmap();
     });
   }, [mapMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Render pins colored by category
+  // Add boundary polygon to map (if available from DB)
+  const addBoundaryToMap = useCallback((m: mapboxgl.Map) => {
+    if (!boundary || boundary.length < 3) return;
+    if (m.getSource('campus-boundary')) return;
+
+    m.addSource('campus-boundary', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [boundary] },
+        properties: {},
+      },
+    });
+    // Outer glow
+    m.addLayer({
+      id: 'campus-boundary-glow',
+      type: 'line',
+      source: 'campus-boundary',
+      paint: {
+        'line-color': '#EF4444',
+        'line-width': 10,
+        'line-opacity': 1,
+        'line-blur': 8,
+        'line-emissive-strength': 1,
+      },
+    });
+    // Inner glow
+    m.addLayer({
+      id: 'campus-boundary-glow-inner',
+      type: 'line',
+      source: 'campus-boundary',
+      paint: {
+        'line-color': '#EF4444',
+        'line-width': 5,
+        'line-opacity': 1,
+        'line-blur': 4,
+        'line-emissive-strength': 1,
+      },
+    });
+    // Core line
+    m.addLayer({
+      id: 'campus-boundary-line',
+      type: 'line',
+      source: 'campus-boundary',
+      paint: {
+        'line-color': '#EF4444',
+        'line-width': 2,
+        'line-opacity': 1,
+        'line-emissive-strength': 1,
+      },
+    });
+  }, [boundary]);
+
+  // Render boundary when both map and boundary data are ready
+  useEffect(() => {
+    if (!mapRef.current || !mapReady || !boundary) return;
+    addBoundaryToMap(mapRef.current);
+  }, [mapReady, boundary, addBoundaryToMap]);
+
+  // Render pins colored by sentiment
   const renderPinMarkers = useCallback(() => {
     markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
     if (!mapRef.current || !showPins) return;
 
-    for (const pin of filteredPins) {
-      const cat = questionCategoryMap[pin.question_id] || null;
-      const config = getCategoryConfig(cat);
+    for (const pin of pins) {
+      const color = getSentimentColor(pin.sentiment);
 
       const marker = new mapboxgl.Marker({
-        color: config.color,
+        color,
         scale: 0.7,
       })
         .setLngLat([pin.longitude, pin.latitude])
@@ -250,7 +241,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
       markersRef.current.push(marker);
     }
-  }, [filteredPins, showPins, questionCategoryMap]);
+  }, [pins, showPins]);
 
   const renderHeatmap = useCallback(() => {
     if (!mapRef.current || !mapReady) return;
@@ -273,7 +264,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       }
     }
 
-    if (!showContour || filteredPins.length < 3) return;
+    if (!showContour || pins.length < 1) return;
 
     // Parse hex color to [r, g, b]
     function hexToRgb(hex: string): [number, number, number] {
@@ -284,29 +275,20 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       return '#' + [r, g, b].map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
     }
 
-    const SENTIMENT_COLORS: Record<string, string> = { good: '#22C55E', ok: '#EAB308', bad: '#EF4444' };
-    const useSentiment = !!selectedQuestionId || !!selectedCategory;
-
-    // Assign a color to each pin
-    const coloredPins = filteredPins.map((pin) => {
-      let color: string;
-      if (useSentiment && pin.sentiment) {
-        // Filtered view: sentiment gradient (green-yellow-red)
-        color = SENTIMENT_COLORS[pin.sentiment] || '#9CA3AF';
-      } else {
-        // All questions/categories: category color blend
-        const cat = questionCategoryMap[pin.question_id] || null;
-        color = getCategoryConfig(cat).color;
-      }
+    // Always use sentiment colors for heatmap
+    const coloredPins = pins.map((pin) => {
+      const color = getSentimentColor(pin.sentiment);
       return { lng: pin.longitude, lat: pin.latitude, rgb: hexToRgb(color) };
     });
 
-    // Point-in-polygon test against campus boundary
-    function insideCampus(lng: number, lat: number): boolean {
+    // Point-in-polygon test against site boundary (if available)
+    const clipBoundary = boundary && boundary.length > 2 ? boundary : null;
+    function insideBoundary(lng: number, lat: number): boolean {
+      if (!clipBoundary) return true; // No boundary = no clipping
       let inside = false;
-      for (let i = 0, j = CAMPUS_BOUNDARY.length - 1; i < CAMPUS_BOUNDARY.length; j = i++) {
-        const xi = CAMPUS_BOUNDARY[i][0], yi = CAMPUS_BOUNDARY[i][1];
-        const xj = CAMPUS_BOUNDARY[j][0], yj = CAMPUS_BOUNDARY[j][1];
+      for (let i = 0, j = clipBoundary.length - 1; i < clipBoundary.length; j = i++) {
+        const xi = clipBoundary[i][0], yi = clipBoundary[i][1];
+        const xj = clipBoundary[j][0], yj = clipBoundary[j][1];
         if ((yi > lat) !== (yj > lat) && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) {
           inside = !inside;
         }
@@ -314,9 +296,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       return inside;
     }
 
-    // Use campus boundary bounding box so heatmap fills the whole campus
-    const bLngs = CAMPUS_BOUNDARY.map((c) => c[0]);
-    const bLats = CAMPUS_BOUNDARY.map((c) => c[1]);
+    // Use site boundary bounding box if available, otherwise derive from pins
+    const bLngs = clipBoundary ? clipBoundary.map((c) => c[0]) : coloredPins.map((p) => p.lng);
+    const bLats = clipBoundary ? clipBoundary.map((c) => c[1]) : coloredPins.map((p) => p.lat);
     const minLng = Math.min(...bLngs);
     const maxLng = Math.max(...bLngs);
     const minLat = Math.min(...bLats);
@@ -337,7 +319,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         const cLat = minLat + (j + 0.5) * stepLat;
 
         // Clip to campus boundary
-        if (!insideCampus(cLng, cLat)) continue;
+        if (!insideBoundary(cLng, cLat)) continue;
 
         let wSum = 0;
         let rSum = 0, gSum = 0, bSum = 0;
@@ -401,7 +383,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         'fill-emissive-strength': 1,
       },
     });
-  }, [filteredPins, showContour, mapReady, questionCategoryMap, selectedQuestionId, selectedCategory]);
+  }, [pins, showContour, mapReady, boundary]);
 
   // Re-render when pins or viewMode change
   useEffect(() => {
@@ -432,11 +414,11 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId);
 
-  // Build category breakdown from filtered pins
-  const categoryBreakdown: Record<string, number> = {};
-  for (const pin of filteredPins) {
-    const cat = questionCategoryMap[pin.question_id] || 'unknown';
-    categoryBreakdown[cat] = (categoryBreakdown[cat] || 0) + 1;
+  // Build sentiment breakdown from pins
+  const sentimentBreakdown: Record<string, number> = { good: 0, ok: 0, bad: 0, none: 0 };
+  for (const pin of pins) {
+    const key = pin.sentiment || 'none';
+    sentimentBreakdown[key] = (sentimentBreakdown[key] || 0) + 1;
   }
 
   return (
@@ -530,40 +512,30 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               <option value="" style={{ background: '#1e1e1e', color: '#fff' }}>All Questions</option>
-              {questions.map((q) => (
-                <option key={q.id} value={q.id} style={{ background: '#1e1e1e', color: '#fff' }}>
-                  Q{q.question_order}: {q.question_text.slice(0, 40)}
-                  {q.question_text.length > 40 ? '...' : ''} ({q.answerCount})
-                </option>
-              ))}
+              {(() => {
+                // Group questions by section
+                const grouped: Record<string, typeof mapQuestions> = {};
+                for (const q of mapQuestions) {
+                  const key = q.category || 'other';
+                  if (!grouped[key]) grouped[key] = [];
+                  grouped[key].push(q);
+                }
+                return Object.entries(grouped).map(([sectionKey, qs]) => {
+                  const sectionLabel = sections.find((s) => s.key === sectionKey)?.label || sectionKey;
+                  return (
+                    <optgroup key={sectionKey} label={sectionLabel} style={{ background: '#1e1e1e', color: '#fff' }}>
+                      {qs.map((q) => (
+                        <option key={q.id} value={q.id} style={{ background: '#1e1e1e', color: '#fff' }}>
+                          Q{q.question_order}: {q.question_text.slice(0, 40)}
+                          {q.question_text.length > 40 ? '...' : ''} ({q.answerCount})
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                });
+              })()}
             </select>
           </div>
-
-          {/* Category filter */}
-          {availableCategories.length > 1 && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Filter className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">Filter by Category</span>
-              </div>
-              <select
-                value={selectedCategory || ''}
-                onChange={(e) => setSelectedCategory(e.target.value || null)}
-                className="w-full px-3 py-2 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500/50 cursor-pointer"
-                style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}
-              >
-                <option value="" style={{ background: '#1e1e1e', color: '#fff' }}>All Categories</option>
-                {availableCategories.map((cat) => {
-                  const config = getCategoryConfig(cat);
-                  return (
-                    <option key={cat} value={cat} style={{ background: '#1e1e1e', color: '#fff' }}>
-                      {config.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-          )}
 
           {/* Response stats */}
           {stats && (
@@ -594,29 +566,36 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             </div>
           )}
 
-          {/* Category breakdown (replaces old green/yellow/red) */}
-          {filteredPins.length > 0 && (
+          {/* Sentiment breakdown */}
+          {pins.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-xs text-gray-500">Pins by Principle</span>
+                <span className="text-xs text-gray-500">Pins by Sentiment</span>
               </div>
               <div className="space-y-1.5">
-                {Object.entries(categoryBreakdown)
+                {Object.entries(sentimentBreakdown)
+                  .filter(([, count]) => count > 0)
                   .sort(([, a], [, b]) => b - a)
-                  .map(([cat, count]) => {
-                    const config = getCategoryConfig(cat);
+                  .map(([sentiment, count]) => {
+                    const color = sentiment === 'none'
+                      ? SENTIMENT_NONE_COLOR
+                      : SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG].color;
+                    const label = sentiment === 'none'
+                      ? 'No Sentiment'
+                      : SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG].label;
                     return (
-                      <div key={cat} className="flex items-center gap-2">
+                      <div key={sentiment} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
                         <span className="text-xs text-gray-400 flex-1 truncate">
-                          {config.label}
+                          {label}
                         </span>
                         <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
                           <motion.div
                             className="h-full rounded-full"
-                            style={{ backgroundColor: config.color }}
+                            style={{ backgroundColor: color }}
                             initial={{ width: 0 }}
                             animate={{
-                              width: `${filteredPins.length > 0 ? (count / filteredPins.length) * 100 : 0}%`,
+                              width: `${pins.length > 0 ? (count / pins.length) * 100 : 0}%`,
                             }}
                           />
                         </div>
@@ -627,7 +606,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                     );
                   })}
               </div>
-              <p className="text-[10px] text-gray-600 mt-1">{filteredPins.length} total pins</p>
+              <p className="text-[10px] text-gray-600 mt-1">{pins.length} total pins</p>
             </div>
           )}
 
@@ -713,7 +692,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           )}
 
           {/* Empty state */}
-          {!loading && filteredPins.length === 0 && stats?.totalResponses === 0 && (
+          {!loading && pins.length === 0 && stats?.totalResponses === 0 && (
             <div className="text-center py-6">
               <p className="text-xs text-gray-500">No responses yet</p>
             </div>

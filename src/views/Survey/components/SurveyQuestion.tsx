@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, MapPin, MessageSquare, MousePointerClick, X } from 'lucide-react';
-import type { SurveyQuestion as SurveyQuestionType, SurveySubmissionAnswer } from '../../../services/surveyService';
-import { getCategoryConfig } from '../../../config/surveyCategories';
+import type { SurveyQuestion as SurveyQuestionType, SurveySubmissionAnswer, SurveySectionConfig } from '../../../services/surveyService';
+import { getSectionConfig } from '../../../config/surveyCategories';
 import { MultipleChoiceInput } from './MultipleChoiceInput';
 import { OpenEndedInput } from './OpenEndedInput';
 import { MapPinPlacer } from './MapPinPlacer';
@@ -20,6 +20,7 @@ interface SurveyQuestionProps {
   isLast: boolean;
   isSubmitting: boolean;
   isPlacingPin: boolean;
+  sections?: SurveySectionConfig[] | null;
 }
 
 export function SurveyQuestionView({
@@ -33,9 +34,10 @@ export function SurveyQuestionView({
   isLast,
   isSubmitting,
   isPlacingPin,
+  sections,
 }: SurveyQuestionProps) {
-  const [showPinPanel, setShowPinPanel] = useState(false);
-  const category = getCategoryConfig(question.category);
+  const [showPinPanel, setShowPinPanel] = useState(!question.is_map_based && question.allow_pin);
+  const section = getSectionConfig(sections, question.category);
 
   const canProceed = () => {
     if (!question.required) return true;
@@ -85,17 +87,17 @@ export function SurveyQuestionView({
         <div className="flex items-center gap-2 mb-3">
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: category.lightColor }}
+            style={{ background: section.lightColor }}
           >
             {question.is_map_based ? (
-              <MapPin className="w-4 h-4" style={{ color: category.color }} />
+              <MapPin className="w-4 h-4" style={{ color: section.color }} />
             ) : (
-              <MessageSquare className="w-4 h-4" style={{ color: category.color }} />
+              <MessageSquare className="w-4 h-4" style={{ color: section.color }} />
             )}
           </div>
           <div className="flex-1">
-            <span className="text-xs uppercase tracking-wider" style={{ color: category.color }}>
-              {category.label}
+            <span className="text-xs uppercase tracking-wider" style={{ color: section.color }}>
+              {section.label}
             </span>
           </div>
           <span className="text-xs text-gray-600">
@@ -130,7 +132,7 @@ export function SurveyQuestionView({
               onUpdateAnswer({ ...answer, pins: newPins });
             }}
             isPlacingPin={isPlacingPin}
-            categoryColor={category.color}
+            accentColor={section.color}
           />
         )}
 
@@ -168,7 +170,7 @@ export function SurveyQuestionView({
               onChange={(matrix) =>
                 onUpdateAnswer({ ...answer, answerMatrix: matrix })
               }
-              categoryColor={category.color}
+              categoryColor={section.color}
             />
           )}
 
@@ -180,7 +182,7 @@ export function SurveyQuestionView({
             onChange={(ranking) =>
               onUpdateAnswer({ ...answer, answerRanking: ranking })
             }
-            categoryColor={category.color}
+            categoryColor={section.color}
           />
         )}
 
@@ -199,7 +201,7 @@ export function SurveyQuestionView({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-400 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5" style={{ color: category.color }} />
+                    <MapPin className="w-3.5 h-3.5" style={{ color: section.color }} />
                     Map Pin (optional)
                   </span>
                   <button
@@ -226,7 +228,7 @@ export function SurveyQuestionView({
                     onUpdateAnswer({ ...answer, pins: newPins });
                   }}
                   isPlacingPin={(answer.pins?.length || 0) < 1}
-                  categoryColor={category.color}
+                  accentColor={section.color}
                 />
               </div>
             )}
@@ -255,7 +257,7 @@ export function SurveyQuestionView({
           style={
             canProceed() && !isSubmitting
               ? {
-                  background: category.color,
+                  background: section.color,
                   color: '#fff',
                 }
               : {

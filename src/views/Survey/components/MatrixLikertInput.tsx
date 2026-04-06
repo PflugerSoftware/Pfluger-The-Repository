@@ -21,12 +21,13 @@ export function MatrixLikertInput({
 
   return (
     <div className="space-y-3">
-      {/* Scale legend (sticky at top on scroll) */}
+      {/* Scale legend */}
       <div className="flex items-center gap-1.5 justify-end pr-1 mb-1">
         {scaleLabels.map((label) => (
           <span
             key={label}
-            className="text-[10px] text-gray-500 text-center w-14 leading-tight"
+            className="text-xs text-center w-14 leading-tight"
+            style={{ color: '#ffffff' }}
           >
             {label}
           </span>
@@ -52,7 +53,7 @@ export function MatrixLikertInput({
                 : '1px solid rgba(255, 255, 255, 0.06)',
             }}
           >
-            <p className="text-sm text-gray-300 mb-2.5 leading-snug">{item}</p>
+            <p className="text-sm mb-2.5 leading-snug" style={{ color: '#ffffff' }}>{item}</p>
             <div className="flex items-center gap-1.5 justify-end">
               {scaleLabels.map((label) => {
                 const isSelected = selected[item] === label;
@@ -61,13 +62,13 @@ export function MatrixLikertInput({
                   <button
                     key={label}
                     onClick={() => handleSelect(item, label)}
-                    className="w-14 h-8 rounded-lg text-[10px] font-medium transition-all"
+                    className="w-14 h-8 rounded-lg text-xs font-medium transition-all"
                     style={{
                       background: isSelected ? `${categoryColor}25` : 'rgba(255, 255, 255, 0.05)',
                       border: isSelected
                         ? `1px solid ${categoryColor}60`
                         : '1px solid rgba(255, 255, 255, 0.08)',
-                      color: isSelected ? categoryColor : 'rgba(156, 163, 175, 1)',
+                      color: '#ffffff',
                     }}
                     title={label}
                   >
@@ -81,7 +82,7 @@ export function MatrixLikertInput({
       })}
 
       {/* Completion hint */}
-      <p className="text-xs text-gray-500 text-center mt-1">
+      <p className="text-sm text-center mt-1" style={{ color: '#ffffff' }}>
         {Object.keys(selected).length} of {subItems.length} rated
       </p>
     </div>

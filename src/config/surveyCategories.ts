@@ -1,75 +1,46 @@
-import type { SurveyCategory } from '../services/surveyService';
+import type { SurveySectionConfig } from '../services/surveyService';
 
-export interface CategoryConfig {
-  key: SurveyCategory;
-  label: string;
-  color: string;
-  lightColor: string;
-  description: string;
-}
+// ============================================
+// Sentiment config (universal - used by all surveys)
+// ============================================
 
-export const SURVEY_CATEGORIES: Record<SurveyCategory, CategoryConfig> = {
-  'about-you': {
-    key: 'about-you',
-    label: 'About You',
-    color: '#9CA3AF',
-    lightColor: 'rgba(156, 163, 175, 0.15)',
-    description: 'Demographics and background',
-  },
-  'people-centered': {
-    key: 'people-centered',
-    label: 'People-Centered Campus',
-    color: '#3B82F6',
-    lightColor: 'rgba(59, 130, 246, 0.15)',
-    description: 'Belonging, inclusion, safety, and support',
-  },
-  'future-evolution': {
-    key: 'future-evolution',
-    label: 'Future Evolution',
-    color: '#10B981',
-    lightColor: 'rgba(16, 185, 129, 0.15)',
-    description: 'Untapped potential, flexibility, and redevelopment',
-  },
-  'build-for-opportunity': {
-    key: 'build-for-opportunity',
-    label: 'Build for Opportunity',
-    color: '#F97316',
-    lightColor: 'rgba(249, 115, 22, 0.15)',
-    description: 'Workforce training, academics, and partnerships',
-  },
-  'community-engagement': {
-    key: 'community-engagement',
-    label: 'Community Engagement',
-    color: '#8B5CF6',
-    lightColor: 'rgba(139, 92, 246, 0.15)',
-    description: 'Campus-community connections and gathering',
-  },
-  'enduring-identity': {
-    key: 'enduring-identity',
-    label: 'Enduring Identity',
-    color: '#F59E0B',
-    lightColor: 'rgba(245, 158, 11, 0.15)',
-    description: 'Character, history, and institutional spirit',
-  },
-  'barriers': {
-    key: 'barriers',
-    label: 'Barriers & Challenges',
-    color: '#EF4444',
-    lightColor: 'rgba(239, 68, 68, 0.15)',
-    description: 'Physical barriers, safety concerns, and obstacles',
-  },
+export type Sentiment = 'good' | 'ok' | 'bad';
+
+export const SENTIMENT_CONFIG: Record<Sentiment, { color: string; lightColor: string; label: string }> = {
+  good: { color: '#22C55E', lightColor: 'rgba(34, 197, 94, 0.15)', label: 'Positive' },
+  ok:   { color: '#EAB308', lightColor: 'rgba(234, 179, 8, 0.15)', label: 'Neutral' },
+  bad:  { color: '#EF4444', lightColor: 'rgba(239, 68, 68, 0.15)', label: 'Negative' },
 };
 
-/** Get category config, with fallback for unknown categories */
-export function getCategoryConfig(category: string | null): CategoryConfig {
-  if (category && category in SURVEY_CATEGORIES) {
-    return SURVEY_CATEGORIES[category as SurveyCategory];
+export const SENTIMENT_NONE_COLOR = '#9CA3AF';
+
+/** Get sentiment color, gray for null/unknown */
+export function getSentimentColor(sentiment: string | null): string {
+  if (sentiment && sentiment in SENTIMENT_CONFIG) {
+    return SENTIMENT_CONFIG[sentiment as Sentiment].color;
   }
-  return {
-    key: 'about-you',
-    label: 'General',
-    color: '#9CA3AF',
-    lightColor: 'rgba(156, 163, 175, 0.15)',
-    description: '',
-  };
+  return SENTIMENT_NONE_COLOR;
+}
+
+// ============================================
+// Section helpers (data-driven from survey record)
+// ============================================
+
+const DEFAULT_SECTION: SurveySectionConfig = {
+  key: 'general',
+  label: 'General',
+  color: '#9CA3AF',
+  lightColor: 'rgba(156, 163, 175, 0.15)',
+  description: '',
+  skipIntro: true,
+};
+
+/** Look up a section config from the survey's sections array */
+export function getSectionConfig(
+  sections: SurveySectionConfig[] | null | undefined,
+  sectionKey: string | null
+): SurveySectionConfig {
+  if (!sectionKey || !sections) return DEFAULT_SECTION;
+  const found = sections.find((s) => s.key === sectionKey);
+  return found || DEFAULT_SECTION;
 }

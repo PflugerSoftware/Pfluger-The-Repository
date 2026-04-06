@@ -123,7 +123,7 @@ Project dashboards are built from composable blocks stored in the `project_block
 **Available block types (22):**
 `section`, `stat-grid`, `bar-chart`, `donut-chart`, `line-chart`, `comparison-table`, `image-gallery`, `text-content`, `timeline`, `key-findings`, `sources`, `tool-comparison`, `case-study-card`, `workflow-steps`, `scenario-bar-chart`, `cost-builder`, `survey-rating`, `feedback-summary`, `quotes`, `activity-rings`, `product-options`, `survey-map`
 
-- `survey-map`: Interactive map analytics block with 3D/satellite toggle, category-colored pin markers, IDW color-blending heatmap (category colors for all-view, sentiment green/yellow/red for filtered view), campus boundary clip with dashed outline, question and category filters, and response stats. Uses Mapbox GL JS. Pins have a `sentiment` field (good/ok/bad). Survey pins are draggable on the survey-taking page.
+- `survey-map`: Interactive map analytics block with 3D/satellite toggle, sentiment-colored pin markers (green=positive, yellow=neutral, red=negative), IDW color-blending heatmap using sentiment colors, site boundary from DB with glowing red outline, question filter grouped by section, and response/sentiment stats. Uses Mapbox GL JS. Boundary polygon and section definitions are stored per-survey in the `surveys` table (multi-survey support). Survey pins are draggable on the survey-taking page and default to neutral (yellow) sentiment.
 - `line-chart`: Multi-series line chart with animated path drawing, hover tooltips, and axis labels. Built with SVG and Framer Motion.
 
 **Block data is DB-only** — no block content lives in code. To add/modify blocks, update the `project_blocks` table in Supabase. See `docs/R&B-Adding-a-New-Project.md` for the full guide including all block type JSON schemas.
@@ -143,6 +143,61 @@ Project dashboards are built from composable blocks stored in the `project_block
 - **Naming convention:** `[project-prefix]-[descriptive-name].[ext]` (lowercase, hyphens)
 - **Config:** `src/config/storage.ts` — `getStorageUrl()` transforms local paths to Supabase URLs
 - **Usage:** Block data can reference images as full URLs (pass-through) or local paths (transformed by `getStorageUrl`)
+
+### Survey System
+
+The platform includes a full survey system for collecting spatial feedback via interactive maps. Surveys are project-scoped and fully data-driven from the DB.
+
+**Architecture:**
+- Surveys are defined in the `surveys` table with per-survey config (roles, boundary polygon, sections, map center/zoom)
+- Questions live in `survey_questions` with a `category` field used as a section key (not for coloring)
+- Responses, answers, and pins cascade from the survey record
+- All pin coloring uses **sentiment** (good/ok/bad), not categories
+- Section definitions (labels, colors, descriptions, skipIntro flag) are stored as JSONB in `surveys.sections`
+- Site boundary polygons are stored as JSONB in `surveys.boundary_polygon`
+
+**Sentiment System:**
+- Pins have a `sentiment` column: `good` (green #22C55E), `ok` (yellow #EAB308), `bad` (red #EF4444)
+- New pins default to `ok` (neutral/yellow)
+- Users choose sentiment per pin via three colored buttons
+- Heatmap always uses sentiment colors (IDW blending)
+- Pins without sentiment render as gray (#9CA3AF)
+
+**Survey Tables:**
+- `surveys` - top-level config with `boundary_polygon` (jsonb), `sections` (jsonb), `roles` (jsonb)
+- `survey_questions` - questions with `category` (section key), `is_map_based`, `allow_pin`, `question_type`
+- `survey_responses` - one per respondent with `first_name`, `role`
+- `survey_answers` - one per question per response with `answer_text`, `answer_choices`, `answer_matrix`, `answer_ranking`
+- `survey_pins` - map pins with `latitude`, `longitude`, `note`, `sentiment`
+
+**Question Types:** `multiple_choice`, `open_ended`, `matrix_likert`, `ranking`, `likert_single`
+
+**Key Files:**
+- `src/views/Survey/SurveyPage.tsx` - Full-screen survey-taking interface with Mapbox satellite map
+- `src/views/Survey/components/` - SurveyQuestion, MapPinPlacer (with sentiment selector), MatrixLikertInput, etc.
+- `src/components/blocks/SurveyMapBlock.tsx` - Analytics dashboard block (pins, heatmap, stats)
+- `src/services/surveyService.ts` - All survey CRUD operations and types
+- `src/config/surveyCategories.ts` - Sentiment config (universal) and section lookup helpers
+- `supabase/migrations/20260406_v2_lee_college_survey.sql` - Current survey schema + Lee College seed data
+
+**Multi-Survey Design:**
+- No survey-specific content is hardcoded in components
+- Boundary polygons, sections, roles, and questions all come from the DB
+- Each survey defines its own sections with colors, labels, and skipIntro flags
+- The `getSectionConfig(sections, key)` helper looks up from the survey's sections array
+- New surveys only require DB inserts (survey record + questions) - no code changes needed
+
+**Survey Taking Flow:**
+1. User visits `/survey/:slug` - loads survey config and questions from DB
+2. Intro screen with survey description and role/name selection
+3. Section intro screens shown when entering a new section (unless `skipIntro: true`)
+4. Map-based questions: user drops pins on satellite map, selects sentiment per pin, adds optional notes
+5. Structured questions: multiple choice, matrix likert, open-ended, ranking
+6. Part 2 questions with `allow_pin: true` auto-open the pin panel for direct map interaction
+7. Submission writes response, answers, and pins to DB
+
+**Purging Test Data:**
+Use `DELETE FROM survey_responses WHERE first_name = 'TestEntry' AND project_id = 'X26-RB08';` to remove test submissions.
 
 ### Navigation
 
@@ -243,15 +298,20 @@ src/
 │   ├── Dashboard.tsx                    # Internal hub
 │   ├── Pitch/PitchSubmission.tsx        # Internal pitch
 │   ├── Analytics.tsx                    # Internal metrics
+│   ├── Survey/
+│   │   ├── SurveyPage.tsx               # Full-screen survey-taking interface
+│   │   └── components/                  # MapPinPlacer, SurveyQuestion, MatrixLikertInput, etc.
 │   └── projects/
 │       ├── ProjectDashboard.tsx         # Block-based project view
 │       └── DynamicProjectDashboard.tsx  # Loads config from Supabase
 ├── services/
-│   └── projects.ts                      # PROJECT_METADATA + block loader
+│   ├── projects.ts                      # PROJECT_METADATA + block loader
+│   └── surveyService.ts                 # Survey CRUD, types, sanitization
 ├── config/
 │   ├── supabase.ts                      # Supabase clients (supabase + supabaseAnon)
 │   ├── storage.ts                       # getStorageUrl() helper
-│   └── mapbox.ts                        # Mapbox access token
+│   ├── mapbox.ts                        # Mapbox access token
+│   └── surveyCategories.ts             # Sentiment config + section helpers
 ├── data/
 │   └── loadProjects.ts                  # Supabase project list loader
 ├── context/

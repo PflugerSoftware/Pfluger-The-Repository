@@ -12,14 +12,17 @@ export type QuestionType =
   | 'ranking'
   | 'likert_single';
 
-export type SurveyCategory =
-  | 'about-you'
-  | 'people-centered'
-  | 'future-evolution'
-  | 'build-for-opportunity'
-  | 'community-engagement'
-  | 'enduring-identity'
-  | 'barriers';
+/** Section key - any string value; sections are defined per-survey in the DB */
+export type SurveySection = string;
+
+export interface SurveySectionConfig {
+  key: string;
+  label: string;
+  color: string;
+  lightColor: string;
+  description: string;
+  skipIntro?: boolean;
+}
 
 export interface Survey {
   id: string;
@@ -32,6 +35,8 @@ export interface Survey {
   map_center_lng: number | null;
   map_zoom: number;
   roles: string[] | null;
+  boundary_polygon: [number, number][] | null;
+  sections: SurveySectionConfig[] | null;
 }
 
 export interface SurveyQuestion {
@@ -41,7 +46,7 @@ export interface SurveyQuestion {
   question_order: number;
   question_text: string;
   question_type: QuestionType;
-  category: SurveyCategory | null;
+  category: SurveySection | null;
   is_map_based: boolean;
   allow_pin: boolean;
   max_pins: number | null;
@@ -113,11 +118,6 @@ export interface AnswerDistribution {
   openEndedAnswers: string[];
   matrixCounts: Record<string, Record<string, number>>;
   totalAnswers: number;
-}
-
-export interface PinCategoryStats {
-  total: number;
-  byCategory: Record<string, number>;
 }
 
 // ============================================
@@ -346,25 +346,6 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
     matrixCounts,
     totalAnswers: data.length,
   };
-}
-
-/** Get pin stats grouped by category (via question join) */
-export async function getPinCategoryStats(
-  surveyId: string,
-  questions: SurveyQuestion[]
-): Promise<PinCategoryStats> {
-  const pins = await getSurveyPins(surveyId);
-  const questionCategoryMap = new Map(
-    questions.map((q) => [q.id, q.category || 'unknown'])
-  );
-
-  const byCategory: Record<string, number> = {};
-  for (const pin of pins) {
-    const cat = questionCategoryMap.get(pin.question_id) || 'unknown';
-    byCategory[cat] = (byCategory[cat] || 0) + 1;
-  }
-
-  return { total: pins.length, byCategory };
 }
 
 /** Fetch all questions with answer counts for the filter dropdown */
