@@ -6,6 +6,8 @@ interface MultipleChoiceInputProps {
   selected: string[];
   maxSelections: number | null;
   onChange: (selected: string[]) => void;
+  otherText?: string;
+  onOtherTextChange?: (text: string) => void;
 }
 
 export function MultipleChoiceInput({
@@ -13,6 +15,8 @@ export function MultipleChoiceInput({
   selected,
   maxSelections,
   onChange,
+  otherText,
+  onOtherTextChange,
 }: MultipleChoiceInputProps) {
   const isSingleSelect = maxSelections === 1;
 
@@ -68,6 +72,23 @@ export function MultipleChoiceInput({
           </motion.button>
         );
       })}
+      {onOtherTextChange &&
+        selected.some((s) => s.toLowerCase().startsWith('other')) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-2"
+          >
+            <textarea
+              value={otherText || ''}
+              onChange={(e) => onOtherTextChange(e.target.value)}
+              maxLength={500}
+              rows={2}
+              placeholder="Please specify..."
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-sky-500/50 transition-colors resize-none"
+            />
+          </motion.div>
+        )}
       {maxSelections && maxSelections > 1 && (
         <p className="text-xs text-gray-500 mt-1">
           Select up to {maxSelections} ({selected.length}/{maxSelections})

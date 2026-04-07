@@ -139,8 +139,16 @@ export function SurveyQuestionView({
                 options={question.options}
                 selected={answer.answerChoices || []}
                 maxSelections={question.question_type === 'likert_single' ? 1 : question.max_selections}
-                onChange={(choices) =>
-                  onUpdateAnswer({ ...answer, answerChoices: choices })
+                onChange={(choices) => {
+                  const update: typeof answer = { ...answer, answerChoices: choices };
+                  if (!choices.some((c) => c.toLowerCase().startsWith('other'))) {
+                    update.answerText = '';
+                  }
+                  onUpdateAnswer(update);
+                }}
+                otherText={answer.answerText}
+                onOtherTextChange={(text) =>
+                  onUpdateAnswer({ ...answer, answerText: text })
                 }
               />
             </div>
