@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { MAPBOX_TOKEN } from '../../config/mapbox';
-import { getSectionConfig, getSentimentColor } from '../../config/surveyCategories';
+import { getSectionConfig } from '../../config/surveyCategories';
 import {
   getSurveyBySlug,
   getSurveyQuestions,
@@ -42,6 +42,7 @@ export default function SurveyPage() {
   // Map state
   const [mapReady, setMapReady] = useState(false);
   const [mapDimmed, setMapDimmed] = useState(false);
+  const [panelExpanded, setPanelExpanded] = useState(false);
 
   // Track which section we last showed
   const [lastShownSection, setLastShownSection] = useState<string | null>(null);
@@ -183,7 +184,6 @@ export default function SurveyPage() {
       const newPin: SurveySubmissionPin = {
         latitude: e.lngLat.lat,
         longitude: e.lngLat.lng,
-        sentiment: 'ok',
       };
 
       const updatedAnswer: SurveySubmissionAnswer = {
@@ -233,7 +233,7 @@ export default function SurveyPage() {
       const pinIndex = idx;
 
       const marker = new mapboxgl.Marker({
-        color: getSentimentColor(pin.sentiment ?? null),
+        color: currentSection.color,
         scale: 0.85,
         draggable: true,
       })
@@ -339,6 +339,7 @@ export default function SurveyPage() {
       // Clear markers before moving to next question
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
+      setPanelExpanded(false);
 
       const nextIndex = currentIndex + 1;
       if (!checkSectionTransition(nextIndex)) {
@@ -376,6 +377,7 @@ export default function SurveyPage() {
   };
 
   const handleBack = () => {
+    setPanelExpanded(false);
     if (currentIndex > 0) {
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
@@ -393,14 +395,20 @@ export default function SurveyPage() {
 
       {/* Map dim overlay for non-map questions */}
       <div
-        className={`absolute inset-0 bg-black/50 pointer-events-none transition-opacity duration-500 ${
+        className={`absolute inset-0 bg-black/90 pointer-events-none transition-opacity duration-500 ${
           mapDimmed ? 'opacity-100' : 'opacity-0'
         }`}
       />
 
-      {/* Glass sidebar */}
+      {/* Glass panel - sidebar on desktop, full-screen or bottom-sheet on mobile */}
       <div
-        className="absolute top-4 left-4 bottom-4 w-96 z-10 rounded-2xl overflow-hidden flex flex-col shadow-2xl"
+        className={`absolute z-10 overflow-hidden flex flex-col shadow-2xl transition-all duration-300
+          left-0 right-0 bottom-0
+          ${phase === 'question' && currentQuestion?.is_map_based
+            ? panelExpanded ? 'top-1/3 rounded-t-2xl' : 'top-2/3 rounded-t-2xl'
+            : 'top-0'}
+          md:top-4 md:left-4 md:bottom-4 md:right-auto md:w-96 md:rounded-2xl
+        `}
         style={{
           background: 'rgba(15, 15, 20, 0.65)',
           backdropFilter: 'blur(40px) saturate(1.4)',
@@ -409,6 +417,15 @@ export default function SurveyPage() {
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
         }}
       >
+        {/* Mobile drag handle - only on map questions */}
+        {phase === 'question' && currentQuestion?.is_map_based && (
+          <button
+            onClick={() => setPanelExpanded((v) => !v)}
+            className="md:hidden flex items-center justify-center pt-2 pb-1 w-full"
+          >
+            <div className="w-10 h-1 rounded-full bg-white/30" />
+          </button>
+        )}
         {/* Progress bar */}
         {(phase === 'question' || phase === 'section-intro') && (
           <div className="px-6 pt-4">
