@@ -107,11 +107,6 @@ export function SurveyQuestionView({
         <h2 className="text-lg font-semibold text-white leading-snug">
           {question.question_text}
         </h2>
-        {question.is_map_based && (
-          <p className="text-xs text-gray-500 mt-2">
-            Tap the map to drop pins. Add an optional note to each.
-          </p>
-        )}
       </div>
 
       {/* Answer area */}
@@ -144,15 +139,23 @@ export function SurveyQuestionView({
                 options={question.options}
                 selected={answer.answerChoices || []}
                 maxSelections={question.question_type === 'likert_single' ? 1 : question.max_selections}
-                onChange={(choices) =>
-                  onUpdateAnswer({ ...answer, answerChoices: choices })
+                onChange={(choices) => {
+                  const update: typeof answer = { ...answer, answerChoices: choices };
+                  if (!choices.some((c) => c.toLowerCase().startsWith('other'))) {
+                    update.answerText = '';
+                  }
+                  onUpdateAnswer(update);
+                }}
+                otherText={answer.answerText}
+                onOtherTextChange={(text) =>
+                  onUpdateAnswer({ ...answer, answerText: text })
                 }
               />
             </div>
           )}
 
-        {/* Open ended */}
-        {question.question_type === 'open_ended' && (
+        {/* Open ended (skip for map-based questions, they use pins + notes only) */}
+        {question.question_type === 'open_ended' && !question.is_map_based && (
           <OpenEndedInput
             value={answer.answerText || ''}
             onChange={(text) => onUpdateAnswer({ ...answer, answerText: text })}
