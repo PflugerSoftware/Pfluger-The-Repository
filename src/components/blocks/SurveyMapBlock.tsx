@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Map as MapIcon, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite } from 'lucide-react';
+import { Map as MapIcon, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite, X, MapPin, User, Clock } from 'lucide-react';
 import { MAPBOX_TOKEN, MAPBOX_STYLES } from '../../config/mapbox';
 import { getSentimentColor, SENTIMENT_CONFIG, SENTIMENT_NONE_COLOR } from '../../config/surveyCategories';
 import {
@@ -10,6 +10,7 @@ import {
   getSurveyStats,
   getSurveyQuestionsWithCounts,
   getQuestionResults,
+  getPinResponseDetails,
 } from '../../services/surveyService';
 import type { SurveySectionConfig } from '../../services/surveyService';
 import { supabaseAnon } from '../../config/supabase';
@@ -28,7 +29,7 @@ interface SurveyMapBlockProps {
 export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const markersRef = useRef<{ marker: mapboxgl.Marker; pinId: string }[]>([]);
 
   const [mapReady, setMapReady] = useState(false);
   const [showPins, setShowPins] = useState(true);
@@ -42,6 +43,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   const [loading, setLoading] = useState(true);
   const [boundary, setBoundary] = useState<[number, number][] | null>(null);
   const [sections, setSections] = useState<SurveySectionConfig[]>([]);
+  const [selectedPin, setSelectedPin] = useState<SurveyPin | null>(null);
+  const [pinRespondent, setPinRespondent] = useState<{ firstName: string | null; role: string | null } | null>(null);
+  const [pinDetailLoading, setPinDetailLoading] = useState(false);
 
   // Only show map-relevant questions in the filter dropdown
   const mapQuestions = questions.filter((q) => q.is_map_based || q.allow_pin);
@@ -216,32 +220,50 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     addBoundaryToMap(mapRef.current);
   }, [mapReady, boundary, addBoundaryToMap]);
 
+  // Handle pin click - load respondent details and show panel
+  const handlePinClick = useCallback(async (pin: SurveyPin) => {
+    setSelectedPin(pin);
+    setPinDetailLoading(true);
+    setPinRespondent(null);
+    const details = await getPinResponseDetails(pin.response_id);
+    setPinRespondent(details);
+    setPinDetailLoading(false);
+  }, []);
+
   // Render pins colored by sentiment
   const renderPinMarkers = useCallback(() => {
-    markersRef.current.forEach((m) => m.remove());
+    markersRef.current.forEach(({ marker }) => marker.remove());
     markersRef.current = [];
 
     if (!mapRef.current || !showPins) return;
 
     for (const pin of pins) {
       const color = getSentimentColor(pin.sentiment);
+      const isSelected = selectedPin?.id === pin.id;
 
       const marker = new mapboxgl.Marker({
         color,
-        scale: 0.7,
+        scale: isSelected ? 1.0 : 0.7,
       })
         .setLngLat([pin.longitude, pin.latitude])
         .addTo(mapRef.current);
 
-      if (pin.note) {
-        marker.setPopup(
-          new mapboxgl.Popup({ closeButton: false }).setText(pin.note)
-        );
+      // Add click handler and highlight styling
+      const el = marker.getElement();
+      el.style.cursor = 'pointer';
+      el.style.transition = 'filter 0.2s, transform 0.2s';
+      if (isSelected) {
+        el.style.filter = `drop-shadow(0 0 8px ${color}) drop-shadow(0 0 16px ${color})`;
+        el.style.zIndex = '10';
       }
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handlePinClick(pin);
+      });
 
-      markersRef.current.push(marker);
+      markersRef.current.push({ marker, pinId: pin.id });
     }
-  }, [pins, showPins]);
+  }, [pins, showPins, handlePinClick, selectedPin]);
 
   const renderHeatmap = useCallback(() => {
     if (!mapRef.current || !mapReady) return;
@@ -387,7 +409,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
   // Re-render when pins or viewMode change
   useEffect(() => {
-    markersRef.current.forEach((m) => m.remove());
+    markersRef.current.forEach(({ marker }) => marker.remove());
     markersRef.current = [];
 
     if (mapRef.current && mapRef.current.isStyleLoaded()) {
@@ -699,6 +721,150 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           )}
         </div>
       </div>
+
+      {/* Pin detail panel - slides in from right */}
+      <AnimatePresence>
+        {selectedPin && (
+          <motion.div
+            initial={{ x: '100%', opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="absolute top-3 right-3 bottom-3 w-72 z-10 rounded-xl overflow-y-auto scrollbar-thin"
+            style={{
+              background: 'rgba(24, 16, 25, 0.92)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div className="p-4 space-y-4">
+              {/* Header with close button */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-sky-400" />
+                  <h3 className="text-sm font-semibold text-white">Pin Details</h3>
+                </div>
+                <button
+                  onClick={() => setSelectedPin(null)}
+                  className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+
+              {/* Sentiment badge */}
+              {(() => {
+                const sentiment = selectedPin.sentiment;
+                const config = sentiment && sentiment in SENTIMENT_CONFIG
+                  ? SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG]
+                  : null;
+                return (
+                  <div
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                    style={{
+                      backgroundColor: config ? config.lightColor : 'rgba(156, 163, 175, 0.15)',
+                      color: config ? config.color : SENTIMENT_NONE_COLOR,
+                    }}
+                  >
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: config ? config.color : SENTIMENT_NONE_COLOR }}
+                    />
+                    {config ? config.label : 'No Sentiment'}
+                  </div>
+                );
+              })()}
+
+              {/* Respondent info */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <User className="w-3 h-3 text-gray-500" />
+                  <span className="text-xs text-gray-500">Respondent</span>
+                </div>
+                {pinDetailLoading ? (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg">
+                    <div className="w-3 h-3 border border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+                    <span className="text-xs text-gray-400">Loading...</span>
+                  </div>
+                ) : pinRespondent ? (
+                  <div className="px-3 py-2 bg-white/5 rounded-lg space-y-1">
+                    <p className="text-sm text-white font-medium">
+                      {pinRespondent.firstName || 'Anonymous'}
+                    </p>
+                    {pinRespondent.role && (
+                      <p className="text-xs text-gray-400 capitalize">{pinRespondent.role}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="px-3 py-2 bg-white/5 rounded-lg">
+                    <p className="text-xs text-gray-500">Unknown respondent</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Question */}
+              {(() => {
+                const question = questions.find((q) => q.id === selectedPin.question_id);
+                if (!question) return null;
+                const section = sections.find((s) => s.key === question.category);
+                return (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <MessageSquare className="w-3 h-3 text-gray-500" />
+                      <span className="text-xs text-gray-500">Question</span>
+                    </div>
+                    {section && (
+                      <span
+                        className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full"
+                        style={{
+                          backgroundColor: section.lightColor,
+                          color: section.color,
+                        }}
+                      >
+                        {section.label}
+                      </span>
+                    )}
+                    <p className="text-xs text-gray-300 leading-relaxed">
+                      Q{question.question_order}: {question.question_text}
+                    </p>
+                  </div>
+                );
+              })()}
+
+              {/* Note */}
+              {selectedPin.note && (
+                <div className="space-y-2">
+                  <span className="text-xs text-gray-500">Note</span>
+                  <div className="px-3 py-2.5 bg-white/5 rounded-lg border-l-2 border-sky-500/40">
+                    <p className="text-xs text-gray-200 leading-relaxed italic">
+                      "{selectedPin.note}"
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Timestamp */}
+              <div className="flex items-center gap-1.5 pt-2 border-t border-white/5">
+                <Clock className="w-3 h-3 text-gray-600" />
+                <span className="text-[10px] text-gray-600">
+                  {new Date(selectedPin.created_at).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+
+              {/* Coordinates */}
+              <div className="text-[10px] text-gray-600">
+                {selectedPin.latitude.toFixed(5)}, {selectedPin.longitude.toFixed(5)}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

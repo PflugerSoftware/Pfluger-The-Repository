@@ -117,6 +117,8 @@ export interface AnswerDistribution {
   choiceCounts: Record<string, number>;
   openEndedAnswers: string[];
   matrixCounts: Record<string, Record<string, number>>;
+  rankingAverages: Record<string, number>;
+  rankingCounts: number;
   totalAnswers: number;
 }
 
@@ -289,11 +291,82 @@ export async function getSurveyStats(surveyId: string): Promise<SurveyStats> {
   };
 }
 
+/** Individual response with all answers */
+export interface ResponseWithAnswers {
+  id: string;
+  firstName: string | null;
+  role: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  answers: {
+    questionId: string;
+    answerText: string | null;
+    answerChoices: string[] | null;
+    answerMatrix: Record<string, string> | null;
+    answerRanking: string[] | null;
+  }[];
+  pinCount: number;
+}
+
+/** Fetch all individual responses for a survey with their answers */
+export async function getSurveyResponses(
+  surveyId: string
+): Promise<ResponseWithAnswers[]> {
+  const { data: responses, error: rErr } = await supabaseAnon
+    .from('survey_responses')
+    .select('id, first_name, role, completed_at, created_at')
+    .eq('survey_id', surveyId)
+    .order('created_at', { ascending: false });
+
+  if (rErr || !responses) return [];
+
+  const { data: answers, error: aErr } = await supabaseAnon
+    .from('survey_answers')
+    .select('response_id, question_id, answer_text, answer_choices, answer_matrix, answer_ranking')
+    .eq('survey_id', surveyId);
+
+  const { data: pins, error: pErr } = await supabaseAnon
+    .from('survey_pins')
+    .select('response_id')
+    .eq('survey_id', surveyId);
+
+  const answersByResponse: Record<string, NonNullable<typeof answers>> = {};
+  if (!aErr && answers) {
+    for (const a of answers) {
+      if (!answersByResponse[a.response_id]) answersByResponse[a.response_id] = [];
+      answersByResponse[a.response_id].push(a);
+    }
+  }
+
+  const pinCountByResponse: Record<string, number> = {};
+  if (!pErr && pins) {
+    for (const p of pins) {
+      pinCountByResponse[p.response_id] = (pinCountByResponse[p.response_id] || 0) + 1;
+    }
+  }
+
+  return responses.map((r) => ({
+    id: r.id,
+    firstName: r.first_name,
+    role: r.role,
+    completedAt: r.completed_at,
+    createdAt: r.created_at,
+    answers: (answersByResponse[r.id] || []).map((a) => ({
+      questionId: a.question_id,
+      answerText: a.answer_text,
+      answerChoices: a.answer_choices as string[] | null,
+      answerMatrix: a.answer_matrix as Record<string, string> | null,
+      answerRanking: a.answer_ranking as string[] | null,
+    })),
+    pinCount: pinCountByResponse[r.id] || 0,
+  }));
+}
+
 /** Fetch answer distribution for a specific question */
 export async function getQuestionResults(questionId: string): Promise<AnswerDistribution> {
   const { data, error } = await supabaseAnon
     .from('survey_answers')
-    .select('answer_text, answer_choices, answer_matrix')
+    .select('answer_text, answer_choices, answer_matrix, answer_ranking')
     .eq('question_id', questionId);
 
   if (error || !data) {
@@ -303,6 +376,8 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
       choiceCounts: {},
       openEndedAnswers: [],
       matrixCounts: {},
+      rankingAverages: {},
+      rankingCounts: 0,
       totalAnswers: 0,
     };
   }
@@ -310,11 +385,15 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
   const choiceCounts: Record<string, number> = {};
   const openEndedAnswers: string[] = [];
   const matrixCounts: Record<string, Record<string, number>> = {};
+  const rankingSums: Record<string, number> = {};
+  const rankingOccurrences: Record<string, number> = {};
+  let rankingCounts = 0;
   let isOpenEnded = false;
   let isMatrix = false;
+  let isRanking = false;
 
   for (const row of data) {
-    if (row.answer_choices && Array.isArray(row.answer_choices)) {
+    if (row.answer_choices && Array.isArray(row.answer_choices) && (row.answer_choices as string[]).length > 0) {
       for (const choice of row.answer_choices as string[]) {
         choiceCounts[choice] = (choiceCounts[choice] || 0) + 1;
       }
@@ -323,20 +402,37 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
       openEndedAnswers.push(row.answer_text);
       isOpenEnded = true;
     }
-    if (row.answer_matrix && typeof row.answer_matrix === 'object') {
+    if (row.answer_matrix && typeof row.answer_matrix === 'object' && Object.keys(row.answer_matrix as Record<string, string>).length > 0) {
       isMatrix = true;
       for (const [subItem, rating] of Object.entries(row.answer_matrix as Record<string, string>)) {
         if (!matrixCounts[subItem]) matrixCounts[subItem] = {};
         matrixCounts[subItem][rating] = (matrixCounts[subItem][rating] || 0) + 1;
       }
     }
+    if (row.answer_ranking && Array.isArray(row.answer_ranking) && (row.answer_ranking as string[]).length > 0) {
+      isRanking = true;
+      rankingCounts++;
+      const items = row.answer_ranking as string[];
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        rankingSums[item] = (rankingSums[item] || 0) + (i + 1);
+        rankingOccurrences[item] = (rankingOccurrences[item] || 0) + 1;
+      }
+    }
   }
 
-  const questionType: QuestionType = isMatrix
-    ? 'matrix_likert'
-    : isOpenEnded
-      ? 'open_ended'
-      : 'multiple_choice';
+  const rankingAverages: Record<string, number> = {};
+  for (const item of Object.keys(rankingSums)) {
+    rankingAverages[item] = rankingSums[item] / rankingOccurrences[item];
+  }
+
+  const questionType: QuestionType = isRanking
+    ? 'ranking'
+    : isMatrix
+      ? 'matrix_likert'
+      : isOpenEnded
+        ? 'open_ended'
+        : 'multiple_choice';
 
   return {
     questionId,
@@ -344,8 +440,24 @@ export async function getQuestionResults(questionId: string): Promise<AnswerDist
     choiceCounts,
     openEndedAnswers,
     matrixCounts,
+    rankingAverages,
+    rankingCounts,
     totalAnswers: data.length,
   };
+}
+
+/** Fetch respondent details for a specific pin */
+export async function getPinResponseDetails(
+  responseId: string
+): Promise<{ firstName: string | null; role: string | null } | null> {
+  const { data, error } = await supabaseAnon
+    .from('survey_responses')
+    .select('first_name, role')
+    .eq('id', responseId)
+    .single();
+
+  if (error || !data) return null;
+  return { firstName: data.first_name, role: data.role };
 }
 
 /** Fetch all questions with answer counts for the filter dropdown */

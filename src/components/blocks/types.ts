@@ -41,7 +41,8 @@ export type BlockType =
   | 'quotes'
   | 'activity-rings'
   | 'product-options'
-  | 'survey-map';
+  | 'survey-map'
+  | 'survey-results';
 
 // Maps each BlockType to its corresponding data interface
 export type BlockDataMap = {
@@ -67,6 +68,7 @@ export type BlockDataMap = {
   'activity-rings': ActivityRingsData;
   'product-options': ProductOptionsData;
   'survey-map': SurveyMapData;
+  'survey-results': SurveyResultsData;
 };
 
 // Discriminated union: narrows `data` type based on `type` field
@@ -420,4 +422,9 @@ export interface SurveyMapData {
   map_center_lng: number;
   map_zoom: number;
   default_view?: 'pins' | 'heatmap';
+}
+
+// Survey Results Block - structured question results (multiple choice, ranking, matrix, open-ended)
+export interface SurveyResultsData {
+  survey_id: string;
 }

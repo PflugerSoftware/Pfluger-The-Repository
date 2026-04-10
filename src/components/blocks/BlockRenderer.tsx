@@ -23,6 +23,7 @@ const QuotesBlock = lazy(() => import('./QuotesBlock').then(m => ({ default: m.Q
 const ActivityRingsBlock = lazy(() => import('./ActivityRingsBlock').then(m => ({ default: m.ActivityRingsBlock })));
 const ProductOptionsBlock = lazy(() => import('./ProductOptionsBlock').then(m => ({ default: m.ProductOptionsBlock })));
 const SurveyMapBlock = lazy(() => import('./SurveyMapBlock').then(m => ({ default: m.SurveyMapBlock })));
+const SurveyResultsBlock = lazy(() => import('./SurveyResultsBlock').then(m => ({ default: m.SurveyResultsBlock })));
 const LineChartBlock = lazy(() => import('./LineChartBlock').then(m => ({ default: m.LineChartBlock })));
 
 const BlockFallback = () => (
@@ -78,6 +79,8 @@ export function BlockRenderer({ block }: BlockRendererProps) {
         return <ProductOptionsBlock data={block.data} />;
       case 'survey-map':
         return <SurveyMapBlock data={block.data} />;
+      case 'survey-results':
+        return <SurveyResultsBlock data={block.data} />;
       case 'line-chart':
         return <LineChartBlock data={block.data} />;
       default: {
