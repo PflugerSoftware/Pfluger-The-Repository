@@ -113,7 +113,7 @@ function MatrixResults({
   const subItems = Object.keys(distribution.matrixCounts);
 
   // Collect all unique rating labels, sorted by a logical likert order
-  const likertOrder = ['Strongly Agree', 'Agree', 'No Opinion', 'Disagree', 'Strongly Disagree'];
+  const likertOrder = ['Strongly Agree', 'Agree', 'Disagree', 'Strongly Disagree'];
   const allRatings = new Set<string>();
   for (const ratings of Object.values(distribution.matrixCounts)) {
     for (const key of Object.keys(ratings)) {

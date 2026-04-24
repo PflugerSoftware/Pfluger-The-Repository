@@ -4,7 +4,6 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Map as MapIcon, Layers, Eye, Filter, Users, MessageSquare, Building2, Satellite, X, MapPin, User, Clock } from 'lucide-react';
 import { MAPBOX_TOKEN, MAPBOX_STYLES } from '../../config/mapbox';
-import { getSentimentColor, SENTIMENT_CONFIG, SENTIMENT_NONE_COLOR } from '../../config/surveyCategories';
 import {
   getSurveyPins,
   getSurveyStats,
@@ -230,7 +229,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     setPinDetailLoading(false);
   }, []);
 
-  // Render pins colored by sentiment
+  const PIN_COLOR = '#00A9E0';
+
   const renderPinMarkers = useCallback(() => {
     markersRef.current.forEach(({ marker }) => marker.remove());
     markersRef.current = [];
@@ -238,7 +238,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
     if (!mapRef.current || !showPins) return;
 
     for (const pin of pins) {
-      const color = getSentimentColor(pin.sentiment);
+      const color = PIN_COLOR;
       const isSelected = selectedPin?.id === pin.id;
 
       const marker = new mapboxgl.Marker({
@@ -297,10 +297,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       return '#' + [r, g, b].map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('');
     }
 
-    // Always use sentiment colors for heatmap
     const coloredPins = pins.map((pin) => {
-      const color = getSentimentColor(pin.sentiment);
-      return { lng: pin.longitude, lat: pin.latitude, rgb: hexToRgb(color) };
+      return { lng: pin.longitude, lat: pin.latitude, rgb: hexToRgb(PIN_COLOR) };
     });
 
     // Point-in-polygon test against site boundary (if available)
@@ -435,13 +433,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
   }, [renderPinMarkers, renderHeatmap]);
 
   const selectedQuestion = questions.find((q) => q.id === selectedQuestionId);
-
-  // Build sentiment breakdown from pins
-  const sentimentBreakdown: Record<string, number> = { good: 0, ok: 0, bad: 0, none: 0 };
-  for (const pin of pins) {
-    const key = pin.sentiment || 'none';
-    sentimentBreakdown[key] = (sentimentBreakdown[key] || 0) + 1;
-  }
 
   return (
     <div className="relative h-[600px] rounded-2xl overflow-hidden border border-white/10">
@@ -588,47 +579,13 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
             </div>
           )}
 
-          {/* Sentiment breakdown */}
+          {/* Pin count */}
           {pins.length > 0 && (
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-xs text-gray-500">Pins by Sentiment</span>
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 text-gray-500" />
+                <span className="text-xs text-gray-500">{pins.length} total pins</span>
               </div>
-              <div className="space-y-1.5">
-                {Object.entries(sentimentBreakdown)
-                  .filter(([, count]) => count > 0)
-                  .sort(([, a], [, b]) => b - a)
-                  .map(([sentiment, count]) => {
-                    const color = sentiment === 'none'
-                      ? SENTIMENT_NONE_COLOR
-                      : SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG].color;
-                    const label = sentiment === 'none'
-                      ? 'No Sentiment'
-                      : SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG].label;
-                    return (
-                      <div key={sentiment} className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                        <span className="text-xs text-gray-400 flex-1 truncate">
-                          {label}
-                        </span>
-                        <div className="w-20 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <motion.div
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: color }}
-                            initial={{ width: 0 }}
-                            animate={{
-                              width: `${pins.length > 0 ? (count / pins.length) * 100 : 0}%`,
-                            }}
-                          />
-                        </div>
-                        <span className="text-xs text-gray-500 w-8 text-right">
-                          {count}
-                        </span>
-                      </div>
-                    );
-                  })}
-              </div>
-              <p className="text-[10px] text-gray-600 mt-1">{pins.length} total pins</p>
             </div>
           )}
 
@@ -751,29 +708,6 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                   <X className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
-
-              {/* Sentiment badge */}
-              {(() => {
-                const sentiment = selectedPin.sentiment;
-                const config = sentiment && sentiment in SENTIMENT_CONFIG
-                  ? SENTIMENT_CONFIG[sentiment as keyof typeof SENTIMENT_CONFIG]
-                  : null;
-                return (
-                  <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: config ? config.lightColor : 'rgba(156, 163, 175, 0.15)',
-                      color: config ? config.color : SENTIMENT_NONE_COLOR,
-                    }}
-                  >
-                    <div
-                      className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: config ? config.color : SENTIMENT_NONE_COLOR }}
-                    />
-                    {config ? config.label : 'No Sentiment'}
-                  </div>
-                );
-              })()}
 
               {/* Respondent info */}
               <div className="space-y-2">

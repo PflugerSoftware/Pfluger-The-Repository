@@ -2,7 +2,25 @@
 
 **Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
-## Handoff Notes (Mar 27, 2026)
+## Handoff Notes (Apr 24, 2026)
+
+**Latest Deploy:** https://repository.pflugerarchitects.com
+
+### "No Opinion" Removed from Lee College Likert Questions
+- Removed the "No Opinion" option from Q14–17 (matrix-likert) before broader distribution.
+- 20 historical "No Opinion" picks (across 14 faculty respondents) were remapped to "Agree" per leadership decision so the answers stay on a valid 4-point scale; other ratings on those answers were untouched.
+- `scale_labels` is now `["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"]` for those four questions; the matrix UI is data-driven so it auto-renders 4 buttons. Removed "No Opinion" from the `likertOrder` sort constant in `SurveyResultsBlock.tsx`.
+- Migration: `supabase/migrations/20260424_remove_no_opinion.sql`.
+
+### Sentiment Removed from Surveys
+- Per leadership: surveys no longer collect or display pin sentiment (good/ok/bad).
+- **Code:** Removed sentiment from `SurveyPin` / `SurveySubmissionPin` types, the submission insert payload, `SENTIMENT_CONFIG` / `getSentimentColor` helpers, and the analytics dashboard (sentiment-colored pins, sentiment-blended heatmap, sentiment breakdown panel, pin-detail sentiment badge). Pins and the IDW heatmap now use a single sky-blue accent (`#00A9E0`); the heatmap reads as density.
+- **Database:** Migration `supabase/migrations/20260424_remove_sentiment.sql` backfills all existing `survey_pins.sentiment` to NULL (44 rows on the Lee College survey) and adds a BEFORE INSERT/UPDATE trigger that nullifies any sentiment value. The column is intentionally retained so any stale browser bundles still in caches that POST a sentiment value succeed without error and the value is dropped at the DB layer. The column can be dropped later once stale clients have aged out.
+- **Files touched:** `src/services/surveyService.ts`, `src/config/surveyCategories.ts`, `src/components/blocks/SurveyMapBlock.tsx`, `CLAUDE.md`.
+
+---
+
+## Previous Handoff Notes (Mar 27, 2026)
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
 
