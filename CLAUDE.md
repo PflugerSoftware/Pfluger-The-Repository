@@ -146,18 +146,20 @@ Project dashboards are built from composable blocks stored in the `project_block
 
 ### Survey System
 
-The platform includes a full survey system for collecting spatial feedback via interactive maps. Surveys are project-scoped and fully data-driven from the DB.
+The platform includes a full survey system for collecting spatial feedback via interactive maps. **Each survey is a fully forked, bespoke product** — its own page component, its own subcomponents, its own routing entry. The shared layer is data access only (`surveyService.ts`).
+
+**Why forked, not generic:** Leadership wants per-survey customization (different prompts, different skip rules, different mechanics — e.g. "if Richmond, skip map questions; if 2 pins on Q5, show a prompt"). Forking each survey means changes to one survey can't break the others. The tradeoff is duplicate-fix cost when you want a shared improvement.
 
 **Architecture:**
 - Surveys are defined in the `surveys` table with per-survey config (roles, boundary polygon, sections, map center/zoom)
-- Questions live in `survey_questions` with a `category` field used as a section key (not for coloring)
+- Questions live in `survey_questions` with a `category` field used as a section key
 - Responses, answers, and pins cascade from the survey record
 - Pins are rendered in a single accent color (sky blue); the heatmap shows density via opacity
 - Section definitions (labels, colors, descriptions, skipIntro flag) are stored as JSONB in `surveys.sections`
 - Site boundary polygons are stored as JSONB in `surveys.boundary_polygon`
 
 **Sentiment Removed (Apr 24, 2026):**
-- Sentiment is no longer captured or displayed anywhere. The `survey_pins.sentiment` column still exists but a BEFORE INSERT/UPDATE trigger forces it to NULL, so any stale browser bundles that still POST a sentiment value succeed without error and the value is dropped at the DB layer. See `supabase/migrations/20260424_remove_sentiment.sql`.
+- Sentiment is no longer captured or displayed anywhere. The `survey_pins.sentiment` column still exists but a BEFORE INSERT/UPDATE trigger forces it to NULL, so any stale browser bundles that still POST a sentiment value succeed without error and the value is dropped at the DB layer.
 
 **Survey Tables:**
 - `surveys` - top-level config with `boundary_polygon` (jsonb), `sections` (jsonb), `roles` (jsonb)
@@ -168,33 +170,44 @@ The platform includes a full survey system for collecting spatial feedback via i
 
 **Question Types:** `multiple_choice`, `open_ended`, `matrix_likert`, `ranking`, `likert_single`
 
-**Key Files:**
-- `src/views/Survey/SurveyPage.tsx` - Full-screen survey-taking interface with Mapbox satellite map
-- `src/views/Survey/components/` - SurveyQuestion, MapPinPlacer, MatrixLikertInput, etc.
-- `src/components/blocks/SurveyMapBlock.tsx` - Analytics dashboard block (pins, heatmap, stats)
-- `src/services/surveyService.ts` - All survey CRUD operations and types
-- `src/config/surveyCategories.ts` - Section lookup helpers
-- `supabase/migrations/20260406_v2_lee_college_survey.sql` - Survey schema + Lee College seed data
-- `supabase/migrations/20260424_remove_sentiment.sql` - Removes sentiment from survey pins (backfills NULL + nullify trigger)
+**Active Surveys:**
+| Project | Slug | Page Component |
+|---|---|---|
+| X26-RB08 Lee College | `LeeCollegeMapSurveySpring2026` | `src/views/Survey/LeeCollege/LeeCollegeSurveyPage.tsx` |
+| X26-RB10 WCJC | `WhartonCountyJuniorCollegeMasterPlanSurvey2026` | `src/views/Survey/WCJC/WcjcSurveyPage.tsx` |
 
-**Multi-Survey Design:**
-- No survey-specific content is hardcoded in components
-- Boundary polygons, sections, roles, and questions all come from the DB
-- Each survey defines its own sections with colors, labels, and skipIntro flags
-- The `getSectionConfig(sections, key)` helper looks up from the survey's sections array
-- New surveys only require DB inserts (survey record + questions) - no code changes needed
+**Per-Survey Folder Structure:**
+Each survey gets its own folder under `src/views/Survey/<SchoolName>/` containing the page + a private `components/` folder (SurveyQuestion, MapPinPlacer, MatrixLikertInput, etc.). The page hardcodes its own `SURVEY_SLUG` constant rather than reading it from the URL.
 
-**Survey Taking Flow:**
-1. User visits `/survey/:slug` - loads survey config and questions from DB
-2. Intro screen with survey description and role/name selection
+**Shared (data access only — no UX behavior):**
+- `src/services/surveyService.ts` - DB CRUD + types + DOMPurify sanitization
+- `src/components/blocks/SurveyMapBlock.tsx` - Analytics block on the project dashboard (not user-facing survey UI)
+- `src/config/surveyCategories.ts` - `getSectionConfig` lookup helper
+
+**Routing:**
+Each survey has its own explicit `<Route>` in `App.tsx`. There is no `/survey/:slug` catch-all. New surveys must register a route or they 404 — by design.
+
+**WCJC-specific behaviors:**
+- Intro asks for first name only; role is derived from Q1's answer at submit time
+- If Q2 = "Richmond campus", all map questions (Q4-Q12) are skipped (handled by `isQuestionSkipped` helper at top of `WcjcSurveyPage.tsx`)
+- Skipped questions are filtered out of the submission payload so the DB doesn't get empty rows
+
+**Adding a new survey:**
+1. Create `src/views/Survey/<NewSchool>/` with its own page + components
+2. Add a `<Route>` line in `App.tsx`
+3. Insert into `projects`, `surveys`, `survey_questions`, `project_blocks` tables
+4. Add the metadata entry in `src/services/projects.ts` (`PROJECT_METADATA`)
+
+**Survey Taking Flow (general pattern, each survey may differ):**
+1. User visits `/survey/<exact-slug>` - dedicated component loads its own slug
+2. Intro screen with survey description and (per-survey) role/name selection
 3. Section intro screens shown when entering a new section (unless `skipIntro: true`)
 4. Map-based questions: user drops pins on satellite map, adds optional notes
 5. Structured questions: multiple choice, matrix likert, open-ended, ranking
-6. Part 2 questions with `allow_pin: true` auto-open the pin panel for direct map interaction
-7. Submission writes response, answers, and pins to DB
+6. Submission writes response, answers, and pins to DB
 
 **Purging Test Data:**
-Use `DELETE FROM survey_responses WHERE first_name = 'TestEntry' AND project_id = 'X26-RB08';` to remove test submissions.
+`DELETE FROM survey_responses WHERE first_name = 'test' AND project_id = '<id>';` (cascades to answers + pins).
 
 ### Navigation
 
@@ -296,8 +309,12 @@ src/
 │   ├── Pitch/PitchSubmission.tsx        # Internal pitch
 │   ├── Analytics.tsx                    # Internal metrics
 │   ├── Survey/
-│   │   ├── SurveyPage.tsx               # Full-screen survey-taking interface
-│   │   └── components/                  # MapPinPlacer, SurveyQuestion, MatrixLikertInput, etc.
+│   │   ├── LeeCollege/
+│   │   │   ├── LeeCollegeSurveyPage.tsx # Bespoke Lee College survey
+│   │   │   └── components/              # Lee College's own forked components
+│   │   └── WCJC/
+│   │       ├── WcjcSurveyPage.tsx       # Bespoke WCJC survey (Richmond skip rule)
+│   │       └── components/              # WCJC's own forked components
 │   └── projects/
 │       ├── ProjectDashboard.tsx         # Block-based project view
 │       └── DynamicProjectDashboard.tsx  # Loads config from Supabase
@@ -369,7 +386,7 @@ The Research Campus map (ResearchMap.tsx) uses Mapbox GL JS with:
 
 ### Confidential Projects
 
-Projects marked `is_confidential = true` (e.g. X25-RB09, X25-RB10, X25-RB11, X00-DEMO, X25-RB02, X26-RB08):
+Projects marked `is_confidential = true` (e.g. X25-RB09, X25-RB10, X25-RB11, X00-DEMO, X25-RB02, X26-RB08, X26-RB10):
 - **Hidden from public views**: filtered out by `loadProjects()` query (`is_confidential = false`)
 - **Blocked from direct URL access**: `resolveProjectIdentifier()` checks `is_confidential` and returns null for unauthenticated users
 - **Hidden from nav**: explore dropdown dynamically loads from DB, only showing non-confidential projects for public users
@@ -472,12 +489,9 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 - **GitHub Actions:** `.github/workflows/ci.yml` runs `tsc --noEmit` and `npm run build` on every push to `main` and on PRs
 - **No auto-deploy.** CI validates the build. Deploy remains manual via `wrangler pages deploy dist`.
 
-## Database Migrations
+## Database Schema Source of Truth
 
-- **Directory:** `supabase/migrations/`
-- **Baseline:** Not yet captured. Run `supabase login && supabase link --project-ref bydkzxqmgsvsnjtafphj && supabase db pull` to capture current schema as baseline.
-- **New migrations:** `supabase migration new <name>`, then edit the generated SQL file
-- **Apply:** Migrations run automatically on `supabase db push`
+**The live Supabase database is the source of truth, not migration files.** The `supabase/migrations/` folder was removed Apr 29, 2026 because the files had drifted from live state and were being treated as authoritative. Schema changes are made directly via psql against `DATABASE_URL` (session pooler). If a baseline is ever needed, capture it from live with `supabase db pull`.
 
 ## Dev vs. Production Database
 

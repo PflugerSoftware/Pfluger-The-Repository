@@ -1,21 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { MAPBOX_TOKEN } from '../../config/mapbox';
-import { getSectionConfig } from '../../config/surveyCategories';
+import { MAPBOX_TOKEN } from '../../../config/mapbox';
+import { getSectionConfig } from '../../../config/surveyCategories';
 import {
   getSurveyBySlug,
   getSurveyQuestions,
   submitSurveyResponse,
-} from '../../services/surveyService';
+} from '../../../services/surveyService';
 import type {
   Survey,
   SurveyQuestion,
   SurveySubmissionAnswer,
   SurveySubmissionPin,
-} from '../../services/surveyService';
+} from '../../../services/surveyService';
 import { SurveyProgress } from './components/SurveyProgress';
 import { SurveyIntro } from './components/SurveyIntro';
 import { SurveyQuestionView } from './components/SurveyQuestion';
@@ -23,8 +22,9 @@ import { SurveyThankYou } from './components/SurveyThankYou';
 
 type Phase = 'loading' | 'intro' | 'section-intro' | 'question' | 'submitting' | 'thankyou' | 'error';
 
-export default function SurveyPage() {
-  const { slug } = useParams<{ slug: string }>();
+const SURVEY_SLUG = 'LeeCollegeMapSurveySpring2026';
+
+export default function LeeCollegeSurveyPage() {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -62,14 +62,8 @@ export default function SurveyPage() {
 
   // Load survey data
   useEffect(() => {
-    if (!slug) {
-      setErrorMessage('No survey specified.');
-      setPhase('error');
-      return;
-    }
-
     async function load() {
-      const surveyData = await getSurveyBySlug(slug!);
+      const surveyData = await getSurveyBySlug(SURVEY_SLUG);
       if (!surveyData) {
         setErrorMessage('Survey not found or is no longer active.');
         setPhase('error');
@@ -89,7 +83,7 @@ export default function SurveyPage() {
     }
 
     load();
-  }, [slug]);
+  }, []);
 
   // Initialize map
   useEffect(() => {

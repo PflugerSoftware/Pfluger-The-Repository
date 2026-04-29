@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, MapPin, MessageSquare, MousePointerClick, X } from 'lucide-react';
-import type { SurveyQuestion as SurveyQuestionType, SurveySubmissionAnswer, SurveySectionConfig } from '../../../services/surveyService';
-import { getSectionConfig } from '../../../config/surveyCategories';
+import type { SurveyQuestion as SurveyQuestionType, SurveySubmissionAnswer, SurveySectionConfig } from '../../../../services/surveyService';
+import { getSectionConfig } from '../../../../config/surveyCategories';
 import { MultipleChoiceInput } from './MultipleChoiceInput';
 import { OpenEndedInput } from './OpenEndedInput';
 import { MapPinPlacer } from './MapPinPlacer';

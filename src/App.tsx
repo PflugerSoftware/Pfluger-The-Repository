@@ -27,7 +27,8 @@ const AboutProcess = lazy(() => import('./views/About/AboutProcess'));
 const AboutAI = lazy(() => import('./views/About/AboutAI'));
 const AboutTools = lazy(() => import('./views/About/AboutTools'));
 const AboutSources = lazy(() => import('./views/About/AboutSources'));
-const SurveyPage = lazy(() => import('./views/Survey/SurveyPage'));
+const LeeCollegeSurveyPage = lazy(() => import('./views/Survey/LeeCollege/LeeCollegeSurveyPage'));
+const WcjcSurveyPage = lazy(() => import('./views/Survey/WCJC/WcjcSurveyPage'));
 
 // Project dashboards (used in overlay route)
 import { ProjectDashboard, DynamicProjectDashboard } from './views/projects';
@@ -214,7 +215,8 @@ function AppRoutes() {
     return (
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-background"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
         <Routes>
-          <Route path="/survey/:slug" element={<SurveyPage />} />
+          <Route path="/survey/LeeCollegeMapSurveySpring2026" element={<LeeCollegeSurveyPage />} />
+          <Route path="/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026" element={<WcjcSurveyPage />} />
         </Routes>
       </Suspense>
     );

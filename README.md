@@ -2,6 +2,43 @@
 
 **Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
+## Handoff Notes (Apr 29, 2026)
+
+**Latest Deploy:** https://repository.pflugerarchitects.com
+
+### New Project: X26-RB10 WCJC Master Plan Survey
+- Project: Wharton County Junior College Campus Master Plan Survey (Houston office)
+- Researchers: Abigail Spears, Jazmin Mendez, Alex Wickes, Chris Laack
+- Survey URL: `/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026`
+- Launches May 1, 2026. Marked confidential during development.
+- Boundary polygon imported from KMZ (13 points around the Main campus in Wharton, TX)
+- 20 questions duplicated from Lee College then adjusted: max 1 pin per map question, "Main Campus" wording on map questions, "your campus" on non-map questions, all "Lee College" → "Wharton County Junior College" references swept
+
+### Survey System Re-Architected: Forked Per-Survey
+- Previous: one generic `SurveyPage.tsx` routed by `/survey/:slug`, fully data-driven from DB
+- New: each survey is a fully forked, bespoke product with its own page + components folder + explicit route
+- Reasoning: leadership wants per-survey customization (different prompts, skip rules, mechanics). Forking means a fix to one survey can't break the others. Tradeoff: duplicate-fix cost when applying a shared improvement.
+- Folder layout: `src/views/Survey/LeeCollege/` and `src/views/Survey/WCJC/`, each with their own `LeeCollegeSurveyPage.tsx` / `WcjcSurveyPage.tsx` + private `components/` folder
+- Routing: explicit `<Route>` per survey in `App.tsx` (no more `:slug` catch-all)
+- Shared layer: only `surveyService.ts` (DB CRUD), `SurveyMapBlock.tsx` (analytics), `surveyCategories.ts` (helpers) — no UX behavior is shared
+
+### WCJC-Specific Bespoke Logic
+- **Intro asks first name only** (role is no longer collected upfront)
+- **Role is derived from Q1's answer** at submit time and written to `survey_responses.role`
+- **Richmond campus skip:** if user picks "Richmond campus" on Q2, all map-based questions (Q4-Q12) are skipped. Implemented via `isQuestionSkipped` helper in `WcjcSurveyPage.tsx`. Skipped questions are filtered out of submission so the DB doesn't get empty rows.
+- **Max 1 pin** on every map question (Lee College allows 2)
+
+### Repository Cleanup: SQL Files Purged
+- Deleted `supabase/migrations/` folder entirely (live Supabase DB is source of truth, files had drifted)
+- Deleted `scripts/apply-rls-policies.sql` (encoded incorrect Supabase Auth assumptions)
+- Deleted `supabase-schema-user_page_views.sql` (one-off schema script masquerading as truth)
+- Combined the 4 Lee College survey row dumps into a single backup file: `docs/Lee College Survey/260424-Backup/lee_college_survey_backup_260424.sql` (FK-dependency order, 4 INSERT statements)
+
+### Schema Fix: Houston Office
+- `projects_office_check` constraint now allows Houston (was Austin/SA/Dallas/Corpus Christi only). Houston is a real office per CLAUDE.md and 3/4 WCJC researchers are based there. Was a constraint bug, not a data bug.
+
+---
+
 ## Handoff Notes (Apr 24, 2026)
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
@@ -885,6 +922,13 @@ View all blocks in action: Open the X00-DEMO project from the Portfolio page.
 - **X26-RB01** - Midland Furniture Pilot (Classroom FFE survey analysis)
   - Researchers: Wendy Rosamond, Alexander Wickes
   - Office: Dallas
+- **X26-RB08** - Lee College Campus Survey (Faculty discovery, interactive map-based)
+  - Researcher: Alexander Wickes
+  - Survey: `/survey/LeeCollegeMapSurveySpring2026` — 34 responses, 472 pins
+- **X26-RB10** - WCJC Master Plan Survey (Faculty + student campus master planning)
+  - Researchers: Abigail Spears, Jazmin Mendez, Alex Wickes, Chris Laack
+  - Office: Houston
+  - Survey: `/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026` — launching May 1, 2026
 
 ## Data Management
 

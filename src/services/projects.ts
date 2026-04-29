@@ -113,6 +113,16 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
     totalHours: 40,
     accentColor: '#B5BD00',
   },
+  'X26-RB10': {
+    id: 'X26-RB10',
+    title: 'WCJC Master Plan Survey',
+    code: 'X26-RB10',
+    subtitle: 'Wharton County Junior College Campus Master Plan Survey',
+    category: 'campus-life',
+    researcher: 'Abigail Spears, Jazmin Mendez, Alex Wickes, Chris Laack',
+    totalHours: 0,
+    accentColor: '#B5BD00',
+  },
 };
 
 // Database block row type

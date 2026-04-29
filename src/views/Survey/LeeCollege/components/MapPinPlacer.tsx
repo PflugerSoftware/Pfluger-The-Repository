@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, X, MousePointerClick } from 'lucide-react';
-import type { SurveySubmissionPin } from '../../../services/surveyService';
+import type { SurveySubmissionPin } from '../../../../services/surveyService';
 
 interface MapPinPlacerProps {
   pins: SurveySubmissionPin[];

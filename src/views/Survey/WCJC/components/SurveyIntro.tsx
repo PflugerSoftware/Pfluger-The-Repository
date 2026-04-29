@@ -1,27 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, ChevronRight } from 'lucide-react';
-import type { Survey } from '../../../services/surveyService';
+import type { Survey } from '../../../../services/surveyService';
 
 interface SurveyIntroProps {
   survey: Survey;
-  onStart: (firstName: string, role: string) => void;
+  onStart: (firstName: string) => void;
 }
-
-const DEFAULT_ROLES = [
-  'Student',
-  'Parent',
-  'Teacher',
-  'Staff',
-  'Other',
-];
 
 export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
   const [firstName, setFirstName] = useState('');
-  const [role, setRole] = useState('');
 
-  const roles = survey.roles && survey.roles.length > 0 ? survey.roles : DEFAULT_ROLES;
-  const canStart = firstName.trim().length > 0 && role.length > 0;
+  const canStart = firstName.trim().length > 0;
 
   return (
     <motion.div
@@ -66,35 +56,12 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
           />
         </div>
 
-        <div>
-          <label className="block text-sm text-gray-400 mb-2">I am a...</label>
-          <div className="grid grid-cols-1 gap-2">
-            {roles.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRole(r)}
-                className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
-                  role === r
-                    ? 'text-sky-300'
-                    : 'text-gray-400 hover:text-gray-200'
-                }`}
-                style={{
-                  background: role === r ? 'rgba(0, 169, 224, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(8px)',
-                  border: role === r ? '1px solid rgba(0, 169, 224, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                }}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Start button */}
       <div className="px-6 py-6">
         <button
-          onClick={() => canStart && onStart(firstName.trim(), role)}
+          onClick={() => canStart && onStart(firstName.trim())}
           disabled={!canStart}
           className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-medium transition-all ${
             canStart
