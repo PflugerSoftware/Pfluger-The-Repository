@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './index.css';
 
 import { ThemeProvider } from './components/System/ThemeManager';
-import { AuthProvider, useAuth } from './components/System/AuthContext';
+import { useAuth } from './components/System/AuthContext';
 import { ProtectedRoute } from './components/Router/ProtectedRoute';
 import { TopNavbar } from './components/Navigation/TopNavbar';
 import { logPageView } from './services/analytics';
@@ -228,11 +228,9 @@ function AppRoutes() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
