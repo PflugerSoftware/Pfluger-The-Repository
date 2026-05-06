@@ -2,6 +2,35 @@
 
 **Repository** is Pfluger Architects' Research & Benchmarking platform. It serves as both a public showcase of research work and an internal management tool for the R&B team.
 
+## Handoff Notes (May 6, 2026)
+
+**Latest Deploy:** https://repository.pflugerarchitects.com
+
+### RLS Enabled on Ezra Revit Tables
+- Supabase linter flagged `public.ezra_revit_chat_logs` and `public.ezra_sessions` with `rls_disabled_in_public` + `sensitive_columns_exposed` (4 ERROR rows total - `session_id` was the sensitive column).
+- Enabled RLS on both with **no policies**. Reads/writes happen via the `ezra-revit` edge function (separate `EzraRevit` repo, `supabase/functions/ezra-revit/index.ts:847-852`), which uses `SUPABASE_SERVICE_ROLE_KEY` and bypasses RLS - so the Revit add-in is unaffected. PostgREST `anon` and `authenticated` paths are now sealed.
+- DB-only change, no migration file (live Supabase is source of truth per CLAUDE.md). Rollback is `ALTER TABLE ... DISABLE ROW LEVEL SECURITY;`.
+- The same gap was already flagged internally in `EzraRevit/docs/code-review-2026-03-11.md:138` (item J-6).
+
+### 2026 R&B Project Metadata Added
+Seven new projects registered in `PROJECT_METADATA` (`src/services/projects.ts`):
+
+| ID | Title | Researcher(s) | Category |
+|---|---|---|---|
+| X26-RB02 | Honest Materials | Monse Rios | sustainability |
+| X26-RB03 | Material Health (Phase 1) | Monse Rios, Katherine Wiley, Casy Mirau | psychology |
+| X26-RB04 | The Future of Athletics | Zach Sprinkle-Lewis, Emily Perna | campus-life |
+| X26-RB05 | Room Printer | Tim Estrada | immersive |
+| X26-RB06 | Materials Checklist | Samantha Goosen | sustainability |
+| X26-RB07 | Mass Timber Phase 3 | Nilen Varade | sustainability |
+| X26-RB09 | Modelizer Part 3 | Agustin Salinas | sustainability |
+
+### Renames
+- **X26-RB08:** "Lee College Campus Survey" → **"Campus Voices"** (subtitle: "Lee College Faculty Discovery Survey")
+- **X26-RB10** subtitle: "Wharton County Junior College Campus Master Plan Survey" → **"Wharton + Richmond Campus Discovery Survey"**
+
+---
+
 ## Handoff Notes (Apr 29, 2026)
 
 **Latest Deploy:** https://repository.pflugerarchitects.com
@@ -922,13 +951,27 @@ View all blocks in action: Open the X00-DEMO project from the Portfolio page.
 - **X26-RB01** - Midland Furniture Pilot (Classroom FFE survey analysis)
   - Researchers: Wendy Rosamond, Alexander Wickes
   - Office: Dallas
-- **X26-RB08** - Lee College Campus Survey (Faculty discovery, interactive map-based)
+- **X26-RB02** - Honest Materials (Sustainable Material Specification Tool)
+  - Researcher: Monse Rios
+- **X26-RB03** - Material Health, Phase 1 (Student Housing Wellbeing Survey)
+  - Researchers: Monse Rios, Katherine Wiley, Casy Mirau
+- **X26-RB04** - The Future of Athletics (Identity-Driven Collegiate Athletic Facilities)
+  - Researchers: Zach Sprinkle-Lewis, Emily Perna
+- **X26-RB05** - Room Printer (AI Workflows for 2D to 3D Model Conversion)
+  - Researcher: Tim Estrada
+- **X26-RB06** - Materials Checklist (Sustainability Integration into Project Workflow)
+  - Researcher: Samantha Goosen
+- **X26-RB07** - Mass Timber Phase 3 (Mass Timber Simulator Tool)
+  - Researcher: Nilen Varade
+- **X26-RB08** - Campus Voices (Lee College Faculty Discovery Survey)
   - Researcher: Alexander Wickes
   - Survey: `/survey/LeeCollegeMapSurveySpring2026` — 34 responses, 472 pins
-- **X26-RB10** - WCJC Master Plan Survey (Faculty + student campus master planning)
+- **X26-RB09** - Modelizer Part 3 (Kenedy Elementary - Performance Analysis)
+  - Researcher: Agustin Salinas
+- **X26-RB10** - WCJC Master Plan Survey (Wharton + Richmond Campus Discovery Survey)
   - Researchers: Abigail Spears, Jazmin Mendez, Alex Wickes, Chris Laack
   - Office: Houston
-  - Survey: `/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026` — launching May 1, 2026
+  - Survey: `/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026` — launched May 1, 2026
 
 ## Data Management
 
