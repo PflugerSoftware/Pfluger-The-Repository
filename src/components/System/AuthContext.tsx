@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { login as authLogin, type UserProfile } from '../../services/auth';
 
 type User = UserProfile;
@@ -13,17 +13,19 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
+  const initialAuth = (() => {
     const savedAuth = localStorage.getItem('ezra-auth');
-    if (savedAuth) {
+    if (!savedAuth) return { isAuthenticated: false, user: null as User | null };
+    try {
       const authData = JSON.parse(savedAuth);
-      setIsAuthenticated(true);
-      setUser(authData.user);
+      return { isAuthenticated: true, user: authData.user as User };
+    } catch {
+      return { isAuthenticated: false, user: null as User | null };
     }
-  }, []);
+  })();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(initialAuth.isAuthenticated);
+  const [user, setUser] = useState<User | null>(initialAuth.user);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     const result = await authLogin(email, password);

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { loadProjects } from '../data/loadProjects';
 import type { ResearchProject } from '../data/loadProjects';
+import { useAuth } from '../components/System/AuthContext';
 
 interface ProjectsContextType {
   projects: ResearchProject[];
@@ -12,6 +13,7 @@ interface ProjectsContextType {
 const ProjectsContext = createContext<ProjectsContextType | undefined>(undefined);
 
 export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
   const [projects, setProjects] = useState<ResearchProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({ children }
     try {
       setLoading(true);
       setError(null);
-      const data = await loadProjects();
+      const data = await loadProjects(isAuthenticated);
       setProjects(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load projects');
@@ -32,7 +34,7 @@ export const ProjectsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [isAuthenticated]);
 
   const refreshProjects = async () => {
     await fetchProjects();
