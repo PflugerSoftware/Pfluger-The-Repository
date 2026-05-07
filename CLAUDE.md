@@ -83,7 +83,8 @@ Authentication uses a **shared password** with client-side session persistence v
 - Two Supabase clients: `supabase` (main) and `supabaseAnon` (for public operations like surveys)
 - No Supabase Auth sessions - RLS uses `anon` role with public read policies
 - Admin account: `software@pflugerarchitects.com` (Dev User), all others are researchers
-- ~107 users across Austin, San Antonio, Dallas, Houston, and Corpus Christi offices
+- 104 users across Austin, San Antonio, Dallas, Houston, and Corpus Christi offices
+- `users` table columns: `id`, `email`, `name`, `role`, `office`, `job_title`, `avatar_url`, `created_at`, `updated_at`
 - RLS policies: public tables readable by anyone, survey tables have public read/insert
 - Confidential projects blocked from direct URL access for unauthenticated users (`resolveProjectIdentifier` checks `is_confidential`)
 - Will migrate to Azure SSO in the future
