@@ -43,8 +43,7 @@
 
 2. **Launch Strategy**:
    - **December 15, 2025**: Design Year Review presentation will showcase 2025 R&B work
-   - **January 2026**: Full R&B program launch (Christian to identify optimal timing)
-   - Launch presentation components: Hours allocation, project pitch process, people pitch (R&B as part-time career paths)
+   - **May  2026**: Full R&B program launched
 
 3. **R&B Applications Meeting (New Monthly Cadence)**:
    - Monthly short shareouts replacing/supplementing Design Applications meetings
@@ -52,75 +51,12 @@
    - Test a few times and survey reactions to optimize timing/attendance
    - Purpose: Regular R&B recap touchpoints firm-wide
 
-4. **December 15th Design Year Review Content**:
-   - **2025 R&B Work Completed**:
-     - Crockett Mass Timber (X25-RB05)
-     - Kennedy Energy Sim (X25-RB08 - The Modulizer Part 1)
-     - Flour Bluff CTE Energy Sim (X25-RB02 - The Modulizer Part 2)
-     - CPISD Immersive Learning
-     - Katherine Texas Architect (X25-RB01 - Sanctuary Spaces)
-   - **Coming in 2026**:
-     - Denton Energy Sim (X25-RB11 - Turf Melting)
-     - Midland Model Fabrication
-
 **Action Items**:
 
-- [ ] Christian to identify January 2026 launch timing
-- [ ] Prepare December 15th Design Year Review presentation with R&B showcase
-- [ ] Develop launch presentation (Hours, Project Pitch, People Pitch/Career Paths)
-- [ ] Test R&B Applications meeting format and survey attendees
-- [ ] Finalize 2026 budget details with JW (Mapbox, VP job numbers, Claude accounts)
-- [ ] Set up State of Firm dates with Clair for R&B integration
-- [ ] Respond to Heather on SOF coordination after dates confirmed
-- [ ] Respond to Augustin on research coordination
-- [ ] Continue Samantha coordination on sustainability R&B (staying high level)
+- [ ] set up all user accounts 
+- [ ] calude account installs and creations
 - [ ] Finalize Ezra (R&B web application) front face tied to Vision statement
-
-**Infrastructure Setup**:
-
-- [x] Claude accounts: research1-5@pflugerarchitects.com
-- [x] Mapbox account created ($5 for 50k-100k usage)
-- [x] Bluehost upgraded, DB migration to Cloudflare planned
-- [x] Cloudflare account created
-- [x] Research@pflugerarchitects.com created for service accounts
-
----
-
-## Marketing Integration Meeting - 2025-11-18
-
-**Attendees**: R&B Team, Marketing (Heather)
-
-**Key Decisions**:
-
-1. **Internal Communication Strategy**:
-   - Align internal R&B shareouts to State of the Firm presentations as "teaser trailers"
-   - Implement once-a-month deep dive sessions for detailed research presentations
-
-2. **Marketing Integration Clarification Needed**:
-   - Review and update timeline templates to include marketing integration touchpoints
-   - Further clarification required on marketing integration aspects within templates
-
-3. **Follow-up Meeting Required**:
-   - Schedule follow-up to review IP considerations and marketing touchpoints for different research templates
-   - Determine appropriate marketing integration points per template type (Simple/Medium/Complex)
-
-**Action Items**:
-
-- [ ] Send active R&B work overview to marketing team
-- [ ] Review and update all timeline templates with marketing integration touchpoints
-- [ ] Schedule follow-up meeting to review:
-  - IP considerations per research type
-  - Marketing touchpoints per template
-  - Publication approval workflow
-- [ ] Establish State of the Firm integration schedule for R&B teaser content
-- [ ] Define deep dive session format and monthly schedule
-- [ ] Christian Owens and Alex to review R&B Reboot deployment
-
-**Additional Notes**:
-
-- Mark Lam Research Award documentation added to `/02_Resources/ML-Research-Award-2.md` (not yet reviewed with team)
-
-**Next Steps**: Follow-up meeting to be scheduled for template review and IP/marketing touchpoint clarification.
+- [ ] RB Projetct set up and workflow finilizaiton
 
 ---
 
