@@ -245,94 +245,96 @@ Clearly indicate the expected relationship, specifying conditions or thresholds 
 
 **Literature Review**: Conduct a literature review to understand prior findings and refine the hypothesis, ensuring it builds on existing knowledge or addresses identified gaps.
 
-## 2.3 Research Scope & Timeline Frameworks
+## 2.3 Research Scope & Methodology Framework
 
-### 2.3.1 Simple & Quick Research
+A research pitch has two independent attributes: **scope tier** (how big the effort is) and **methodology** (what kind of inquiry it is). Any method can be applied at any scope. The default scope noted for each method below is guidance for matching depth to method, not a constraint. A "Simple Case Study" or a "Complex Infographic" are both valid combinations - the scope tier sets the time budget and check-in cadence; the methodology sets the kind of work.
 
-**Timeline**: 20-60 hours
-**Touchpoints**: 0%, 50%, 99%
-**Shareout**: Internal high level share out at 99%, External - social media graphic with quick fact at 99%
+### 2.3.1 Scope Tiers
 
-**Available Methods:**
+The scope tier defines the time budget, check-in touchpoints, and shareout schedule for a project. Scope is independent of methodology.
 
-**1. Infographic Creation**
+**Simple** (8-20 hours)
+- Touchpoints: 0%, 50%, 99%
+- Shareout: Internal high level share out at 99%, External - social media graphic with quick fact at 99%
+
+**Medium** (20-40 hours)
+- Touchpoints: 0%, 33%, 66%, 99%
+- Shareout: 66% Internal high level share out + External social media graphic with quick fact, 99% Final publication
+
+**Complex** (40-80 hours)
+- Touchpoints: 0%, 25%, 50%, 75%, 99%
+- Shareout: 50% Internal high level share out, 99% Final publication + External social media graphic with quick fact
+
+### 2.3.2 Methodologies
+
+Each methodology has a default scope tier (the suggested fit) and a method-only template. The scope tier can be adjusted independently in the pitch to match the depth the researcher commits to.
+
+**1. Case Study Analysis** Required Phase One Research for Experimental Design
+- **Default Scope**: Simple
+- **Deliverable**: Detailed case study analysis
+- **Description**: Conduct a detailed analysis of a relevant case study connected to your topic
+- Use Pfluger projects when possible
+- Comprehensive documentation
+- **Template**: Research and Benchmarking - Case Study.md
+
+**2. Infographic Creation**
+- **Default Scope**: Simple
 - **Deliverable**: Visual infographic summarizing key facts
 - **Description**: Create a simple infographic summarizing key facts and examples about your topic
 - Groups may use this as a 'sandbox' project for a new program to explore
 - Tools: Mentimeter, Padlet, PechaKucha
 - Key facts visualization with internal/external sharing capability
-- **Template**: Research and Benchmarking - Short - Infographic Template.md
+- **Template**: Research and Benchmarking - Infographic.md
 
-**2. Expert Interview**
+**3. Expert Interview**
+- **Default Scope**: Simple
 - **Deliverable**: Expert interview summary with key insights
 - **Description**: Conduct a short interview with someone knowledgeable about your topic
 - Start with internal Pfluger experts as a way to get to know our work
 - Note down key insights and summarize reflections
-- **Template**: Research and Benchmarking - Short - Interview.md
+- **Template**: Research and Benchmarking - Interview.md
 
-**3. Literature Review**
+**4. Literature Review**
+- **Default Scope**: Simple
 - **Deliverable**: Brief literature review from 3+ academic articles
 - **Description**: Write a brief literature review summarizing findings from at least three academic articles and/or past Pfluger projects related to your topic
 - Brief format focused on key findings
-- **Template**: Research and Benchmarking - Short - Literature Review.md
+- **Template**: Research and Benchmarking - Literature Review.md
 
-### 2.3.2 Medium Intensity Research
-
-**Timeline**: 60-120 hours
-**Touchpoints**: 0%, 33%, 66%, 99%
-**Shareout**: 
-33% Internal high level share out at 66%, External - social media graphic with quick fact
-99% Final publication
-
-**Available Methods:**
-
-**1. Survey/Post-Occupancy Design**
+**5. Survey/Post-Occupancy Design**
+- **Default Scope**: Medium
 - **Deliverable**: Survey design and post-occupancy evaluation
 - **Description**: Design a short survey to gather opinions or data about your research topic
 - Use past Pfluger projects as an additional method of learning more about the work others are doing in the firm
 - Supplement with insights from past Pfluger projects for comparison
-- **Template**: Research and Benchmarking - Medium - Survey Post Occupancy.md
+- **Template**: Research and Benchmarking - Survey Post Occupancy.md
 
-**2. Annotated Bibliography/Resources**
+**6. Annotated Bibliography/Resources**
+- **Default Scope**: Medium
 - **Deliverable**: Annotated bibliography with source summaries
 - **Description**: Compile an annotated bibliography of relevant sources
 - Summarize each source's key points and relevance to your research
 - Contribute resources to the firm's Design Resources or Image Bank in the Shared Drive
-- **Template**: Research and Benchmarking - Medium - Annotated Bibliography.md
+- **Template**: Research and Benchmarking - Annotated Bibliography.md
 
-### 2.3.3 Complex & Long-Term Research
-
-**Timeline**: 120+ hours
-**Touchpoints**: 0%, 25%, 50%, 75%, 99%
-**Shareout**: 
-50% Internal high level share out. 
-99% Final publication, External - social media graphic with quick fact
-
-**Available Methods:**
-
-**1. Case Study Analysis** Required Phase One Research for Experimental Design
-- **Deliverable**: Detailed case study analysis
-- **Description**: Conduct a detailed analysis of a relevant case study connected to your topic
-- Use Pfluger projects when possible
-- Comprehensive documentation
-- **Template**: Research and Benchmarking - Short - Case Study.md
-- **Note**: While listed as "Short" template, case studies can scale to complex research depending on depth
-
-**2. Experimental Design**
+**7. Experimental Design**
+- **Default Scope**: Complex
 - **Deliverable**: Small-scale experiment testing hypothesis
 - **Description**: Design a small-scale experiment to test a hypothesis related to your research question
 - Use Pfluger project as test bed when possible
 - Measure outcomes systematically
-- **Template**: Research and Benchmarking - Long - Experimental Design.md
+- **Template**: Research and Benchmarking - Experimental Design.md
 
-**3. Long-form Essay/Whitepaper**
+**8. Long-form Essay/Whitepaper**
+- **Default Scope**: Complex
 - **Deliverable**: Comprehensive essay/whitepaper for publication
 - **Description**: Write a comprehensive essay or whitepaper exploring different aspects of your topic
 - Use evidence from various sources
 - Aim to share it internally or submit it for publication
-- **Template**: Research and Benchmarking - Long - Long Form White Paper.md
+- **Template**: Research and Benchmarking - Long Form White Paper.md
 
-**4. Original Research Proposal**
+**9. Original Research Proposal**
+- **Default Scope**: Complex
 - **Deliverable**: Original research proposal
 - **Description**: Develop a proposal for original research on your chosen topic
 - Outline research questions, methodology, and expected outcomes
@@ -1085,12 +1087,37 @@ External Partners may require funding. Depending on the involvement of an extern
 - When research is integrated into an architectural project
 - Time should be billed to the project number, with a comment referencing the related RBxx code (e.g., "See X25_RB03")
 
-## 6.2 Active Research Projects (2025)
+## 6.2 Active Research Projects
+
+### X24-RB01: Immersive Learning
+**Status**: Developmental (per DB)
+**Researcher**: Alex Wickes (lead)
+**Office**: Austin
+**Start Date**: 2024-01-01
+**Category**: immersive
+**Research Premise**: Immersive Learning is physical experience enhanced by digital experience. Research explores transformation of educational environments for the GPISD K-12 initiative, examining how immersive technologies can be applied to STEM/STEAM, CTE, outdoor learning, and play-based learning environments. Key question: how to use immersive spaces effectively.
+**Adventure Objectives**:
+- Develop a framework for crafting immersive lessons combining content, space, and technology
+- Map immersive technology against Bloom's Taxonomy and the Technology Implementation Matrix
+- Apply Apple Spatial Design principles (reserve full immersion for special moments, design for comfort, allow user control)
+- Define a 5-step workflow (PEAK Institute / Daniel Forrester) for teachers to develop, review, and book immersive lessons
+- Catalog and compare 8 vendor solutions (Eye Click, Kids Jump Tech, Play Lu, Elumenati, WorldViz, BenQ, ClassVR, zSpace) across 4 space types (Device, Plane, Interaction, Panorama)
+- Document product line costs across price tiers ($300-$189K per unit)
+- Develop case studies for TM Clark Library and GPISD schools (East Cliff, New Austin, WC Andrews)
+**Key Findings**:
+- 75% boost in knowledge retention reported by ClassVR
+- Installed systems can cost $100,000+; mobile systems can be shared to reduce cost
+- Five framework layers: Content, Marketplace, Converter, End Device, User - each ranging from generalized/low-cost to specialized/high-cost
+- 8 vendors analyzed, 20+ products, 4 space types
+- Lighting recommendations: tinted interior glazing, modulated ceilings, automatic shades, dimmable LEDs
+**Identified future project alignment**: GPISD East Cliff, New Austin, WC Andrews
+
+---
 
 ### X25-RB01: Sanctuary Spaces
 **Status**: In Publishing - Sunwest has final edits
 **Shareout Potential**: Internal Able, External maybe hold
-**Researchers**: Katherine Wiley, Braden Haley
+**Researchers**: Katherine Wiley (lead), Alex Wickes, Braden Haley
 **Research Type**: Mid-Level: Annotated Bibliography (approx. 80 hours)
 **Research Premise**: An article for Texas Architect: Toolkit on what aspects of interior design influence the effectiveness of sanctuary-type spaces, easing the transition from home to school, by writing an article for Texas Architects on what makes a sanctuary space effective. Dive into the psychological effects of learning spaces and how design affects self-regulation in elementary grade students.
 **Adventure Objectives**:
@@ -1098,12 +1125,12 @@ External Partners may require funding. Depending on the involvement of an extern
 - Identify 3-4 aspects of sanctuary spaces (250 words each) that enhance the students experience. Back each aspect and claim with 2-3 academic research showcasing its importance
 - For each aspect, identify it in a Pfluger project
 **Continuing research opportunity**: Further research the psychological effects of spatial elements in gathering spaces and how can these be shaped to positively influence learning
-**Resources & Partners**: Sunwest publishing and editing
+**Resources & Partners**: Sunwest Publishing (publisher), Braden Haley
 **Identified future project alignment**: Garland Elementary School (Sept 2025)
 
 ---
 
-### X25-RB02: The Modulizer Part 2 - Flour Bluff CTE Energy Simulation
+### X25-RB02: The Modulizer Part 2
 **Status**: Phase 1 Complete - Transitioned to energy simulation focus
 **Shareout Potential**: Internal Able, External not yet
 **Researcher**: Agustin Gonzalez (with team: Leah van der Sanden, Agustin Salinas, Chris Olivarez, Brandon Jacobson)
@@ -1125,23 +1152,30 @@ External Partners may require funding. Depending on the involvement of an extern
 - Document measured impacts of design decisions on overall building performance
 - Develop design evaluation framework that can be replicated for future projects
 **Continuing research opportunity**: Expand the modulizer methodology to other project types beyond K-12, or develop automated design optimization workflows that integrate sustainability modeling directly into early-stage design
-**Resources & Partners**: UTSA (potential faculty collaborators), Amanda for publication coordination
+**Resources & Partners**: UTSA (university partner), Amanda (publication coordination), Laura Goff (computational design)
 **Identified future project alignment**: Flour Bluff CTE Center (Schematic Design → Design Development, Nov 2025-Mar 2026)
 
 ---
 
-### X25-RB03: Gyp, Concrete, and What's That?
-**Status**: On Pause
-**Shareout Potential**: Internal not yet, External not yet
-**Researcher**: Monse Rios
-**Research Type**: Simple & Quick: Infographic and Literature Review (approx. 60 hours)
-**Research Premise**: This research aims to focus on novel material usage and selection as well as the life cycle impacts of them. By observing what the new material trends are, we can respond to social trends as well as public appeal and host this in the built environment, supported by backed positive benefits.
+### X25-RB03: A4LE Design Awards
+**Status**: Developmental (per DB)
+**Researcher**: Alex Wickes (lead)
+**Office**: Austin
+**Start Date**: 2025-01-01
+**Category**: immersive
+**Research Premise**: Research supporting A4LE and AIA design award submissions through documentation of sustainable design strategies and performance metrics across Pfluger's K-12 educational projects.
 **Adventure Objectives**:
-- Identify trends in architectural material usages and manufacturing such as additive manufacturing of elements such as Actual and Branch Technology
-- Identify hybridizations of social trends and architecture and the potential impact of these in our educational environments
-**Continuing research opportunity**: Building on this foundational research, the next step will be to survey and work directly with BIPOC students, discovering alternative student-centered design methods. This phase will focus on gathering student input to develop design ideas that support belonging, safety, and cultural recognition in schools. The goal is to use insights about the students and their environments to create design solutions that respond to their needs and experiences.
-**Resources & Partners**: NA
-**Identified future project alignment**: Argile or Garland Elementary
+- Document sustainable design strategies and performance metrics for submitted projects
+- Prepare submissions across multiple award categories (A4LE and AIA)
+- Maintain ongoing documentation as projects progress
+**Key Findings**:
+- Multiple award categories targeted (A4LE and AIA)
+- K-12 educational focus
+- Sustainability criteria documented across submitted projects
+- Ongoing documentation work
+**Resources & Partners**: A4LE (Association for Learning Environments)
+**Identified future project alignment**: TBD - applies broadly to Pfluger K-12 portfolio
+**Note**: Project code X25-RB03 was previously assigned to a Gyp/Concrete material research effort (Monse Rios). That work has been deprioritized; the current scope of X25-RB03 is design award submissions.
 
 ---
 
@@ -1159,30 +1193,31 @@ External Partners may require funding. Depending on the involvement of an extern
 - Identify maintenance and durability solutions of a mass timber system
 - Identify 3-4 psychological benefits of mass timber or related natural-based architectural materials on living-based occupant situations
 **Continuing research opportunity**: Further research on the psychological effects of spatial elements in gathering spaces and how these can be shaped to positively influence learning
-**Resources & Partners**: Wood Works, Timerlyne, Mercer Mass Timber
+**Resources & Partners**: Wood Works, Timberlyne, Mercer Mass Timber
 **Identified future project alignment**: Austin ISD Crockett Mass Timber Gym (Bid complete, within budget, awaiting school board presentation)
 
 ---
 
-### X25-RB06: Where Have All the Artists Gone?!
-**Status**: On Pause
-**Shareout Potential**: Internal not yet, External not yet
-**Researcher**: NA
-**Research Type**: Simple & Quick - Literature Review (approx. 40 hours)
-**Research Premise**: Building on student population demographic data, this research aims to hone in on dense urban settings where land isn't always the cheapest option and uncover novel design and construction methods to support Austin's creative growth when there isn't room to expand out. Focusing on construction and market sector analysis, this research will support the future identification of alternative methods to developing education environments in dense urban settings. Office conversion strat of Office-To-Education or Office-To-Other. 
+### X25-RB06: Timberlyne Study
+**Status**: Developmental (per DB)
+**Researcher**: Alex Wickes (lead)
+**Office**: Austin
+**Start Date**: 2025-05-27
+**Category**: sustainability
+**Research Premise**: Mass Engineered Timber (MET) design assist study documenting Timberlyne's workflow and technical considerations for CLT and Glulam construction.
 **Adventure Objectives**:
-- Identify trends in real estate in alignment with Pfluger's market regions
-- Identify metrics in construction and renovation costs of Office-To-Education in areas aligning with Pfluger's market regions
-- Exploring HS to secondary/higher education as a new space
-**Continuing research opportunity**: Experimental Design
-**Resources & Partners**: Potential research partner with the Austin Creative Alliance to develop urban infill micro schools centered around the Fine arts. SPARK — Connects artists and city areas
-**Identified future project alignment**: NA
-
----
-
-### X25-RB07: [Project Name TBD]
-**Status**: On Pause
-**Note**: Project mentioned in status update but details not yet documented. Requires further information to complete knowledge base entry.
+- Document Timberlyne's design assist workflow (open spec bidding, structural coordination, connection design, precon services)
+- Capture technical requirements: moment frames, diaphragm roof, PT glulam with Sansin coating, maintenance built into scope
+- Catalog Timberlyne capabilities and capacity
+- Develop case studies of major mass timber developments
+**Key Findings**:
+- Timberlyne: founded 1987, 35+ years of timber expertise, 2 locations (Texas + Nebraska), 125,000 SF combined manufacturing
+- Boerne, TX facility houses the first Hundegger RobotMax CNC machine (largest in North America), 42,500 SF
+- CLT and Glulam production capability
+- Case studies: Walmart Home Office (2.4M SF office, 1.7M CF timber), Adohi Hall (202,000 SF student housing, 708 beds), Mercer Mass Timber acquisition ($81.1M, 19M acres forestland)
+**Resources & Partners**: Timberlyne (MET manufacturer partner), Sansin (PT glulam coating manufacturer)
+**Identified future project alignment**: Related to broader mass timber line of work - X25-RB05 (Mass Timber), X26-RB07 (Mass Timber Phase 3)
+**Note**: Project code X25-RB06 was previously assigned to "Where Have All the Artists Gone?!" office-to-education research. That work has been deprioritized; the current scope of X25-RB06 is the Timberlyne MET design assist study.
 
 ---
 
@@ -1191,7 +1226,7 @@ External Partners may require funding. Depending on the involvement of an extern
 **Shareout Potential**: Internal Able, External yes
 **Share out dates**:
 **Touchpoints**:
-**Researcher**: Agustin Gonzalez (with computational design support from Laura Goff)
+**Researchers**: Agustin Gonzalez (lead), Alex Wickes
 **Research Type**: Mid-Level: Literature Review (approx. 60 hours)
 **Research Premise**: This research investigates the energy and design implications of massing strategies in sustainable school architecture. Through comparative literature reviews and precedent analysis, it evaluates the tools and methods used by Lake|Flato and Ramboll for early design-stage sustainability modeling. By identifying proven massing modifications from CAE and COTE award-winning schools, this work will inform a design strategy for Kennedy Elementary that balances exterior modesty, energy performance, and site safety.
 **Adventure Objectives**:
@@ -1203,13 +1238,14 @@ External Partners may require funding. Depending on the involvement of an extern
 - Follow-up DD analysis using Sefaira lighting revealed glazing performance issues; strategic interventions (VLT adjustments, extended overhangs) successfully reduced glare zones and balanced daylight distribution in learning environments
 
 **Continuing research opportunity**: Apply research findings to develop and test 3-4 massing iterations of Kennedy Elementary, evaluating each for energy use, views, and façade metrics. This work may feed into a higher education studio where students design the school alongside the research team, with client participation in critiques.
-**Resources & Partners**: UTSA (potential faculty collaborators), Amanda for publication coordination
+**Resources & Partners**: UTSA (university partner), Amanda (publication coordination), Laura Goff (computational design)
 **Identified future project alignment**: Kennedy Elementary School, research successfully integrated into SD booklet, informing the design conversation and concept.
 
 ---
 
-### X25-RB09: Pfluger Vision
-**Status**: Active - Launched December 2025
+### X25-RB09: Project Vision
+**Status**: Pre-Research (per DB) - actively under development; Application launched December 2025
+**Confidential**: Yes (per DB)
 **Shareout Potential**: Internal Able, External no
 **Project Update** (December 2025): Application launched with full feature set. Authentication, map layers, graph builder, and detail panels complete.
 **Researcher**: Alex Wickes
@@ -1252,9 +1288,10 @@ External Partners may require funding. Depending on the involvement of an extern
 
 ---
 
-### X25-RB10: LHISD Cost Projection Model (Project Prism)
+### X25-RB10: Project Prism
 
-**Status**: Active Development - In full work mode
+**Status**: Pre-Research (per DB) - Active Development, in full work mode
+**Confidential**: Yes (per DB)
 **Shareout Potential**: Internal Able, External maybe
 **Research Type**: Tool Development - Web-based cost projection model
 **Project Overview**: Liberty Hill ISD requested cost projection tool to model facility requirements for next decade, supporting planning for possible May 2026 bond referendum. Tool will help predict costs for new construction, additions, renovations across multiple building types with flexibility for demographics, inflation, and economic trends.
@@ -1285,8 +1322,9 @@ External Partners may require funding. Depending on the involvement of an extern
 
 ---
 
-### X25-RB11: Turf Melting Mitigation Study (Let's Focus)
-**Status**: Research in progress - Tony S and Casey M notified of options
+### X25-RB11: Let's Focus
+**Status**: Pre-Research (per DB) - Research in progress, Tony S and Casey M notified of options
+**Confidential**: Yes (per DB)
 **Shareout Potential**: Internal Able, External no
 **Project**: Denton ISD Martinez Elementary School (Project 22-024)
 **Research Type**: Quick Research Sprint - Experimental Design (20 hours)
@@ -1315,7 +1353,82 @@ External Partners may require funding. Depending on the involvement of an extern
 **Resources & Partners**: Project team coordination (Tony S, Casey M), Turf Guard manufacturer data
 **Identified future project alignment**: Martinez Elementary courtyard design (active construction issue resolution)
 
+---
 
+### X25-RB13: CTE Design Echos
+**Status**: Developmental (per DB)
+**Researcher**: Alex Wickes (lead)
+**Office**: Corpus Christi
+**Start Date**: 2025-10-21
+**Category**: sustainability
+**Research Premise**: Design concept survey analysis for the Flour Bluff CTE Center with 65 participant responses across three schematic concepts (The Bridge, The Porch, The Current). Companion work to X25-RB02 (Modulizer Part 2) which evaluated the same concepts on energy/daylighting performance.
+**Adventure Objectives**:
+- Survey 65 participants on three schematic concepts
+- Compare concepts on enthusiasm rating, top positive themes, and top concerns
+- Distill cross-concept themes to inform design recommendations
+- Reconcile survey findings with X25-RB02 energy/daylighting analysis
+- Refine selected concept in Climate Studio and address concerns in Design Development
+**Key Findings**:
+- The Porch rated highest (3.9 avg, 50% rated 5 stars / "very excited")
+- The Bridge: 3.8 avg (41% rated 5 stars)
+- The Current: 3.7 avg (most consistent ratings, 43% rated 4 / "somewhat excited")
+- Universal positive themes: outdoor spaces (#1), flexibility (#2), clear zones (#3), connection (#4)
+- Universal concerns: crowding (#1), security (#2), territory (#3), logistics (#4)
+**Recommendations**: The Porch has strongest support. Prioritize outdoor spaces, lab separation, storage, secure entry, and flexibility. Consider hybrid approach combining best elements of all three concepts.
+**Timeline**: Present findings (Nov 5, 2025), select concept (Nov 11, 2025), reconcile with energy analysis (Nov 2025), refine in Climate Studio (Dec 2025), address concerns in DD (Mar 2026).
+**Resources & Partners**: UTSA (university partner), Flour Bluff ISD (government/district partner)
+**Identified future project alignment**: Flour Bluff CTE Center (Schematic Design → Design Development)
+
+---
+
+### X26-RB01: Midland Furniture Pilot
+**Status**: Completed (per DB)
+**Researcher**: TBD (not yet recorded in project_researchers)
+**Office**: Dallas
+**Start Date**: 2026-02-03 | **Completion Date**: 2026-02-07 | **Total Hours**: 20
+**Category**: campus-life
+**Research Premise**: Classroom FFE survey analysis from a one-semester pilot across 4 Midland ISD campuses, comparing student and teacher preferences across chairs and desks.
+**Adventure Objectives**:
+- Survey 321 students and 7 teachers across 4 Midland ISD campuses
+- Identify chair and desk preferences with sub-themes
+- Capture teacher workspace feedback on task chair, desk, and mobile table
+- Capture classroom storage feedback
+- Produce design recommendations for future FFE specifications
+**Key Findings**:
+- 93% positive first impressions; 92.5% rated their chair comfortable
+- Student chair favorite: Chair 3 (46.6%, wide and spacious); runner-ups Chair 1 (20.1%), Chair 4 (17.2%), Chair 2 (16.1%)
+- Student desk favorite: Desk 3/4 combined 52.7% (Desk 3 and 4 grouped due to a survey typo); Desk 1 (30.0%), Desk 2 (17.3%)
+- Teacher chair preferences: Chair 1 and Chair 4 tied (lightweight, quiet, stable, backpack hook). Notable: Chair 3 was student favorite but not selected by any teacher.
+- Teacher desk preferences: Desks 1-3 each preferred by 2 of 5 teachers
+- Top concerns: too many casters on desks, oversized desks sticking into walkways, pencil mark transfer on light surfaces, loud storage lock
+- Teacher workspace: 4 of 5 rated task chair "Very comfortable"; mobile table valued as podium/teaching station
+**Design Recommendations**: Prioritize workspace size, specify 2 casters on desks (vs more), consider height adjustability, use darker laminate to prevent pencil transfer, include backpack hook in chair specifications.
+**Identified future project alignment**: Midland ISD; Sample Rodeo stakeholder event planned for May 2026
+
+---
+
+### X26-RB08: Lee College Campus Survey
+**Status**: Developmental (per DB) - **Confidential**
+**Researcher**: AW, JM (per project list; not yet recorded in project_researchers)
+**Office**: San Antonio
+**Start Date**: 2026-03-01 | **Total Hours**: 40
+**Category**: campus-life
+**Research Premise**: Interactive map-based survey collecting student and staff feedback on campus spaces at Lee College. Methodology shared with X26-RB10 (WCJC Master Plan Survey).
+**Block Structure**: survey-map, survey-results (multiple choice, ranking, matrix, open-ended), stat-grid, line-chart, sources
+**Identified future project alignment**: Lee College Master Plan
+
+---
+
+### X26-RB10: WCJC Master Plan Survey
+**Status**: Developmental (per DB) - **Confidential**
+**Researcher**: AW, JM, AS (per project list; not yet recorded in project_researchers)
+**Office**: Houston
+**Start Date**: 2026-05-01
+**Category**: campus-life
+**Research Premise**: Master Plan Faculty and Student Survey at Wharton County Junior College (WCJC). Methodology shared with X26-RB08 (Lee College Campus Survey).
+**Block Structure**: survey-map, survey-results (multiple choice, ranking, matrix, open-ended), stat-grid, line-chart, sources
+**Related Pitch**: P-2026-027 (Jazmin Mendez, pending) - "Establish a foresight methodology" covers both Wharton College and Lee College Master Plan work
+**Identified future project alignment**: Wharton County Junior College Master Plan
 
 ---
 
@@ -1871,7 +1984,7 @@ Research deliverable templates are maintained in:
 **Notes**:
 - All templates stored in `/01_Templates/`
 - Project folder template available for new research initialization
-- Templates based on research scope: Simple (20-60h), Medium (60-120h), Complex (120+h)
+- Scope tiers define time budget and check-in cadence: Simple (8-20h), Medium (20-40h), Complex (40-80h). Methods are independent of scope and have method-only templates.
 - Marketing integration points to be defined in upcoming template review
 - Templates evolve based on researcher feedback and successful deliverable examples
 

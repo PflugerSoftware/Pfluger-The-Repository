@@ -156,9 +156,9 @@ export function PitchReviewPanel({
                           className="bg-transparent text-white text-xs px-2 py-1 rounded-lg border-2 border-sky-500/50 focus:outline-none focus:border-sky-500"
                         >
                           <option value="">Scope</option>
-                          <option value="simple">Simple (20-60 hrs)</option>
-                          <option value="medium">Medium (60-120 hrs)</option>
-                          <option value="complex">Complex (120-200 hrs)</option>
+                          <option value="simple">Simple (8-20 hrs)</option>
+                          <option value="medium">Medium (20-40 hrs)</option>
+                          <option value="complex">Complex (40-80 hrs)</option>
                         </select>
                         <select
                           value={pitch.methodology || ''}

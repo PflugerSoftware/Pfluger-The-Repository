@@ -82,9 +82,9 @@ const FIELDS: FieldConfig[] = [
 ];
 
 const SCOPE_LABELS: Record<string, string> = {
-  simple: 'Simple & Quick (20-60 hrs)',
-  medium: 'Medium Intensity (60-120 hrs)',
-  complex: 'Complex & Long-Term (120+ hrs)'
+  simple: 'Simple & Quick (8-20 hrs)',
+  medium: 'Medium Intensity (20-40 hrs)',
+  complex: 'Complex & Long-Term (40-80 hrs)'
 };
 
 const ALIGNMENT_LABELS: Record<string, string> = {

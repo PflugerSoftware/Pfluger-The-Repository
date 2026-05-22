@@ -35,18 +35,19 @@ export const SCOPE_TIERS: Record<string, {
   methods: string[];
 }> = {
   simple: {
-    hours: [20, 60],
+    hours: [8, 20],
     weeks: [5, 15],
     touchpoints: [0, 50, 99],
     shareout: 'Internal high-level share out at 99%, External social media graphic at 99%',
     methods: [
+      'Case Study Analysis',
       'Infographic Creation',
       'Expert Interview',
       'Literature Review',
     ],
   },
   medium: {
-    hours: [60, 120],
+    hours: [20, 40],
     weeks: [15, 30],
     touchpoints: [0, 33, 66, 99],
     shareout: '66% Internal high-level share out + External social media graphic, 99% Final publication',
@@ -56,12 +57,11 @@ export const SCOPE_TIERS: Record<string, {
     ],
   },
   complex: {
-    hours: [120, 200],
+    hours: [40, 80],
     weeks: [30, 50],
     touchpoints: [0, 25, 50, 75, 99],
     shareout: '50% Internal high-level share out, 99% Final publication + External social media graphic',
     methods: [
-      'Case Study Analysis',
       'Experimental Design',
       'Long-form Whitepaper',
       'Original Research Proposal',

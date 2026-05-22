@@ -3,9 +3,9 @@ import { CheckCircle, Send, Loader2 } from 'lucide-react';
 import type { PitchData } from './PitchCard';
 
 const SCOPE_HOURS: Record<string, string> = {
-  simple: '20-60',
-  medium: '60-120',
-  complex: '120+',
+  simple: '8-20',
+  medium: '20-40',
+  complex: '40-80',
 };
 
 interface PitchFinalReviewProps {
