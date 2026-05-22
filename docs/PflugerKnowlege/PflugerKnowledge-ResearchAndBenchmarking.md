@@ -1053,9 +1053,11 @@ External Partners may require funding. Depending on the involvement of an extern
 **03 - Research Resource Identification**
 - Efforts to locate or coordinate with potential research partners, collaborators, institutions, or archives
 
-### 6.1.2 Project-Specific Research Work (T01-xx)
+### 6.1.2 Project-Specific Research Work (T01-xx) - Vantage Point Subnumbers
 
-**010 - General/Miscellaneous**
+The following subnumbers (010-090) are the Vantage Point levels used to bill time against each R&B project. When opening a research project in Vantage Point, these subnumbers appear under the project as the available billing levels. Use the subnumber that matches the kind of work being done.
+
+**010 - General - Miscellaneous**
 - Catch-all sub-number for work on an R&B project
 
 **020 - External Coordination**
