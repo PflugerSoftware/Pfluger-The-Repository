@@ -1,0 +1,278 @@
+src|content
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|test
+REPO_TITLE|color as wayfind?
+REPO_TITLE|what do we have on mass timber
+REPO_TITLE|i would like to create an environment fo...
+REPO_TITLE|Which projects have external partners?
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|What research projects are currently in ...
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|tell me about immersive learning
+REPO_TITLE|What research categories do you have?
+REPO_TITLE|so what makes a good chair
+REPO_TITLE|tell me about some work
+REPO_TITLE|so what makes a good chair
+REPO_TITLE|for the flour bluff project, which desig...
+REPO_TITLE|i need to know about code
+REPO_TITLE|im wanting to know about lighting and co...
+REPO_TITLE|helo. info on chairs?
+REPO_TITLE|what do we have on FFE?
+REPO_TITLE|i am going to be doing some master plann...
+REPO_TITLE|Hey! lets look at somthing interesting
+REPO_TITLE|Hey! What makes a good chair?
+REVIT_Q|tell me about this?
+REVIT_Q|lets say its 5$ a sf. how much would this be?
+REVIT_Q|any research related to this?
+REVIT_Q|what about building performance
+REVIT_Q|tell me about this
+REVIT_Q|maybe how this can help with views? anything around that
+REVIT_Q|what about all these.
+REVIT_Q|how much SF of this wall type do we have
+REVIT_Q|how big is the space between them
+REVIT_Q|what natrual materials do we have
+REVIT_Q|what metal panel materials do we have that we can use on a south facade
+REVIT_Q|what finish is on this?
+REVIT_Q|hey im in the flour bluff cte model.. what were some survey results that i should integrate into the floor plan?
+REVIT_Q|thats $25 a sf, whats the total
+REVIT_Q|what acoustic materials are in this model so far?
+REVIT_Q|which rooms are we using aktura?
+REVIT_Q|what floor type currently has hard usrfaces
+REVIT_Q|how many doors are in the building
+REVIT_Q|wheres our won door
+REVIT_Q|what is the square footage of this wall
+REVIT_Q|how can we get that u nder $300,000
+REVIT_Q|what are some cheaper alternatives to a brick veneer
+REVIT_Q|in a coastal environment - is an exposed stainless steel fastener ok?
+REVIT_Q|what if we cant get stainless steel?
+REVIT_Q|why not concealed??
+REVIT_Q|why is the site model not showing up in this view?
+REVIT_Q|why is the site model not showing up in this view?
+REVIT_Q|why is the site model not showing up in this view?
+REVIT_Q|what are the linked revit models in my revit file?
+REVIT_Q|how many different floor types do we have
+REVIT_Q|how many sf would i need to add a classroom
+REVIT_Q|what about an office?
+REVIT_Q|exactly what is ACT-1
+REVIT_Q|Check for all the other ACT materials on the project
+REVIT_Q|hello, what roomsdo we have and are there any that seem undersized?
+REVIT_Q|who made you
+REVIT_Q|the horizon? thats strange
+REVIT_Q|what materials can we use across them? ideas on accent materials?
+REVIT_Q|could you tell me about this
+REVIT_Q|how much insulation are we using inside this roof. Is it enough for Liberty Hill ISD district
+REVIT_Q|Do a carbon calculation
+REVIT_Q|How much ceiling finish is in this room. How many ACT tiles do we need
+REVIT_Q|What other ACT materials do we have on this project?
+REVIT_Q|Find the Revit Material
+REVIT_Q|what's the difference between these two ceilings
+REVIT_Q|Where have we used the second ceiling on this project?
+REVIT_Q|What natural materials do we have on this project?
+REVIT_Q|What's the difference between the ACT-1 and ACT-2
+REVIT_Q|What's the total area of these two ceilings across the project?
+REVIT_Q|calculate the total area of the selected ceilings
+REVIT_Q|what is this
+REVIT_Q|where is this referenced in the project
+REVIT_Q|Do we have any unused roof details?
+REVIT_Q|Does the project have any unused drafting views that reference the roof details
+REVIT_Q|Where can I find these views
+REVIT_Q|Can you look up all the sheets and flag the ones where the views are not aligned properly
+REVIT_Q|Can you find any typos in the view names on any sheets
+REVIT_Q|Can you flag and inconsistencies in the sheet numbering
+REVIT_Q|this is about quality control. please help me
+REVIT_Q|Where are all the views on this sheet
+REVIT_Q|Can you read through this and do a detailed code review. This is a project in the Liberty Hill ISD district.
+REVIT_Q|does this help
+REVIT_Q|CHAPTER 2 - DEFINITIONS
+REVIT_Q|What quantity of ICF walls do we have in this project?
+REVIT_Q|Ok now check the square footage of all ICF walls in the project
+REVIT_Q|yes please
+REVIT_Q|how many parking spots do I have in the model
+REVIT_Q|yes please count all placed parking spots
+REVIT_Q|please total the Parking Space Count parameter in all instances in the project
+REVIT_Q|what tonnage of steel is there in the Structural model linked here
+REVIT_Q|I've got the structural linked model selected now - how much tonnage of steel is in this model?
+REVIT_Q|how many instances of the wall type basic wall decal walnut are there?
+REVIT_Q|how many instances of the wall type basic wall decal walnut are there?
+REVIT_Q|how many instances of the wall type basic wall decal walnut are there?
+REVIT_Q|how many furniture pieces of HON cylinder are on level 1?
+REVIT_Q|which ones aligns with the data of the FFE study from midland high school?
+REVIT_Q|which chairs would be best for a sanctuary space?
+REVIT_Q|how many instances of floor finish - LVT-4 Daffodil are there in the project?
+REVIT_Q|what is the total square foot coverage and by floor instance of the floor finish - LVT-4 daffodil?
+REVIT_Q|what is the average size of a room classroom?
+REVIT_Q|in this project what is the average sq ft of a first grade room?
+REVIT_Q|how many cubbies are in each classroom?
+REVIT_Q|casework cubby review
+REVIT_Q|what about generic model cubby
+REVIT_Q|what is a standard cubby height and width?
+REVIT_Q|what is the total volume of this roof
+REVIT_Q|based on this drafting view are our roof slopes adequately draining water into the gutter
+REVIT_Q|based on this drafting view are our roof slopes adequately draining water into the gutter
+REVIT_Q|this model is making me feel really sad, can you cheer me up
+REVIT_Q|what do you know about me
+REVIT_Q|Give me the square footage of all of the wall type I have selected
+REVIT_Q|The wall I have selected is to show you what wall type. I want the square footage of all of the instances placed of this wall type
+REVIT_Q|Ok give me the square footage of all of these walls
+REVIT_Q|In this model is a wall type "wood wall panel staggered". Give me the total square footage of all of the instances of this wall placed in the model
+REVIT_Q|yes
+REVIT_Q|that seems wrong try again
+REVIT_Q|that still seems way off. I am seeing 68 instances and way more than 1047 SF. try again
+REVIT_Q|thanks
+REVIT_Q|any answer?
+REVIT_Q|how many exterior doors in the floor plan
+REVIT_Q|how many of these doors are from phase 2a and exterior
+REVIT_Q|how many are phase 2b
+REVIT_Q|I'm considering adding this baffle to this room. WHat are acoustic considerations for this? How can we do a an acoustic calculation?
+REVIT_Q|These are actually 2' on center. Whats the performance with that spacing? Can you estimate thhe SF of the room material to do a reverbiration calculation?
+REVIT_Q|this is the ceiling in the space, can we use the area for the caulculation?
+REVIT_Q|This ceiling is an ACT ceiling, are you taking that into consideration?
+REVIT_Q|Can you take the properties of this room and run acoustic analysis on it? Also calculate the window to wall ratio and sightlines.
+REVIT_Q|By acoustic analysis I mean reverb time inside of thee space
+REVIT_Q|use typical values please
+REVIT_Q|If we wanted to remove the ceiling what design configurations could we introduce to the space to make it perform better?
+REVIT_Q|Whats the average cost of ACT? If we were to replace it with furniture what would our budget be?
+REVIT_Q|Is there something we're not seeing?
+REVIT_Q|If we were to design a mezzanine or loft element that we could suspend from the ceiling what would those look like?
+REVIT_Q|how would the students get upthere? Is this allowed by code
+REVIT_Q|List the revised sheets for Addendum 2
+REVIT_Q|How many exterior doors are in the project?
+REVIT_Q|and in new construction only?
+REVIT_Q|Which of the 40 doors have the Phase created parameter as new construction?
+REVIT_Q|Which of the 40 doors have the Phase created parameter as new construction?
+REVIT_Q|Total squarefootage of the project
+REVIT_Q|total square footage of the project
+REVIT_Q|Thank you
+REVIT_Q|tell me about this
+REVIT_Q|can you tell me about this
+REVIT_Q|what are this items
+REVIT_Q|can you do an NRC calculation on this room
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|conversational
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|general_design
+REVIT_INTENT|conversational
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|research_query
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|conversational
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|research_query
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|element_query
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|conversational
+REVIT_INTENT|element_query
+REVIT_INTENT|research_query
+(276 rows)

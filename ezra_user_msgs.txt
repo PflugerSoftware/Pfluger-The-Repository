@@ -1,0 +1,37 @@
+role|content
+user|What research categories do you have?
+user|what other categories are on the list
+user|what other categories
+user|test
+user|color as wayfind?
+user|what do we have on mass timber
+user|i would like to create an environment for little kids to where it is comfy and they can escape
+user|Which projects have external partners?
+user|What research categories do you have?
+user|What research categories do you have?
+user|what do you have in project sustainability
+user|What research categories do you have?
+user|What research projects are currently in progress?
+user|what project touch on interior design
+user|What research categories do you have?
+user|tell me about immersive learning
+user|how does this relate to sancuary spaces
+user|What research categories do you have?
+user|so what makes a good chair
+user|tell me about some work
+user|simulation
+user|so what makes a good chair
+user|what about for a reading nook? 
+user|for the flour bluff project, which design was chosen and why?
+user|i need to know about code
+user|im wanting to know about lighting and color
+user|helo. info on chairs?
+user|what makes a good chair
+user|what do we have on FFE?
+user|what about for midland?
+user|curious what makes a good chair
+user|i am going to be doing some master planning and site development. what can you tell me about building orientation and simulation
+user|can you give me some EUI savings and what they did to get it
+user|Hey! lets look at somthing interesting
+user|Hey! What makes a good chair?
+(35 rows)
