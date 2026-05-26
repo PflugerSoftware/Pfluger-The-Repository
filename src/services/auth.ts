@@ -7,12 +7,25 @@ export interface UserProfile {
   role: 'admin' | 'researcher' | 'contributor' | 'viewer';
 }
 
-// Shared password for all users (will migrate to Azure SSO)
-const SHARED_PASSWORD = '123456Softwares!';
-
 export async function login(email: string, password: string): Promise<{ user: UserProfile | null; error?: string }> {
-  if (password !== SHARED_PASSWORD) {
-    return { user: null, error: 'Invalid password' };
+  // Validate the credential against Supabase Auth (per-user passwords live in
+  // auth.users). We only use the session to verify the password, then drop it
+  // locally so the rest of the app keeps running as the anon role - matching
+  // existing RLS behavior and avoiding token-refresh issues. App session state
+  // is owned by AuthContext via localStorage, not the Supabase session.
+  const { error: authError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (authError) {
+    return { user: null, error: 'Invalid email or password' };
+  }
+
+  try {
+    await supabase.auth.signOut({ scope: 'local' });
+  } catch {
+    // Non-fatal: the credential is already verified.
   }
 
   const { data, error } = await supabase

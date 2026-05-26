@@ -32,3 +32,6 @@ supabase/.temp/
 
 # Claude Code local settings (may contain credential references)
 .claude/settings.local.json
+
+# Generated credential lists (plaintext passwords - never commit)
+docs/user-passwords-*.csv
