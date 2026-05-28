@@ -22,8 +22,12 @@ import { SurveyThankYou } from './components/SurveyThankYou';
 
 type Phase = 'loading' | 'intro' | 'section-intro' | 'question' | 'submitting' | 'thankyou' | 'error';
 
-// Richmond campus respondents have no relationship to the Main campus map,
-// so map-based questions (Q4-Q12) are hidden from their flow.
+// Campuses with no relationship to the Main campus map skip Q4-Q12.
+const SKIPS_MAP_QUESTIONS = [
+  'Richmond campus',
+  'Sugarland, working with Richmond Campus',
+];
+
 function isQuestionSkipped(
   question: SurveyQuestion,
   questions: SurveyQuestion[],
@@ -33,7 +37,7 @@ function isQuestionSkipped(
   const campusQ = questions.find((q) => q.question_order === 2);
   if (!campusQ) return false;
   const choices = answers.get(campusQ.id)?.answerChoices ?? [];
-  return choices.includes('Richmond campus');
+  return choices.some((c) => SKIPS_MAP_QUESTIONS.includes(c));
 }
 
 const SURVEY_SLUG = 'WhartonCountyJuniorCollegeMasterPlanSurvey2026';
