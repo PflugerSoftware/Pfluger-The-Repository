@@ -190,8 +190,9 @@ Each survey has its own explicit `<Route>` in `App.tsx`. There is no `/survey/:s
 
 **WCJC-specific behaviors:**
 - Intro asks for first name only; role is derived from Q1's answer at submit time
-- If Q2 = "Richmond campus", all map questions (Q4-Q12) are skipped (handled by `isQuestionSkipped` helper at top of `WcjcSurveyPage.tsx`)
+- Q2 has 4 campus options: `Main campus`, `Richmond campus`, `Sugarland, working with Wharton Main Campus`, `Sugarland, working with Richmond Campus`. The two Richmond-affiliated options (`Richmond campus` and `Sugarland, working with Richmond Campus`) skip all map questions (Q4-Q12); the two Main-affiliated options get the full flow. The skip list lives as `SKIPS_MAP_QUESTIONS` at the top of `WcjcSurveyPage.tsx` — add new campus strings there if more options are added.
 - Skipped questions are filtered out of the submission payload so the DB doesn't get empty rows
+- Campus is not stored on `survey_responses` directly — it lives inside Q2's `survey_answers.answer_choices`. To filter responses by campus, join through `survey_answers` on the Q2 question.
 
 **Adding a new survey:**
 1. Create `src/views/Survey/<NewSchool>/` with its own page + components
@@ -314,7 +315,7 @@ src/
 │   │   │   ├── LeeCollegeSurveyPage.tsx # Bespoke Lee College survey
 │   │   │   └── components/              # Lee College's own forked components
 │   │   └── WCJC/
-│   │       ├── WcjcSurveyPage.tsx       # Bespoke WCJC survey (Richmond skip rule)
+│   │       ├── WcjcSurveyPage.tsx       # Bespoke WCJC survey (Richmond + Sugarland-Richmond skip rule)
 │   │       └── components/              # WCJC's own forked components
 │   └── projects/
 │       ├── ProjectDashboard.tsx         # Block-based project view

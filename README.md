@@ -54,7 +54,7 @@ Seven new projects registered in `PROJECT_METADATA` (`src/services/projects.ts`)
 ### WCJC-Specific Bespoke Logic
 - **Intro asks first name only** (role is no longer collected upfront)
 - **Role is derived from Q1's answer** at submit time and written to `survey_responses.role`
-- **Richmond campus skip:** if user picks "Richmond campus" on Q2, all map-based questions (Q4-Q12) are skipped. Implemented via `isQuestionSkipped` helper in `WcjcSurveyPage.tsx`. Skipped questions are filtered out of submission so the DB doesn't get empty rows.
+- **Campus skip rule:** Q2 has 4 campus options (`Main campus`, `Richmond campus`, `Sugarland, working with Wharton Main Campus`, `Sugarland, working with Richmond Campus`). The two Richmond-affiliated options skip all map-based questions (Q4-Q12); the two Main-affiliated options get the full flow. Skip strings live in `SKIPS_MAP_QUESTIONS` at the top of `WcjcSurveyPage.tsx`. Skipped questions are filtered out of submission so the DB doesn't get empty rows.
 - **Max 1 pin** on every map question (Lee College allows 2)
 
 ### Repository Cleanup: SQL Files Purged
