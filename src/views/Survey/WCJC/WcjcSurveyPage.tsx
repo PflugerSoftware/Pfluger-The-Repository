@@ -28,15 +28,32 @@ const SKIPS_MAP_QUESTIONS = [
   'Sugarland, working with Richmond Campus',
 ];
 
+// Campuses that end the survey right after the campus question (Q2). Their
+// Q1 + Q2 answers are still submitted; every later question is skipped.
+const ENDS_SURVEY = [
+  'Sugarland, Sugarland Campus',
+];
+
+function getCampusChoices(
+  questions: SurveyQuestion[],
+  answers: Map<string, SurveySubmissionAnswer>
+): string[] {
+  const campusQ = questions.find((q) => q.question_order === 2);
+  if (!campusQ) return [];
+  return answers.get(campusQ.id)?.answerChoices ?? [];
+}
+
 function isQuestionSkipped(
   question: SurveyQuestion,
   questions: SurveyQuestion[],
   answers: Map<string, SurveySubmissionAnswer>
 ): boolean {
+  const choices = getCampusChoices(questions, answers);
+  // End-of-survey campuses: skip everything after the campus question.
+  if (question.question_order > 2 && choices.some((c) => ENDS_SURVEY.includes(c))) {
+    return true;
+  }
   if (!question.is_map_based) return false;
-  const campusQ = questions.find((q) => q.question_order === 2);
-  if (!campusQ) return false;
-  const choices = answers.get(campusQ.id)?.answerChoices ?? [];
   return choices.some((c) => SKIPS_MAP_QUESTIONS.includes(c));
 }
 
