@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pfluger Architects · AI Adoption & ROI Overview</title>
+<style>
+  :root{
+    --ink:#1c2430; --ink2:#3a4658; --mut:#6b7886; --line:#e3e7ec; --bg:#f6f7f9;
+    --card:#ffffff; --accent:#c0392b; --navy:#1f2d3d; --good:#1e8449; --gold:#b9770e;
+    --shadow:0 1px 2px rgba(20,30,45,.06),0 6px 22px rgba(20,30,45,.06);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       color:var(--ink);background:var(--bg);line-height:1.45;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+  /* header */
+  header.top{background:var(--navy);color:#fff;padding:26px 0 22px}
+  header.top .wrap{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
+  .brand{font-weight:700;letter-spacing:.04em;font-size:13px;text-transform:uppercase;color:#aeb9c6}
+  h1{margin:4px 0 2px;font-size:27px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:#9fb0c0;font-size:13.5px}
+  .range-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+       padding:7px 13px;border-radius:999px;font-size:12.5px;color:#dce4ec}
+  /* nav */
+  nav.tabs{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+       border-bottom:1px solid var(--line)}
+  nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto}
+  nav.tabs button{background:none;border:none;padding:14px 14px 11px;font-size:13.5px;font-weight:600;
+       color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;font-family:inherit}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent)}
+  /* sections */
+  section.panel{display:none;padding:30px 0 50px}
+  section.panel.on{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2{font-size:20px;margin:0 0 3px;letter-spacing:-.01em}
+  .lead{color:var(--mut);font-size:14px;margin:0 0 20px;max-width:760px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;font-weight:700;color:var(--accent);margin:0 0 6px}
+  /* hero cards */
+  .heros{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+  .hero .n{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+  .hero .l{font-size:12.5px;color:var(--mut);margin-top:5px;font-weight:600}
+  .hero .x{font-size:11.5px;color:var(--ink2);margin-top:8px}
+  .hero.accent{background:linear-gradient(160deg,#23344a,#1a2737);color:#fff;border-color:#23344a}
+  .hero.accent .l{color:#a9b8c7}.hero.accent .x{color:#cdd8e2}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow);margin-bottom:18px}
+  .card h3{margin:0 0 2px;font-size:15.5px}
+  .card .note{color:var(--mut);font-size:12.5px;margin:0 0 14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  /* bars */
+  .barrow{display:grid;grid-template-columns:170px 1fr 64px;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .barrow .lbl{color:var(--ink2);font-weight:600;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bartrk{background:#eef1f4;border-radius:6px;height:18px;overflow:hidden}
+  .barfill{height:100%;border-radius:6px}
+  .barrow .val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700;text-align:right}
+  /* account cards */
+  .acct{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px;box-shadow:var(--shadow)}
+  .acct .h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px}
+  .acct .name{font-weight:700;font-size:14.5px}
+  .acct .em{font-size:11px;color:var(--mut);margin-bottom:10px;word-break:break-all}
+  .acct .stat{display:flex;gap:16px;margin-bottom:12px}
+  .acct .stat div span{display:block}
+  .acct .stat .k{font-size:18px;font-weight:800}
+  .acct .stat .t{font-size:10.5px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;padding:3px 9px;border-radius:999px;color:#fff;font-weight:600}
+  /* donut */
+  .donutwrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .donutsvg{flex:0 0 220px;max-width:240px}
+  .donutlegend{flex:1 1 160px;min-width:150px}
+  .donutlegend .dl{margin:4px 0;line-height:1.3}
+  .donutlegend .dlname{font-size:12px;font-weight:700}
+  .donutlegend .dlval{font-size:11px;color:var(--mut);white-space:nowrap;margin-left:5px}
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:12px;color:var(--ink2)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  /* scope flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:6px}
+  .phase{border:1px solid var(--line);border-radius:13px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);display:flex;flex-direction:column}
+  .phase .head{padding:13px 14px;color:#fff}
+  .phase .head .pn{font-weight:800;font-size:14px}
+  .phase .head .pm{font-size:11.5px;opacity:.9;margin-top:2px}
+  .phase .body{padding:12px 13px;flex:1}
+  .phase .topic{display:flex;justify-content:space-between;gap:6px;font-size:12px;padding:5px 0;border-bottom:1px dashed #eef1f4}
+  .phase .topic:last-child{border-bottom:none}
+  .phase .topic .d{display:inline-flex;align-items:center;gap:7px;color:var(--ink2);font-weight:600}
+  .phase .topic .d i{width:9px;height:9px;border-radius:2px}
+  .phase .topic .c{font-variant-numeric:tabular-nums;color:var(--mut);font-weight:700}
+  .flowbar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:14px 0 6px;border:1px solid var(--line)}
+  .offaxis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .offaxis .phase .head{background:#5d6d7e}
+  /* ROI */
+  .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:6px}
+  .ctrl label{display:block;font-size:12.5px;font-weight:700;color:var(--ink2);margin-bottom:7px}
+  .ctrl .rowv{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .ctrl .rowv b{font-size:18px}
+  .ctrl input[type=range]{width:100%;accent-color:var(--accent)}
+  .ctrl .hint{font-size:11px;color:var(--mut);margin-top:4px}
+  .roibig{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
+  table.roi{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.roi th,table.roi td{text-align:right;padding:7px 9px;border-bottom:1px solid var(--line)}
+  table.roi th:first-child,table.roi td:first-child{text-align:left}
+  table.roi th{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+  table.roi tfoot td{font-weight:800;border-top:2px solid var(--ink);border-bottom:none}
+  table.roi td .sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px}
+  /* forecast */
+  .scenario{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 16px}
+  .scenario .s{flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--card);box-shadow:var(--shadow)}
+  .scenario .s .t{font-size:11.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .scenario .s .v{font-size:24px;font-weight:800;margin-top:4px}
+  .scenario .s.hi{background:linear-gradient(160deg,#1e3a2a,#16281d);color:#fff;border-color:#1e3a2a}
+  .scenario .s.hi .t{color:#9ec9af}
+  .callout{background:#fff7ec;border:1px solid #f3dcc0;border-left:4px solid var(--gold);border-radius:10px;padding:13px 15px;font-size:13px;color:#6b5630;margin:14px 0}
+  .callout b{color:#4a3a1f}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axis{font-size:10.5px;fill:var(--mut)}
+  .gl{stroke:#eef1f4;stroke-width:1}
+  footer{color:var(--mut);font-size:11.5px;text-align:center;padding:26px 0 40px;border-top:1px solid var(--line);margin-top:20px}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:5px;background:#eef1f4;color:var(--ink2);margin-left:6px}
+  @media(max-width:900px){.heros,.grid2,.grid3,.controls,.roibig,.flow{grid-template-columns:1fr 1fr}.offaxis{grid-template-columns:1fr}}
+  @media(max-width:620px){.heros,.grid2,.grid3,.controls,.roibig,.flow{grid-template-columns:1fr}.barrow{grid-template-columns:120px 1fr 50px}}
+  @media print{nav.tabs{display:none}section.panel{display:block!important;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div>
+    <div class="brand">Pfluger Architects · Design Research</div>
+    <h1>AI Adoption &amp; ROI Overview</h1>
+    <div class="sub" id="subline"></div>
+  </div>
+  <div class="range-pill" id="rangepill"></div>
+</div></header>
+
+<nav class="tabs"><div class="wrap" id="tabbar"></div></nav>
+
+<!-- OVERVIEW -->
+<section class="panel on" id="p-overview"><div class="wrap">
+  <p class="eyebrow">The headline numbers</p>
+  <h2>Where we are today</h2>
+  <p class="lead">Everything below is built from our Claude organization export covering <span id="ld-range"></span>. These are the grand totals across every seat in the firm.</p>
+  <div class="heros" id="hero-cards"></div>
+  <div class="card">
+    <h3>Message activity, projected to year-end</h3>
+    <p class="note">Monthly messages firm-wide. Solid = actual through June (June shown at full-month run-rate); dashed = projection as onboarding ramps to 100 users by October and holds through December.</p>
+    <div id="chart-spark"></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>AI across the scope of work</h3><p class="note">Share of messages by project phase, plus firm operations and personal use. Center shows the portion spent on core project delivery.</p><div id="chart-ha"></div></div>
+    <div class="card"><h3>What the firm is talking about</h3><p class="note">Share of categorized messages across the leading themes (smaller themes grouped as "Other").</p><div id="chart-content"></div></div>
+  </div>
+</div></section>
+
+<!-- TRENDS -->
+<section class="panel" id="p-trends"><div class="wrap">
+  <p class="eyebrow">Momentum</p>
+  <h2>The trend is the story</h2>
+  <p class="lead">Monthly message volume by theme. The firm went from a handful of curious pilots to firm-wide working tool in five months.</p>
+  <div class="card"><h3>Monthly messages by theme</h3><p class="note">Stacked by topic. Hover the legend below to read the mix.</p><div id="chart-stacked"></div><div class="legend" id="stack-legend"></div></div>
+  <div class="grid2">
+    <div class="card"><h3>Total monthly messages</h3><p class="note">June is a partial month (export cut off mid-month) — the dashed marker is the projected full-month run-rate.</p><div id="chart-monthly"></div></div>
+    <div class="card"><h3>Fastest-growing themes</h3><p class="note">Change in monthly messages, first half vs. most recent month.</p><div id="chart-growth"></div></div>
+  </div>
+</div></section>
+
+<!-- ACCOUNTS -->
+<section class="panel" id="p-accounts"><div class="wrap">
+  <p class="eyebrow">Who is using it, for what</p>
+  <h2>What each account is talking about</h2>
+  <p class="lead">Every seat, ranked by message volume, with the topic mix of its <em>content-bearing</em> conversations. Office accounts (Houston, Austin, etc.) are shared seats used by multiple staff.</p>
+  <div class="grid3" id="acct-grid"></div>
+</div></section>
+
+<!-- TOPICS -->
+<section class="panel" id="p-topics"><div class="wrap">
+  <p class="eyebrow">The big picture</p>
+  <h2>What the firm is using AI for</h2>
+  <p class="lead">Ranked themes across all content-bearing conversations. This is the raw material for the scope-of-work view and the ROI model.</p>
+  <div class="grid2">
+    <div class="card"><h3>Themes by conversations</h3><div id="topic-bars-c"></div></div>
+    <div class="card"><h3>Themes by messages (depth)</h3><p class="note">Messages-per-conversation shows which themes spark sustained working sessions vs. quick lookups.</p><div id="topic-bars-m"></div></div>
+  </div>
+  <div class="card"><h3>Reading the trends</h3><div id="topic-narrative"></div></div>
+</div></section>
+
+<!-- SCOPE -->
+<section class="panel" id="p-scope"><div class="wrap">
+  <p class="eyebrow">Tying it to the work</p>
+  <h2>AI across the scope of work</h2>
+  <p class="lead">Every project moves through phases. Here is where AI is showing up along that arc — and which themes drive each phase. This is the bridge between "we use a chatbot" and "we use it to deliver buildings."</p>
+  <div class="flowbar" id="scope-flowbar"></div>
+  <div class="legend" id="scope-legend" style="margin-bottom:18px"></div>
+  <div class="flow" id="scope-flow"></div>
+  <p class="eyebrow" style="margin-top:24px">Outside the project arc</p>
+  <p class="lead" style="margin-bottom:8px">Firm operations and personal/learning use — overhead that still reflects adoption and comfort with the tool.</p>
+  <div class="offaxis" id="scope-off"></div>
+</div></section>
+
+<!-- ROI -->
+<section class="panel" id="p-roi"><div class="wrap">
+  <p class="eyebrow">The business case</p>
+  <h2>Return on investment</h2>
+  <p class="lead">A transparent, adjustable model. Drag the sliders to test assumptions live — every number below recalculates. Defaults are conservative (loaded staff cost, time-saved tiered by how research-heavy each theme is).</p>
+  <div class="card">
+    <div class="controls">
+      <div class="ctrl"><label>Blended hourly value</label><div class="rowv"><span class="hint">$/hour credited to saved time</span><b id="v-rate">$150</b></div><input type="range" id="s-rate" min="40" max="250" step="5" value="150"></div>
+      <div class="ctrl"><label>Time-saved multiplier</label><div class="rowv"><span class="hint">scales the per-theme minutes</span><b id="v-mult">1.0×</b></div><input type="range" id="s-mult" min="0.25" max="2" step="0.05" value="1"></div>
+      <div class="ctrl"><label>Cost per seat / month</label><div class="rowv"><span class="hint">× <span id="v-seats"></span> active seats</span><b id="v-seat">$20</b></div><input type="range" id="s-seat" min="0" max="80" step="1" value="20"></div>
+    </div>
+    <div class="roibig" id="roi-big"></div>
+    <table class="roi" id="roi-table"></table>
+    <p class="note" id="roi-foot" style="margin-top:12px"></p>
+  </div>
+  <div class="callout" id="roi-callout"></div>
+</div></section>
+
+<!-- FORECAST -->
+<section class="panel" id="p-forecast"><div class="wrap">
+  <p class="eyebrow">What full adoption looks like</p>
+  <h2>Forecast to 100 people</h2>
+  <p class="lead">We are <span id="fc-now"></span> of the way through onboarding. The chart pairs the people-onboarded ramp against message volume, then projects both forward to the full firm at a steady per-person usage rate you can adjust.</p>
+  <div class="card"><h3>Onboarding ramp vs. message volume</h3><p class="note">Bars: people onboarded each month. Line: messages that month. Dashed: projected.</p><div id="chart-ramp"></div></div>
+  <div class="card">
+    <div class="controls" style="grid-template-columns:1fr">
+      <div class="ctrl"><label>Steady-state messages per person / month</label><div class="rowv"><span class="hint" id="fc-hint"></span><b id="v-pp">120</b></div><input type="range" id="s-pp" min="30" max="180" step="5" value="120"></div>
+    </div>
+    <div class="scenario" id="fc-scenario"></div>
+    <p class="note" id="fc-foot"></p>
+  </div>
+  <div class="callout" id="fc-callout"></div>
+</div></section>
+
+<footer><div class="wrap">
+  Source: <span id="src"></span> · Built for internal leadership review · Topic &amp; phase classification is keyword-based and adjustable. Figures are directional, not audited.
+</div></footer>
+
+<script>
+const DATA = {
+  "generatedFrom": "Claude.ai org export (data-e296bed2-da6c-4124-acc3-04ccf5d2d23b-1781191347-2b327420-batch-0000)",
+  "dateRange": {
+    "start": "2026-01-09",
+    "end": "2026-06-11"
+  },
+  "lastMonthPartial": {
+    "month": "2026-06",
+    "days": 11,
+    "fullDays": 30
+  },
+  "totals": {
+    "conversations": 577,
+    "messages": 8095,
+    "human": 4063,
+    "assistant": 4032,
+    "namedConvs": 367,
+    "emptyConvs": 203,
+    "emptyMsgs": 2829,
+    "otherTopic": 18,
+    "seats": 11,
+    "accountUuids": 17
+  },
+  "monthMsgs": {
+    "2026-02": 339,
+    "2026-01": 293,
+    "2026-03": 1389,
+    "2026-04": 1375,
+    "2026-05": 2777,
+    "2026-06": 1922
+  },
+  "dayMsgs": {
+    "2026-02-26": 20,
+    "2026-02-25": 22,
+    "2026-02-24": 21,
+    "2026-02-23": 34,
+    "2026-02-20": 8,
+    "2026-02-19": 59,
+    "2026-02-18": 14,
+    "2026-02-17": 18,
+    "2026-02-16": 2,
+    "2026-02-15": 4,
+    "2026-02-13": 2,
+    "2026-02-12": 27,
+    "2026-02-10": 4,
+    "2026-02-09": 30,
+    "2026-02-04": 8,
+    "2026-02-02": 54,
+    "2026-01-31": 16,
+    "2026-01-30": 30,
+    "2026-01-29": 49,
+    "2026-01-28": 39,
+    "2026-01-27": 14,
+    "2026-01-26": 4,
+    "2026-01-22": 18,
+    "2026-01-21": 17,
+    "2026-01-20": 6,
+    "2026-01-19": 26,
+    "2026-01-16": 2,
+    "2026-01-15": 10,
+    "2026-01-14": 42,
+    "2026-01-13": 8,
+    "2026-01-12": 10,
+    "2026-01-09": 2,
+    "2026-03-31": 102,
+    "2026-03-30": 26,
+    "2026-03-29": 10,
+    "2026-03-27": 8,
+    "2026-03-26": 88,
+    "2026-03-25": 217,
+    "2026-03-24": 8,
+    "2026-03-23": 184,
+    "2026-03-22": 12,
+    "2026-03-21": 2,
+    "2026-03-20": 26,
+    "2026-04-01": 92,
+    "2026-03-19": 32,
+    "2026-03-18": 14,
+    "2026-03-17": 12,
+    "2026-03-16": 42,
+    "2026-03-14": 69,
+    "2026-03-13": 244,
+    "2026-03-12": 20,
+    "2026-03-11": 26,
+    "2026-03-10": 34,
+    "2026-03-09": 46,
+    "2026-03-07": 8,
+    "2026-03-06": 22,
+    "2026-03-05": 41,
+    "2026-03-03": 12,
+    "2026-03-02": 8,
+    "2026-03-01": 76,
+    "2026-02-27": 12,
+    "2026-05-07": 46,
+    "2026-05-06": 51,
+    "2026-05-05": 40,
+    "2026-05-12": 287,
+    "2026-05-13": 397,
+    "2026-05-15": 80,
+    "2026-05-04": 69,
+    "2026-05-01": 222,
+    "2026-04-30": 142,
+    "2026-04-29": 120,
+    "2026-04-28": 10,
+    "2026-04-27": 73,
+    "2026-04-24": 16,
+    "2026-04-23": 24,
+    "2026-05-14": 122,
+    "2026-04-22": 42,
+    "2026-04-21": 74,
+    "2026-04-20": 70,
+    "2026-04-19": 20,
+    "2026-04-17": 36,
+    "2026-04-16": 190,
+    "2026-04-15": 4,
+    "2026-04-14": 14,
+    "2026-04-13": 18,
+    "2026-04-11": 14,
+    "2026-04-10": 116,
+    "2026-04-09": 26,
+    "2026-04-08": 22,
+    "2026-04-07": 78,
+    "2026-04-06": 48,
+    "2026-04-04": 24,
+    "2026-04-03": 32,
+    "2026-04-02": 70,
+    "2026-05-11": 176,
+    "2026-05-08": 58,
+    "2026-05-09": 16,
+    "2026-05-10": 4,
+    "2026-05-18": 215,
+    "2026-05-26": 122,
+    "2026-06-02": 139,
+    "2026-05-29": 117,
+    "2026-06-01": 222,
+    "2026-06-03": 257,
+    "2026-06-10": 393,
+    "2026-05-19": 38,
+    "2026-05-20": 103,
+    "2026-05-21": 122,
+    "2026-05-22": 207,
+    "2026-06-04": 268,
+    "2026-06-05": 179,
+    "2026-06-08": 200,
+    "2026-05-31": 8,
+    "2026-05-30": 2,
+    "2026-05-28": 82,
+    "2026-05-27": 110,
+    "2026-05-25": 45,
+    "2026-05-24": 16,
+    "2026-05-23": 22,
+    "2026-06-07": 6,
+    "2026-06-09": 224,
+    "2026-06-11": 34
+  },
+  "monthsOrder": [
+    "2026-01",
+    "2026-02",
+    "2026-03",
+    "2026-04",
+    "2026-05",
+    "2026-06"
+  ],
+  "topicMeta": {
+    "code": {
+      "label": "Code & Compliance",
+      "color": "#c0392b"
+    },
+    "submittal": {
+      "label": "Submittals & Construction Admin",
+      "color": "#d68910"
+    },
+    "qaqc": {
+      "label": "QA/QC & Drawing Review",
+      "color": "#b9770e"
+    },
+    "bim": {
+      "label": "Revit / BIM, CAD & 3D",
+      "color": "#2e86c1"
+    },
+    "sustain": {
+      "label": "Sustainability & Materials",
+      "color": "#1e8449"
+    },
+    "mep": {
+      "label": "MEP & Structural Systems",
+      "color": "#16a085"
+    },
+    "predesign": {
+      "label": "Programming & Pre-Design",
+      "color": "#8e44ad"
+    },
+    "pursuits": {
+      "label": "Presentations, Pursuits & Branding",
+      "color": "#2980b9"
+    },
+    "bizops": {
+      "label": "Business Ops & Project Mgmt",
+      "color": "#5d6d7e"
+    },
+    "ai": {
+      "label": "AI / Claude Tooling & Setup",
+      "color": "#7d3c98"
+    },
+    "personal": {
+      "label": "Personal / Off-Topic",
+      "color": "#95a5a6"
+    },
+    "other": {
+      "label": "General / Other",
+      "color": "#bdc3c7"
+    },
+    "nocontent": {
+      "label": "No exported text (API / agent)",
+      "color": "#34495e"
+    }
+  },
+  "phaseMeta": {
+    "CA": {
+      "label": "Construction Admin",
+      "color": "#d68910"
+    },
+    "CD": {
+      "label": "Construction Documents",
+      "color": "#c0392b"
+    },
+    "Design": {
+      "label": "Design (SD/DD)",
+      "color": "#2e86c1"
+    },
+    "Pre-Design": {
+      "label": "Pre-Design / Programming",
+      "color": "#8e44ad"
+    },
+    "Practice": {
+      "label": "Firm Practice & Operations",
+      "color": "#5d6d7e"
+    },
+    "Personal": {
+      "label": "Personal / Off-Topic",
+      "color": "#95a5a6"
+    },
+    "other": {
+      "label": "General / Other",
+      "color": "#bdc3c7"
+    },
+    "nocontent": {
+      "label": "No exported text (API / agent)",
+      "color": "#34495e"
+    }
+  },
+  "topics": [
+    {
+      "key": "nocontent",
+      "label": "No exported text (API / agent)",
+      "color": "#34495e",
+      "convs": 203,
+      "msgs": 2829
+    },
+    {
+      "key": "code",
+      "label": "Code & Compliance",
+      "color": "#c0392b",
+      "convs": 75,
+      "msgs": 860
+    },
+    {
+      "key": "pursuits",
+      "label": "Presentations, Pursuits & Branding",
+      "color": "#2980b9",
+      "convs": 50,
+      "msgs": 1080
+    },
+    {
+      "key": "bim",
+      "label": "Revit / BIM, CAD & 3D",
+      "color": "#2e86c1",
+      "convs": 42,
+      "msgs": 878
+    },
+    {
+      "key": "submittal",
+      "label": "Submittals & Construction Admin",
+      "color": "#d68910",
+      "convs": 39,
+      "msgs": 706
+    },
+    {
+      "key": "ai",
+      "label": "AI / Claude Tooling & Setup",
+      "color": "#7d3c98",
+      "convs": 33,
+      "msgs": 274
+    },
+    {
+      "key": "bizops",
+      "label": "Business Ops & Project Mgmt",
+      "color": "#5d6d7e",
+      "convs": 32,
+      "msgs": 351
+    },
+    {
+      "key": "sustain",
+      "label": "Sustainability & Materials",
+      "color": "#1e8449",
+      "convs": 24,
+      "msgs": 381
+    },
+    {
+      "key": "personal",
+      "label": "Personal / Off-Topic",
+      "color": "#95a5a6",
+      "convs": 22,
+      "msgs": 111
+    },
+    {
+      "key": "other",
+      "label": "General / Other",
+      "color": "#bdc3c7",
+      "convs": 18,
+      "msgs": 207
+    },
+    {
+      "key": "mep",
+      "label": "MEP & Structural Systems",
+      "color": "#16a085",
+      "convs": 17,
+      "msgs": 163
+    },
+    {
+      "key": "predesign",
+      "label": "Programming & Pre-Design",
+      "color": "#8e44ad",
+      "convs": 12,
+      "msgs": 155
+    },
+    {
+      "key": "qaqc",
+      "label": "QA/QC & Drawing Review",
+      "color": "#b9770e",
+      "convs": 10,
+      "msgs": 100
+    }
+  ],
+  "phases": [
+    {
+      "key": "nocontent",
+      "label": "No exported text (API / agent)",
+      "color": "#34495e",
+      "convs": 203,
+      "msgs": 2829
+    },
+    {
+      "key": "Practice",
+      "label": "Firm Practice & Operations",
+      "color": "#5d6d7e",
+      "convs": 125,
+      "msgs": 1370
+    },
+    {
+      "key": "Design",
+      "label": "Design (SD/DD)",
+      "color": "#2e86c1",
+      "convs": 103,
+      "msgs": 2285
+    },
+    {
+      "key": "CD",
+      "label": "Construction Documents",
+      "color": "#c0392b",
+      "convs": 54,
+      "msgs": 492
+    },
+    {
+      "key": "CA",
+      "label": "Construction Admin",
+      "color": "#d68910",
+      "convs": 33,
+      "msgs": 724
+    },
+    {
+      "key": "other",
+      "label": "General / Other",
+      "color": "#bdc3c7",
+      "convs": 26,
+      "msgs": 192
+    },
+    {
+      "key": "Personal",
+      "label": "Personal / Off-Topic",
+      "color": "#95a5a6",
+      "convs": 21,
+      "msgs": 105
+    },
+    {
+      "key": "Pre-Design",
+      "label": "Pre-Design / Programming",
+      "color": "#8e44ad",
+      "convs": 12,
+      "msgs": 98
+    }
+  ],
+  "topicByMonth": {
+    "nocontent": {
+      "2026-02": 22,
+      "2026-01": 16,
+      "2026-03": 683,
+      "2026-05": 881,
+      "2026-04": 857,
+      "2026-06": 370
+    },
+    "code": {
+      "2026-02": 82,
+      "2026-01": 155,
+      "2026-03": 245,
+      "2026-05": 218,
+      "2026-04": 56,
+      "2026-06": 104
+    },
+    "bim": {
+      "2026-02": 39,
+      "2026-01": 14,
+      "2026-03": 163,
+      "2026-04": 67,
+      "2026-05": 98,
+      "2026-06": 497
+    },
+    "ai": {
+      "2026-02": 66,
+      "2026-01": 12,
+      "2026-03": 94,
+      "2026-04": 16,
+      "2026-05": 56,
+      "2026-06": 30
+    },
+    "other": {
+      "2026-02": 13,
+      "2026-01": 2,
+      "2026-03": 4,
+      "2026-04": 2,
+      "2026-05": 130,
+      "2026-06": 56
+    },
+    "sustain": {
+      "2026-02": 75,
+      "2026-01": 30,
+      "2026-03": 40,
+      "2026-04": 110,
+      "2026-05": 56,
+      "2026-06": 70
+    },
+    "mep": {
+      "2026-02": 4,
+      "2026-01": 10,
+      "2026-03": 12,
+      "2026-04": 2,
+      "2026-05": 123,
+      "2026-06": 12
+    },
+    "submittal": {
+      "2026-02": 18,
+      "2026-04": 12,
+      "2026-05": 434,
+      "2026-06": 242
+    },
+    "personal": {
+      "2026-02": 9,
+      "2026-01": 14,
+      "2026-03": 76,
+      "2026-04": 12
+    },
+    "bizops": {
+      "2026-02": 9,
+      "2026-03": 4,
+      "2026-04": 85,
+      "2026-05": 158,
+      "2026-06": 95
+    },
+    "pursuits": {
+      "2026-02": 2,
+      "2026-01": 10,
+      "2026-03": 66,
+      "2026-05": 496,
+      "2026-04": 92,
+      "2026-06": 414
+    },
+    "qaqc": {
+      "2026-01": 28,
+      "2026-03": 2,
+      "2026-04": 58,
+      "2026-05": 6,
+      "2026-06": 6
+    },
+    "predesign": {
+      "2026-01": 2,
+      "2026-04": 6,
+      "2026-05": 121,
+      "2026-06": 26
+    }
+  },
+  "phaseByMonth": {
+    "nocontent": {
+      "2026-02": 22,
+      "2026-01": 16,
+      "2026-03": 683,
+      "2026-05": 881,
+      "2026-04": 857,
+      "2026-06": 370
+    },
+    "other": {
+      "2026-02": 25,
+      "2026-01": 4,
+      "2026-03": 4,
+      "2026-04": 75,
+      "2026-05": 24,
+      "2026-06": 60
+    },
+    "CD": {
+      "2026-02": 39,
+      "2026-01": 148,
+      "2026-03": 89,
+      "2026-04": 86,
+      "2026-05": 84,
+      "2026-06": 46
+    },
+    "Practice": {
+      "2026-02": 79,
+      "2026-01": 24,
+      "2026-03": 134,
+      "2026-04": 110,
+      "2026-05": 660,
+      "2026-06": 363
+    },
+    "Design": {
+      "2026-02": 157,
+      "2026-01": 85,
+      "2026-03": 409,
+      "2026-04": 211,
+      "2026-05": 608,
+      "2026-06": 815
+    },
+    "Personal": {
+      "2026-02": 9,
+      "2026-01": 14,
+      "2026-03": 70,
+      "2026-04": 10,
+      "2026-05": 2
+    },
+    "CA": {
+      "2026-02": 8,
+      "2026-04": 26,
+      "2026-05": 448,
+      "2026-06": 242
+    },
+    "Pre-Design": {
+      "2026-01": 2,
+      "2026-05": 70,
+      "2026-06": 26
+    }
+  },
+  "crosstab": {
+    "nocontent": {
+      "nocontent": 203
+    },
+    "other": {
+      "code": 3,
+      "other": 15,
+      "mep": 2,
+      "qaqc": 1,
+      "submittal": 2,
+      "bizops": 2,
+      "bim": 1
+    },
+    "CD": {
+      "bim": 6,
+      "code": 32,
+      "qaqc": 8,
+      "mep": 1,
+      "ai": 1,
+      "sustain": 1,
+      "submittal": 3,
+      "bizops": 2
+    },
+    "Practice": {
+      "ai": 29,
+      "submittal": 1,
+      "code": 16,
+      "bim": 7,
+      "bizops": 25,
+      "pursuits": 40,
+      "personal": 2,
+      "mep": 4,
+      "predesign": 1
+    },
+    "Design": {
+      "sustain": 23,
+      "code": 22,
+      "bim": 27,
+      "submittal": 4,
+      "ai": 3,
+      "mep": 10,
+      "qaqc": 1,
+      "pursuits": 7,
+      "other": 3,
+      "bizops": 2,
+      "predesign": 1
+    },
+    "Personal": {
+      "personal": 20,
+      "pursuits": 1
+    },
+    "CA": {
+      "submittal": 29,
+      "bizops": 1,
+      "code": 2,
+      "bim": 1
+    },
+    "Pre-Design": {
+      "predesign": 10,
+      "pursuits": 2
+    }
+  },
+  "accounts": [
+    {
+      "uuid": "3b8d6a7f-2b02-48a7-b1af-64707a94b14b",
+      "label": "Pfluger",
+      "email": "software@pflugerarchitects.com",
+      "convs": 106,
+      "msgs": 2633,
+      "topics": {
+        "submittal": 24,
+        "code": 4,
+        "nocontent": 40,
+        "pursuits": 4,
+        "qaqc": 2,
+        "bim": 10,
+        "sustain": 8,
+        "ai": 4,
+        "mep": 1,
+        "predesign": 3,
+        "bizops": 5,
+        "other": 1
+      },
+      "phases": {
+        "CA": 22,
+        "Practice": 13,
+        "nocontent": 40,
+        "other": 2,
+        "CD": 7,
+        "Design": 19,
+        "Pre-Design": 3
+      },
+      "topTopics": [
+        [
+          "submittal",
+          24
+        ],
+        [
+          "bim",
+          10
+        ],
+        [
+          "sustain",
+          8
+        ],
+        [
+          "bizops",
+          5
+        ],
+        [
+          "code",
+          4
+        ]
+      ]
+    },
+    {
+      "uuid": "7bac2c02-53fd-4496-bbfc-1805e0f6c61a",
+      "label": "Pfluger Houston",
+      "email": "PAHouston@pflugerarchitects.com",
+      "convs": 80,
+      "msgs": 1006,
+      "topics": {
+        "nocontent": 46,
+        "pursuits": 18,
+        "code": 2,
+        "other": 4,
+        "bizops": 2,
+        "predesign": 5,
+        "mep": 1,
+        "sustain": 2
+      },
+      "phases": {
+        "nocontent": 46,
+        "Practice": 17,
+        "Pre-Design": 6,
+        "other": 3,
+        "CD": 1,
+        "Design": 7
+      },
+      "topTopics": [
+        [
+          "pursuits",
+          18
+        ],
+        [
+          "predesign",
+          5
+        ],
+        [
+          "code",
+          2
+        ],
+        [
+          "bizops",
+          2
+        ],
+        [
+          "sustain",
+          2
+        ]
+      ]
+    },
+    {
+      "uuid": "other",
+      "label": "Other / Unlisted seats",
+      "email": "",
+      "convs": 150,
+      "msgs": 960,
+      "topics": {
+        "nocontent": 14,
+        "bim": 17,
+        "ai": 20,
+        "code": 47,
+        "sustain": 8,
+        "submittal": 6,
+        "personal": 19,
+        "bizops": 2,
+        "qaqc": 5,
+        "pursuits": 2,
+        "mep": 6,
+        "other": 3,
+        "predesign": 1
+      },
+      "phases": {
+        "nocontent": 14,
+        "CD": 34,
+        "Practice": 33,
+        "Design": 41,
+        "Personal": 17,
+        "other": 7,
+        "CA": 3,
+        "Pre-Design": 1
+      },
+      "topTopics": [
+        [
+          "code",
+          47
+        ],
+        [
+          "ai",
+          20
+        ],
+        [
+          "personal",
+          19
+        ],
+        [
+          "bim",
+          17
+        ],
+        [
+          "sustain",
+          8
+        ]
+      ],
+      "isOther": true
+    },
+    {
+      "uuid": "6da28df6-3ad5-43ee-ac82-a88a29de217c",
+      "label": "Pfluger Marketing",
+      "email": "marketing@pflugerarchitects.com",
+      "convs": 24,
+      "msgs": 763,
+      "topics": {
+        "nocontent": 22,
+        "mep": 2
+      },
+      "phases": {
+        "nocontent": 22,
+        "Design": 2
+      },
+      "topTopics": [
+        [
+          "mep",
+          2
+        ]
+      ]
+    },
+    {
+      "uuid": "5808a5d5-358b-42d1-b50c-6d7f66971efa",
+      "label": "Pfluger San Antonio",
+      "email": "PASanAntonio@pflugerarchitects.com",
+      "convs": 16,
+      "msgs": 740,
+      "topics": {
+        "personal": 1,
+        "bizops": 1,
+        "ai": 1,
+        "submittal": 1,
+        "mep": 1,
+        "other": 3,
+        "pursuits": 3,
+        "bim": 3,
+        "predesign": 2
+      },
+      "phases": {
+        "Personal": 1,
+        "other": 3,
+        "Practice": 3,
+        "CA": 1,
+        "Design": 6,
+        "Pre-Design": 2
+      },
+      "topTopics": [
+        [
+          "pursuits",
+          3
+        ],
+        [
+          "bim",
+          3
+        ],
+        [
+          "predesign",
+          2
+        ],
+        [
+          "personal",
+          1
+        ],
+        [
+          "bizops",
+          1
+        ]
+      ]
+    },
+    {
+      "uuid": "3e1845f8-77a2-4f4d-9877-7ff7a2b97934",
+      "label": "Pfluger Austin",
+      "email": "PAAustin@pflugerarchitects.com",
+      "convs": 64,
+      "msgs": 633,
+      "topics": {
+        "nocontent": 22,
+        "other": 2,
+        "ai": 3,
+        "bizops": 7,
+        "predesign": 1,
+        "code": 13,
+        "submittal": 2,
+        "mep": 5,
+        "bim": 5,
+        "qaqc": 1,
+        "sustain": 3
+      },
+      "phases": {
+        "nocontent": 22,
+        "other": 3,
+        "Practice": 18,
+        "Design": 11,
+        "CA": 4,
+        "CD": 6
+      },
+      "topTopics": [
+        [
+          "code",
+          13
+        ],
+        [
+          "bizops",
+          7
+        ],
+        [
+          "mep",
+          5
+        ],
+        [
+          "bim",
+          5
+        ],
+        [
+          "ai",
+          3
+        ]
+      ]
+    },
+    {
+      "uuid": "4426b45a-96a1-46da-9b20-33ef4f40f2dc",
+      "label": "Pfluger Dallas",
+      "email": "PADallas@pflugerarchitects.com",
+      "convs": 49,
+      "msgs": 590,
+      "topics": {
+        "nocontent": 23,
+        "pursuits": 7,
+        "bim": 3,
+        "code": 3,
+        "sustain": 3,
+        "personal": 1,
+        "other": 3,
+        "submittal": 4,
+        "bizops": 1,
+        "qaqc": 1
+      },
+      "phases": {
+        "nocontent": 23,
+        "Design": 10,
+        "CD": 3,
+        "Practice": 5,
+        "Personal": 2,
+        "other": 3,
+        "CA": 3
+      },
+      "topTopics": [
+        [
+          "pursuits",
+          7
+        ],
+        [
+          "submittal",
+          4
+        ],
+        [
+          "bim",
+          3
+        ],
+        [
+          "code",
+          3
+        ],
+        [
+          "sustain",
+          3
+        ]
+      ]
+    },
+    {
+      "uuid": "2a867126-c55b-4192-a086-6f2b95b4ed24",
+      "label": "Kylie Cortez",
+      "email": "communications@pflugerarchitects.com",
+      "convs": 18,
+      "msgs": 306,
+      "topics": {
+        "pursuits": 12,
+        "nocontent": 3,
+        "bim": 1,
+        "other": 1,
+        "mep": 1
+      },
+      "phases": {
+        "Practice": 11,
+        "nocontent": 3,
+        "Design": 2,
+        "other": 2
+      },
+      "topTopics": [
+        [
+          "pursuits",
+          12
+        ],
+        [
+          "bim",
+          1
+        ],
+        [
+          "mep",
+          1
+        ]
+      ]
+    },
+    {
+      "uuid": "2fa55028-2eeb-43bc-bd6f-d08b37b06fda",
+      "label": "Pfluger Corpus Christi",
+      "email": "PACorpusChristi@pflugerarchitects.com",
+      "convs": 44,
+      "msgs": 272,
+      "topics": {
+        "nocontent": 33,
+        "code": 1,
+        "bizops": 6,
+        "qaqc": 1,
+        "submittal": 2,
+        "other": 1
+      },
+      "phases": {
+        "nocontent": 33,
+        "CD": 2,
+        "Practice": 4,
+        "other": 3,
+        "Design": 2
+      },
+      "topTopics": [
+        [
+          "bizops",
+          6
+        ],
+        [
+          "submittal",
+          2
+        ],
+        [
+          "code",
+          1
+        ],
+        [
+          "qaqc",
+          1
+        ]
+      ]
+    },
+    {
+      "uuid": "c7e33c0f-2a56-41d0-a7be-ecc5129827be",
+      "label": "Terry",
+      "email": "terry.hoyle@pflugerarchitects.com",
+      "convs": 21,
+      "msgs": 168,
+      "topics": {
+        "ai": 5,
+        "personal": 1,
+        "pursuits": 2,
+        "code": 5,
+        "bizops": 5,
+        "bim": 3
+      },
+      "phases": {
+        "Practice": 17,
+        "Personal": 1,
+        "Design": 3
+      },
+      "topTopics": [
+        [
+          "ai",
+          5
+        ],
+        [
+          "code",
+          5
+        ],
+        [
+          "bizops",
+          5
+        ],
+        [
+          "bim",
+          3
+        ],
+        [
+          "pursuits",
+          2
+        ]
+      ]
+    },
+    {
+      "uuid": "87a17edb-f395-4e03-98fc-068c44a999a4",
+      "label": "Nobody",
+      "email": "lisa.fitze@pflugerarchitects.com",
+      "convs": 5,
+      "msgs": 24,
+      "topics": {
+        "bizops": 3,
+        "pursuits": 2
+      },
+      "phases": {
+        "Practice": 4,
+        "CD": 1
+      },
+      "topTopics": [
+        [
+          "bizops",
+          3
+        ],
+        [
+          "pursuits",
+          2
+        ]
+      ]
+    }
+  ],
+  "onboarding": {
+    "2026-01": 5,
+    "2026-02": 7,
+    "2026-03": 8,
+    "2026-04": 13,
+    "2026-05": 38,
+    "2026-06": 44
+  },
+  "rampFuture": {
+    "2026-07": 55,
+    "2026-08": 70,
+    "2026-09": 85,
+    "2026-10": 100,
+    "2026-11": 100,
+    "2026-12": 100
+  },
+  "targetHeadcount": 100,
+  "perPerson": [
+    {
+      "month": "2026-01",
+      "msgs": 293,
+      "people": 5,
+      "perPerson": 58.6
+    },
+    {
+      "month": "2026-02",
+      "msgs": 339,
+      "people": 7,
+      "perPerson": 48.4
+    },
+    {
+      "month": "2026-03",
+      "msgs": 1389,
+      "people": 8,
+      "perPerson": 173.6
+    },
+    {
+      "month": "2026-04",
+      "msgs": 1375,
+      "people": 13,
+      "perPerson": 105.8
+    },
+    {
+      "month": "2026-05",
+      "msgs": 2777,
+      "people": 38,
+      "perPerson": 73.1
+    },
+    {
+      "month": "2026-06",
+      "msgs": 1922,
+      "people": 44,
+      "perPerson": 43.7
+    }
+  ]
+};
+</script>
+<script>
+/* ============================= helpers ============================= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=n=>n.toLocaleString("en-US");
+const usd=n=>"$"+Math.round(n).toLocaleString("en-US");
+const usdK=n=>n>=1000?"$"+(n/1000).toFixed(n>=10000?0:1)+"k":"$"+Math.round(n);
+const monLbl=m=>{const[y,mo]=m.split("-");return["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+mo-1]+" "+y.slice(2);};
+function el(tag,attrs,html){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.textContent=html;return e;}
+// darken very-light fills so they're legible as colored text on white
+function darkText(hex){const c=(hex||"").replace("#","");if(c.length<6)return hex;const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);const lum=(0.299*r+0.587*g+0.114*b)/255;if(lum>0.58){const f=0.52;return `rgb(${Math.round(r*f)},${Math.round(g*f)},${Math.round(b*f)})`;}return hex;}
+function svg(w,h){const s=el("svg",{viewBox:`0 0 ${w} ${h}`,width:w,height:h});s.setAttribute("preserveAspectRatio","xMidYMid meet");return s;}
+
+/* June partial-month handling */
+const months=DATA.monthsOrder;
+const lastMonth=months[months.length-1];
+// partial-month run-rate basis (auto-computed by process.js from the export's last date)
+const partialDays=(DATA.lastMonthPartial&&DATA.lastMonthPartial.days)||30;
+const fullDays=(DATA.lastMonthPartial&&DATA.lastMonthPartial.fullDays)||30;
+function fullMonthEstimate(m,val){return (m===lastMonth&&partialDays<fullDays)? Math.round(val*fullDays/partialDays):val;}
+
+/* ============================= tabs ============================= */
+const TABS=[["overview","Overview"],["trends","Trends"],["accounts","By Account"],["topics","Themes"],["scope","Scope of Work"],["roi","ROI"],["forecast","Forecast"]];
+const tabbar=$("#tabbar");
+TABS.forEach(([id,lbl],i)=>{const b=document.createElement("button");b.textContent=lbl;b.dataset.t=id;if(i===0)b.className="on";
+  b.onclick=()=>{$$("nav.tabs button").forEach(x=>x.classList.toggle("on",x===b));$$("section.panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+id));window.scrollTo({top:0,behavior:"smooth"});draw(id);};
+  tabbar.appendChild(b);});
+
+/* ============================= header ============================= */
+$("#subline").textContent=`${DATA.totals.seats} seats · ${fmt(DATA.totals.conversations)} conversations · ${fmt(DATA.totals.messages)} messages`;
+$("#rangepill").textContent=`${monLbl(months[0])} – Jun 2026`;
+$("#ld-range").textContent=`${monLbl(months[0])} through June 2026`;
+$("#src").textContent=DATA.generatedFrom;
+
+/* ============================= OVERVIEW ============================= */
+function heroCards(){
+  const t=DATA.totals;
+  const onb=DATA.onboarding[lastMonth], tgt=DATA.targetHeadcount;
+  // top 2 themes by message volume + their share of categorized messages
+  const shortName=l=>l.split(/[,/(]/)[0].trim();
+  const themes=DATA.topics.filter(t2=>t2.key!=="nocontent"&&t2.key!=="other").sort((a,b)=>b.msgs-a.msgs);
+  const top2=themes.slice(0,2);
+  const catMsgs=t.messages-t.emptyMsgs;
+  const top2Share=Math.round(100*(top2[0].msgs+top2[1].msgs)/catMsgs);
+  // ROI at current assumptions
+  const r=computeRoi();
+  const cards=[
+    {n:fmt(t.messages),l:"Messages exchanged",x:`${fmt(t.human)} from people · ${fmt(t.assistant)} from Claude`},
+    {n:top2Share+"%",l:"From our top 2 themes",x:`${shortName(top2[0].label)} + ${shortName(top2[1].label)}, of categorized chats`},
+    {n:onb+" / "+tgt,l:"People onboarded",x:`${Math.round(100*onb/tgt)}% of the firm — and climbing`},
+    {n:(r.roiX===Infinity?"∞":r.roiX.toFixed(1)+"×"),l:"Return on AI spend so far",x:`${usdK(r.totVal)} time-value vs ${usdK(r.seatCostTotal)} software cost`,accent:true},
+  ];
+  $("#hero-cards").innerHTML=cards.map(c=>`<div class="hero ${c.accent?'accent':''}"><div class="n">${c.n}</div><div class="l">${c.l}</div><div class="x">${c.x}</div></div>`).join("");
+}
+// onboarding ramp for future months (cumulative people); edit in process.js -> rampFuture
+const RAMP_FUTURE=DATA.rampFuture||{};
+function projPerPerson(){ // latest full-month per-person run-rate; volume then scales monotonically as seats are added
+  const m=lastMonth;
+  return fullMonthEstimate(m,DATA.monthMsgs[m])/DATA.onboarding[m];
+}
+function sparkChart(){
+  const monthsAll=[...DATA.monthsOrder,...Object.keys(RAMP_FUTURE)]; // actual + projected months
+  const nA=DATA.monthsOrder.length;            // actual months
+  const actual=DATA.monthsOrder.map(m=>fullMonthEstimate(m,DATA.monthMsgs[m])); // June -> full-month run-rate
+  const R=projPerPerson();
+  const futM=monthsAll.slice(nA);
+  const proj=futM.map(m=>Math.round(RAMP_FUTURE[m]*R));
+  const vals=actual.concat(proj);
+  const W=1080,H=280,pl=46,pr=18,pt=20,pb=30;
+  // round the y-axis up to an even-thousands grid
+  const raw=Math.max(...vals);
+  const cands=[1000,2000,3000,5000,10000,20000];
+  let step=cands[cands.length-1];for(const c of cands){if(raw/c<=5){step=c;break;}}
+  const max=Math.ceil(raw/step)*step;
+  const x=i=>pl+(i/(monthsAll.length-1))*(W-pl-pr);
+  const y=v=>pt+(1-v/max)*(H-pt-pb);
+  const s=svg(W,H);
+  for(let g=0;g<=max+1;g+=step){const yy=y(g);s.appendChild(el("line",{x1:pl,x2:W-pr,y1:yy,y2:yy,class:"gl"}));
+    s.appendChild(el("text",{x:pl-6,y:yy+3,"text-anchor":"end",class:"axis"},g>=1000?(g/1000)+"k":g));}
+  const grad=el("linearGradient",{id:"sg",x1:0,y1:0,x2:0,y2:1});grad.appendChild(el("stop",{offset:0,"stop-color":"#2e86c1","stop-opacity":.20}));grad.appendChild(el("stop",{offset:1,"stop-color":"#2e86c1","stop-opacity":0}));s.appendChild(grad);
+  // actual area + solid line
+  const aIdx=nA-1;
+  const aPts=actual.map((v,i)=>[x(i),y(v)]);
+  const aLine=aPts.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+  s.appendChild(el("path",{d:aLine+` L${x(aIdx)} ${H-pb} L${x(0)} ${H-pb} Z`,fill:"url(#sg)"}));
+  s.appendChild(el("path",{d:aLine,fill:"none",stroke:"#2e86c1","stroke-width":2.6}));
+  // projection dashed line from last actual
+  const pPts=[[x(aIdx),y(actual[aIdx])]].concat(proj.map((v,i)=>[x(nA+i),y(v)]));
+  s.appendChild(el("path",{d:pPts.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" "),fill:"none",stroke:"#2e86c1","stroke-width":2.4,"stroke-dasharray":"6 4","stroke-opacity":.75}));
+  aPts.forEach(p=>s.appendChild(el("circle",{cx:p[0],cy:p[1],r:3,fill:"#2e86c1"})));
+  pPts.slice(1).forEach(p=>s.appendChild(el("circle",{cx:p[0],cy:p[1],r:3,fill:"#7fb4d8"})));
+  // "Today" marker: red dashed vertical at the current month, labeled with the value
+  const todayX=x(aIdx), todayV=actual[aIdx];
+  s.appendChild(el("line",{x1:todayX,x2:todayX,y1:pt,y2:H-pb,stroke:"#c0392b","stroke-width":1.6,"stroke-dasharray":"5 4"}));
+  s.appendChild(el("text",{x:todayX-7,y:H-pb-6,"text-anchor":"end","font-size":10,fill:"#9aa6b2"},"actual"));
+  s.appendChild(el("text",{x:todayX+7,y:H-pb-6,"font-size":10,fill:"#9aa6b2"},"projected"));
+  s.appendChild(el("rect",{x:todayX-34,y:pt+4,width:68,height:30,rx:4,fill:"#c0392b"}));
+  s.appendChild(el("text",{x:todayX,y:pt+16,"text-anchor":"middle","font-size":9.5,"font-weight":700,fill:"#fff"},"TODAY"));
+  s.appendChild(el("text",{x:todayX,y:pt+29,"text-anchor":"middle","font-size":12,"font-weight":800,fill:"#fff"},fmt(Math.round(todayV))));
+  // marker: month we reach 100 users
+  const i100=monthsAll.indexOf(Object.keys(RAMP_FUTURE).find(m=>RAMP_FUTURE[m]>=DATA.targetHeadcount));
+  if(i100>=0){s.appendChild(el("line",{x1:x(i100),x2:x(i100),y1:pt,y2:H-pb,stroke:"#8e44ad","stroke-width":1,"stroke-dasharray":"2 3","stroke-opacity":.6}));
+    s.appendChild(el("text",{x:x(i100),y:pt+12,"text-anchor":"middle","font-size":9.5,fill:"#8e44ad","font-weight":700},"100 users"));}
+  // EOY annotation
+  const dec=vals[vals.length-1];
+  s.appendChild(el("text",{x:x(11),y:y(dec)-9,"text-anchor":"end","font-size":11.5,"font-weight":700,fill:"#2e86c1"},"Dec ≈ "+fmt(dec)));
+  monthsAll.forEach((m,i)=>s.appendChild(el("text",{x:x(i),y:H-9,"text-anchor":"middle",class:"axis"},monLbl(m).split(" ")[0])));
+  $("#chart-spark").innerHTML="";$("#chart-spark").appendChild(s);
+}
+function donut(target,parts,centerTop,centerBot){
+  const W=200,H=200,cx=100,cy=100,r=80,rin=52;
+  const tot=parts.reduce((a,p)=>a+p.v,0);let ang=-Math.PI/2;
+  const s=svg(W,H);
+  parts.forEach(p=>{const a2=ang+(p.v/tot)*Math.PI*2;
+    const x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const xi2=cx+rin*Math.cos(a2),yi2=cy+rin*Math.sin(a2),xi1=cx+rin*Math.cos(ang),yi1=cy+rin*Math.sin(ang);
+    const large=(a2-ang)>Math.PI?1:0;
+    s.appendChild(el("path",{d:`M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${xi2} ${yi2} A${rin} ${rin} 0 ${large} 0 ${xi1} ${yi1} Z`,fill:p.c}));
+    ang=a2;});
+  // center: big number, then caption wrapped into short lines that fit inside the hole
+  const capLines=[];{let line="";(centerBot||"").split(" ").forEach(w=>{if((line+" "+w).trim().length>11){if(line)capLines.push(line);line=w;}else line=(line+" "+w).trim();});if(line)capLines.push(line);}
+  const numY=capLines.length>1?cy-6:cy-1;
+  s.appendChild(el("text",{x:cx,y:numY,"text-anchor":"middle","font-size":22,"font-weight":800,fill:"#1c2430"},centerTop));
+  capLines.slice(0,2).forEach((ln,i)=>s.appendChild(el("text",{x:cx,y:numY+15+i*12,"text-anchor":"middle","font-size":9.5,fill:"#6b7886"},ln)));
+  // layout: donut on the left, HTML legend on the right so labels wrap freely
+  const wrap=document.createElement("div");wrap.className="donutwrap";
+  const hole=document.createElement("div");hole.className="donutsvg";hole.appendChild(s);
+  const leg=document.createElement("div");leg.className="donutlegend";
+  leg.innerHTML=parts.map(p=>`<div class="dl"><span class="dlname" style="color:${darkText(p.c)}">${p.l}</span><span class="dlval">· ${fmt(p.v)} · ${Math.round(100*p.v/tot)}%</span></div>`).join("");
+  wrap.appendChild(hole);wrap.appendChild(leg);
+  target.innerHTML="";target.appendChild(wrap);
+}
+function overviewDonuts(){
+  // scope-of-work circle: the four project phases + a combined "Operations" slice
+  const pm=DATA.phaseMeta, msgsOf=k=>(DATA.phases.find(p=>p.key===k)||{msgs:0}).msgs;
+  const proj=["Pre-Design","Design","CD","CA"];
+  const pparts=proj.filter(k=>pm[k]).map(k=>({l:pm[k].label,v:msgsOf(k),c:pm[k].color})).filter(p=>p.v>0);
+  const opsMsgs=["Practice","other"].reduce((a,k)=>a+msgsOf(k),0); // firm ops + general (personal kept separate)
+  if(opsMsgs)pparts.push({l:"Project Mgmt & Other",v:opsMsgs,c:"#5d6d7e"});
+  if(msgsOf("Personal"))pparts.push({l:"Personal / Off-Topic",v:msgsOf("Personal"),c:pm["Personal"].color});
+  const projMsgs=proj.reduce((a,k)=>a+msgsOf(k),0);
+  const totPhased=pparts.reduce((a,p)=>a+p.v,0);
+  donut($("#chart-ha"),pparts,Math.round(100*projMsgs/totPhased)+"%","on project work");
+  // themes circle: share of categorized messages by theme (top 8, remainder folded into "Other themes")
+  const themed=DATA.topics.filter(t=>t.key!=="nocontent"&&t.key!=="other").sort((a,b)=>b.msgs-a.msgs);
+  const topN=themed.slice(0,8), rest=themed.slice(8);
+  const parts=topN.map(t=>({l:t.label,v:t.msgs,c:t.color}));
+  if(rest.length)parts.push({l:"Other themes",v:rest.reduce((a,t)=>a+t.msgs,0),c:"#bdc3c7"});
+  const totThemed=themed.reduce((a,t)=>a+t.msgs,0);
+  const topShare=Math.round(100*topN[0].msgs/totThemed);
+  donut($("#chart-content"),parts,topShare+"%",topN[0].label.split(/[,/(]/)[0].trim());
+}
+
+/* ============================= TRENDS ============================= */
+const topicOrder=()=>DATA.topics.filter(t=>t.key!=="nocontent").sort((a,b)=>b.msgs-a.msgs);
+function stackedChart(){
+  const tops=topicOrder().filter(t=>t.key!=="other").slice(0,9);
+  const W=1080,H=300,pl=40,pr=14,pt=14,pb=28;
+  const totalsByMonth=months.map(m=>tops.reduce((a,t)=>a+((DATA.topicByMonth[t.key]||{})[m]||0),0));
+  const max=Math.max(...totalsByMonth)*1.05;
+  const bw=(W-pl-pr)/months.length*0.62;
+  const xc=i=>pl+(i+0.5)*((W-pl-pr)/months.length);
+  const y=v=>pt+(1-v/max)*(H-pt-pb);
+  const s=svg(W,H);
+  [0,.25,.5,.75,1].forEach(f=>{const yy=pt+f*(H-pt-pb);s.appendChild(el("line",{x1:pl,x2:W-pr,y1:yy,y2:yy,class:"gl"}));s.appendChild(el("text",{x:pl-6,y:yy+3,"text-anchor":"end",class:"axis"},Math.round(max*(1-f))));});
+  months.forEach((m,i)=>{let acc=0;
+    tops.forEach(t=>{const v=(DATA.topicByMonth[t.key]||{})[m]||0;if(!v)return;const y0=y(acc),y1=y(acc+v);
+      s.appendChild(el("rect",{x:xc(i)-bw/2,y:y1,width:bw,height:y0-y1,fill:t.color,rx:1}));acc+=v;});
+    s.appendChild(el("text",{x:xc(i),y:H-8,"text-anchor":"middle",class:"axis"},monLbl(m)));});
+  $("#chart-stacked").innerHTML="";$("#chart-stacked").appendChild(s);
+  $("#stack-legend").innerHTML=tops.map(t=>`<span><i style="background:${t.color}"></i>${t.label}</span>`).join("");
+}
+function monthlyChart(){
+  const W=520,H=240,pl=38,pr=14,pt=14,pb=26;
+  const vals=months.map(m=>DATA.monthMsgs[m]);
+  const projLast=fullMonthEstimate(lastMonth,vals[vals.length-1]);
+  const max=Math.max(...vals,projLast)*1.08;
+  const bw=(W-pl-pr)/months.length*0.55;
+  const xc=i=>pl+(i+0.5)*((W-pl-pr)/months.length);
+  const y=v=>pt+(1-v/max)*(H-pt-pb);
+  const s=svg(W,H);
+  [0,.5,1].forEach(f=>{const yy=pt+f*(H-pt-pb);s.appendChild(el("line",{x1:pl,x2:W-pr,y1:yy,y2:yy,class:"gl"}));s.appendChild(el("text",{x:pl-6,y:yy+3,"text-anchor":"end",class:"axis"},Math.round(max*(1-f))));});
+  months.forEach((m,i)=>{const v=vals[i];s.appendChild(el("rect",{x:xc(i)-bw/2,y:y(v),width:bw,height:H-pb-y(v),fill:"#2e86c1",rx:2}));
+    s.appendChild(el("text",{x:xc(i),y:y(v)-5,"text-anchor":"middle","font-size":10,"font-weight":700,fill:"#1c2430"},fmt(v)));
+    s.appendChild(el("text",{x:xc(i),y:H-7,"text-anchor":"middle",class:"axis"},monLbl(m)));});
+  // projected full June
+  const i=months.length-1;s.appendChild(el("rect",{x:xc(i)-bw/2,y:y(projLast),width:bw,height:H-pb-y(projLast),fill:"none",stroke:"#2e86c1","stroke-width":1.5,"stroke-dasharray":"4 3",rx:2}));
+  s.appendChild(el("text",{x:xc(i),y:y(projLast)-5,"text-anchor":"middle","font-size":9.5,fill:"#2e86c1"},"~"+fmt(projLast)));
+  $("#chart-monthly").innerHTML="";$("#chart-monthly").appendChild(s);
+}
+function growthChart(){
+  const tops=topicOrder().filter(t=>t.key!=="other");
+  const recent=fullMonthEstimate(lastMonth,1)===1?lastMonth:lastMonth;
+  const g=tops.map(t=>{const tb=DATA.topicByMonth[t.key]||{};const early=(tb[months[0]]||0)+(tb[months[1]]||0)+(tb[months[2]]||0);
+    const late=fullMonthEstimate(lastMonth,(tb[lastMonth]||0));return {t,delta:late-early/3,late};}).sort((a,b)=>b.late-a.late).slice(0,7);
+  const max=Math.max(...g.map(x=>x.late));
+  $("#chart-growth").innerHTML=g.map(x=>`<div class="barrow"><div class="lbl">${x.t.label}</div><div class="bartrk"><div class="barfill" style="width:${Math.max(3,100*x.late/max)}%;background:${x.t.color}"></div></div><div class="val">${fmt(x.late)}/mo</div></div>`).join("");
+}
+
+/* ============================= ACCOUNTS ============================= */
+function accountCards(){
+  const tm=DATA.topicMeta;
+  // canonical firm-wide topic order so chips line up across every card
+  const order={};DATA.topics.forEach((t,i)=>order[t.key]=i);
+  $("#acct-grid").innerHTML=DATA.accounts.map(a=>{
+    const classified=Object.entries(a.topics).filter(([k])=>k!=="nocontent"&&k!=="other");
+    const tot=classified.reduce((s,[,v])=>s+v,0)||1;
+    const top=classified.sort((x,y)=>(order[x[0]]??99)-(order[y[0]]??99)).slice(0,6);
+    const chips=top.map(([k,v])=>`<span class="chip" style="background:${tm[k].color}">${tm[k].label.split(" ")[0].replace(/[^A-Za-z0-9/]/g,"")} ${v}</span>`).join("");
+    const empty=a.topics.nocontent||0;
+    return `<div class="acct"><div class="h"><span class="name">${a.label}</span></div>
+      <div class="em">${a.email||"multiple unlisted seats"}</div>
+      <div class="stat"><div><span class="k">${fmt(a.msgs)}</span><span class="t">messages</span></div>
+        <div><span class="k">${fmt(a.convs)}</span><span class="t">chats</span></div>
+        <div><span class="k">${Math.round(a.msgs/a.convs)}</span><span class="t">msg/chat</span></div></div>
+      ${top.length?`<div style="font-size:11px;color:var(--mut);font-weight:600;margin-bottom:6px">MOSTLY ABOUT</div><div class="chips">${chips}</div>`:`<div style="font-size:12px;color:var(--mut)">Primarily API / agent sessions (${fmt(empty)} chats)</div>`}
+      </div>`;
+  }).join("");
+}
+
+/* ============================= TOPICS ============================= */
+function topicBars(){
+  const byC=topicOrder().filter(t=>t.key!=="other").slice(0,11);
+  const maxC=Math.max(...byC.map(t=>t.convs));
+  $("#topic-bars-c").innerHTML=byC.map(t=>`<div class="barrow"><div class="lbl">${t.label}</div><div class="bartrk"><div class="barfill" style="width:${Math.max(3,100*t.convs/maxC)}%;background:${t.color}"></div></div><div class="val">${t.convs}</div></div>`).join("");
+  const byM=[...byC].sort((a,b)=>b.msgs-a.msgs);const maxM=Math.max(...byM.map(t=>t.msgs));
+  $("#topic-bars-m").innerHTML=byM.map(t=>`<div class="barrow"><div class="lbl">${t.label}</div><div class="bartrk"><div class="barfill" style="width:${Math.max(3,100*t.msgs/maxM)}%;background:${t.color}"></div></div><div class="val">${fmt(t.msgs)}</div></div>`).join("");
+}
+function topicNarrative(){
+  const to=topicOrder().filter(t=>t.key!=="other");
+  const top3=to.slice(0,3);
+  const deepest=[...to].sort((a,b)=>(b.msgs/b.convs)-(a.msgs/a.convs)).slice(0,2);
+  const codeShare=Math.round(100*(DATA.topics.find(t=>t.key==="code")?.convs||0)/(DATA.totals.conversations-DATA.totals.emptyConvs));
+  $("#topic-narrative").innerHTML=`<ul style="margin:0;padding-left:18px;font-size:13.5px;color:var(--ink2);line-height:1.7">
+    <li><b>Building code &amp; compliance is the #1 use</b> — roughly ${codeShare}% of content-bearing chats. Staff are pulling IBC, TAS, and ISD-standard answers in seconds instead of digging through PDFs.</li>
+    <li><b>Real production work, not just Q&amp;A.</b> The deepest back-and-forth happens in <em>${deepest.map(t=>t.label).join("</em> and <em>")}</em> — multi-message sessions reviewing submittals, drawings, and models.</li>
+    <li><b>Leading themes:</b> ${top3.map(t=>t.label).join(", ")}.</li>
+    <li><b>${Math.round(100*DATA.totals.emptyConvs/DATA.totals.conversations)}% of all conversations are deep API / Claude Code / agent automation</b> — power users building tools and running multi-step workflows, the leading edge of where the firm is headed.</li>
+  </ul>`;
+}
+
+/* ============================= SCOPE OF WORK ============================= */
+const PHASE_FLOW=[["Pre-Design","Pre-Design / Programming"],["Design","Design (SD/DD)"],["CD","Construction Documents"],["CA","Construction Admin"]];
+const PHASE_OFF=[["Practice","Firm Practice & Operations"],["Personal","Personal / Off-Topic"]];
+function scope(){
+  const pm=DATA.phaseMeta, tm=DATA.topicMeta, ct=DATA.crosstab;
+  const flowConvs=PHASE_FLOW.map(([k])=>DATA.phases.find(p=>p.key===k)?.convs||0);
+  const totFlow=flowConvs.reduce((a,b)=>a+b,0);
+  // flow bar
+  $("#scope-flowbar").innerHTML=PHASE_FLOW.map(([k],i)=>`<div title="${pm[k].label}" style="width:${100*flowConvs[i]/totFlow}%;background:${pm[k].color}"></div>`).join("");
+  $("#scope-legend").innerHTML=PHASE_FLOW.map(([k],i)=>`<span><i style="background:${pm[k].color}"></i>${pm[k].label} — ${flowConvs[i]} chats</span>`).join("");
+  function phaseCard(k,label){
+    const p=DATA.phases.find(x=>x.key===k)||{convs:0,msgs:0};
+    const topics=Object.entries(ct[k]||{}).filter(([t])=>t!=="nocontent").sort((a,b)=>b[1]-a[1]).slice(0,6);
+    return `<div class="phase"><div class="head" style="background:${pm[k].color}"><div class="pn">${label}</div><div class="pm">${p.convs} conversations · ${fmt(p.msgs)} messages</div></div>
+      <div class="body">${topics.map(([t,n])=>`<div class="topic"><span class="d"><i style="background:${tm[t].color}"></i>${tm[t].label}</span><span class="c">${n}</span></div>`).join("")||'<div class="note">—</div>'}</div></div>`;
+  }
+  $("#scope-flow").innerHTML=PHASE_FLOW.map(([k,l])=>phaseCard(k,l)).join("");
+  $("#scope-off").innerHTML=PHASE_OFF.map(([k,l])=>phaseCard(k,l)).join("");
+}
+
+/* ============================= ROI ============================= */
+// Minutes SAVED per conversation, tiered by research depth.
+// Rebased so a submittal/QA review reflects a ~4x speedup (an hour of work done in ~15 min => 45 min saved);
+// that 1.5x rebasis was applied uniformly to every tier and baked in, so the default multiplier is 1.0x.
+const TIER={code:38,submittal:45,qaqc:45,bim:23,sustain:30,mep:30,predesign:38,pursuits:38,bizops:23,ai:15,personal:0,other:15,nocontent:23};
+const TIER_LABEL={nocontent:"API / Claude Code / agent sessions"};
+function activeSeats(){return DATA.onboarding[lastMonth];}
+$("#v-seats").textContent=activeSeats();
+function computeRoi(){
+  const rate=+$("#s-rate").value, mult=+$("#s-mult").value, seat=+$("#s-seat").value;
+  const tm=DATA.topicMeta;
+  const rows=DATA.topics.map(t=>{const min=(TIER[t.key]??10)*mult;const hrs=t.convs*min/60;return {key:t.key,label:TIER_LABEL[t.key]||t.label,color:tm[t.key]?.color||"#999",convs:t.convs,min:Math.round(min),hrs,val:hrs*rate};})
+    .filter(r=>r.convs>0).sort((a,b)=>b.val-a.val);
+  const totHrs=rows.reduce((a,r)=>a+r.hrs,0), totVal=rows.reduce((a,r)=>a+r.val,0);
+  const monthsElapsed=months.length;     // Jan..Jun
+  const seatCostTotal=seat*activeSeats()*monthsElapsed;   // approx period cost at current seats
+  const net=totVal-seatCostTotal;
+  const roiX=seatCostTotal>0?(totVal/seatCostTotal):Infinity;
+  return {rate,mult,seat,tm,rows,totHrs,totVal,monthsElapsed,seatCostTotal,net,roiX};
+}
+function roi(){
+  const {rate,mult,seat,tm,rows,totHrs,totVal,monthsElapsed,seatCostTotal,net,roiX}=computeRoi();
+  $("#v-rate").textContent="$"+rate;$("#v-mult").textContent=mult.toFixed(2)+"×";$("#v-seat").textContent="$"+seat;
+  const big=[
+    {n:usdK(totVal),l:"Value of time saved",x:`${fmt(Math.round(totHrs))} hours · ${monLbl(months[0])}–Jun`},
+    {n:usdK(seatCostTotal),l:"Software cost (period)",x:`${activeSeats()} seats × $${seat} × ${monthsElapsed} mo`},
+    {n:usdK(net),l:"Net value created",x:net>=0?"already cash-positive":"investment phase",accent:true},
+    {n:roiX===Infinity?"∞":roiX.toFixed(1)+"×",l:"Return per $1 spent",x:"value ÷ software cost"},
+  ];
+  $("#roi-big").innerHTML=big.map(c=>`<div class="hero ${c.accent?'accent':''}"><div class="n">${c.n}</div><div class="l">${c.l}</div><div class="x">${c.x}</div></div>`).join("");
+  $("#roi-table").innerHTML=`<thead><tr><th>Theme</th><th>Chats</th><th>Min saved / chat</th><th>Hours saved</th><th>Value</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr><td><span class="sw" style="background:${r.color}"></span>${r.label}</td><td>${fmt(r.convs)}</td><td>${r.min}</td><td>${fmt(Math.round(r.hrs))}</td><td>${usd(r.val)}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td>Total</td><td>${fmt(rows.reduce((a,r)=>a+r.convs,0))}</td><td></td><td>${fmt(Math.round(totHrs))}</td><td>${usd(totVal)}</td></tr></tfoot>`;
+  $("#roi-foot").textContent=`Min saved / chat = minutes of work avoided per conversation. Hours saved = chats × min saved ÷ 60 × multiplier. Personal/off-topic chats are credited $0. The API/agent sessions are credited a conservative ${Math.round(TIER.nocontent*mult)} min each, though many represent hours of automated work.`;
+  $("#roi-callout").innerHTML=`<b>Bottom line:</b> at ${usd(rate)}/hr and $${seat}/seat, the firm has captured about <b>${usdK(totVal)}</b> of time value against roughly <b>${usdK(seatCostTotal)}</b> in software cost — a <b>${roiX===Infinity?"∞":roiX.toFixed(1)}×</b> return — and we are only ${Math.round(100*activeSeats()/DATA.targetHeadcount)}% onboarded.`;
+}
+
+/* ============================= FORECAST ============================= */
+function rampChart(){
+  const W=1080,H=300,pl=42,pr=46,pt=16,pb=30;
+  // extend forecast months Jul..Dec (matches the Overview projection ramp)
+  const futMonths=Object.keys(RAMP_FUTURE);            // Jul..Dec
+  const futurePeople=futMonths.map(m=>RAMP_FUTURE[m]);
+  const allMonths=[...months,...futMonths];
+  const people=months.map(m=>DATA.onboarding[m]).concat(futurePeople);
+  const maxP=100;
+  const realMsgs=months.map(m=>fullMonthEstimate(m,DATA.monthMsgs[m]));
+  const pp=+$("#s-pp").value;                           // same per-person basis the projection uses
+  const futMsgs=futurePeople.map(n=>Math.round(n*pp));  // messages grow consistently with seats
+  const allMsgs=realMsgs.concat(futMsgs);
+  // round the message (left) axis to even thousands
+  const rawM=Math.max(...allMsgs);
+  const cands=[1000,2000,3000,5000,10000,20000];let stepM=cands[cands.length-1];for(const c of cands){if(rawM/c<=5){stepM=c;break;}}
+  const maxM=Math.ceil(rawM/stepM)*stepM;
+  const xc=i=>pl+(i+0.5)*((W-pl-pr)/allMonths.length);
+  const yP=v=>pt+(1-v/maxP)*(H-pt-pb);
+  const yM=v=>pt+(1-v/maxM)*(H-pt-pb);
+  const s=svg(W,H);
+  for(let g=0;g<=maxM+1;g+=stepM){const yy=yM(g);s.appendChild(el("line",{x1:pl,x2:W-pr,y1:yy,y2:yy,class:"gl"}));
+    s.appendChild(el("text",{x:pl-6,y:yy+3,"text-anchor":"end",class:"axis"},g>=1000?(g/1000)+"k":g));}
+  // right axis people
+  [0,.5,1].forEach(f=>{const yy=pt+f*(H-pt-pb);s.appendChild(el("text",{x:W-pr+6,y:yy+3,"text-anchor":"start",class:"axis",fill:"#8e44ad"},Math.round(maxP*(1-f))));});
+  const split=months.length;
+  const bw=(W-pl-pr)/allMonths.length*0.5;
+  // people bars
+  people.forEach((n,i)=>{const future=i>=split;s.appendChild(el("rect",{x:xc(i)-bw/2,y:yP(n),width:bw,height:H-pb-yP(n),fill:future?"#d7c4e8":"#8e44ad",rx:2}));
+    s.appendChild(el("text",{x:xc(i),y:yP(n)-4,"text-anchor":"middle","font-size":9.5,fill:"#8e44ad","font-weight":700},n));});
+  // message line
+  const linePts=allMsgs.map((v,i)=>[xc(i),yM(v)]);
+  let realPath=linePts.slice(0,split).map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+  let futPath=linePts.slice(split-1).map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+  s.appendChild(el("path",{d:realPath,fill:"none",stroke:"#2e86c1","stroke-width":2.4}));
+  s.appendChild(el("path",{d:futPath,fill:"none",stroke:"#2e86c1","stroke-width":2.4,"stroke-dasharray":"6 4","stroke-opacity":.75}));
+  linePts.forEach((p,i)=>{s.appendChild(el("circle",{cx:p[0],cy:p[1],r:3,fill:i>=split?"#7fb4d8":"#2e86c1"}));});
+  allMonths.forEach((m,i)=>s.appendChild(el("text",{x:xc(i),y:H-9,"text-anchor":"middle",class:"axis"},i>=split?monLbl(m)+"*":monLbl(m))));
+  // labels
+  s.appendChild(el("text",{x:pl-6,y:11,"text-anchor":"end","font-size":10,fill:"#2e86c1","font-weight":700},"msgs"));
+  s.appendChild(el("text",{x:W-pr+6,y:11,"text-anchor":"start","font-size":10,fill:"#8e44ad","font-weight":700},"people"));
+  $("#chart-ramp").innerHTML="";$("#chart-ramp").appendChild(s);
+}
+function forecast(){
+  const pp=+$("#s-pp").value;$("#v-pp").textContent=pp;
+  // observed reference
+  const mayPP=DATA.perPerson.find(r=>r.month==="2026-05");
+  const junFull=fullMonthEstimate(lastMonth,DATA.monthMsgs[lastMonth]);
+  const junPP=Math.round(junFull/DATA.onboarding[lastMonth]);
+  $("#fc-hint").textContent=`observed: May ≈ ${mayPP?Math.round(mayPP.perPerson):"–"}, June run-rate ≈ ${junPP}`;
+  $("#fc-now").textContent=`${Math.round(100*DATA.onboarding[lastMonth]/DATA.targetHeadcount)}%`;
+  const tgt=DATA.targetHeadcount;
+  const projMsgsMo=tgt*pp;
+  const projMsgsYr=projMsgsMo*12;
+  // ROI at scale using current blended assumptions
+  const rate=+($("#s-rate")?.value||85), mult=+($("#s-mult")?.value||1), seat=+($("#s-seat")?.value||25);
+  // derive avg minutes saved per message from current content mix
+  const contentConvs=DATA.totals.conversations; const totMinNow=DATA.topics.reduce((a,t)=>a+t.convs*(TIER[t.key]??10)*mult,0);
+  const minPerMsg=totMinNow/DATA.totals.messages;
+  const projValMo=projMsgsMo*minPerMsg/60*rate;
+  const projCostMo=tgt*seat;
+  const cur=[
+    {t:"People",v:tgt},
+    {t:"Messages / month",v:fmt(Math.round(projMsgsMo))},
+    {t:"≈ Value / month",v:usdK(projValMo)},
+    {t:"Net / year",v:usdK(projValMo*12-projCostMo*12),hi:true},
+  ];
+  $("#fc-scenario").innerHTML=cur.map(c=>`<div class="s ${c.hi?'hi':''}"><div class="t">${c.t}</div><div class="v">${c.v}</div></div>`).join("");
+  $("#fc-foot").textContent=`At ${tgt} people sending ${pp} messages each per month (${fmt(Math.round(projMsgsMo))}/mo, ${fmt(Math.round(projMsgsYr))}/yr), and holding the current ROI assumptions ($${rate}/hr, $${seat}/seat), projected value is about ${usdK(projValMo)}/month against ${usdK(projCostMo)}/month in seats.`;
+  $("#fc-callout").innerHTML=`<b>The trajectory:</b> we are ${Math.round(100*DATA.onboarding[lastMonth]/tgt)}% onboarded and already running ~${fmt(junFull)} messages in our latest full month. Taking everyone to the full firm of ${tgt} at today's per-person rate points to <b>~${fmt(Math.round(projMsgsMo))} messages a month</b> and roughly <b>${usdK(projValMo*12)}/yr</b> in recovered time — for about <b>${usdK(projCostMo*12)}/yr</b> in software.`;
+}
+
+/* ============================= draw dispatch ============================= */
+let drawn={};
+function draw(id){
+  if(id==="overview"&&!drawn.overview){heroCards();sparkChart();overviewDonuts();drawn.overview=1;}
+  if(id==="trends"&&!drawn.trends){stackedChart();monthlyChart();growthChart();drawn.trends=1;}
+  if(id==="accounts"&&!drawn.accounts){accountCards();drawn.accounts=1;}
+  if(id==="topics"&&!drawn.topics){topicBars();topicNarrative();drawn.topics=1;}
+  if(id==="scope"&&!drawn.scope){scope();drawn.scope=1;}
+  if(id==="roi"){roi();}
+  if(id==="forecast"){forecast();rampChart();}
+}
+["s-rate","s-mult","s-seat"].forEach(id=>$("#"+id).addEventListener("input",()=>{roi();heroCards();}));
+$("#s-pp").value=String(Math.round(projPerPerson()/5)*5); // default per-person rate = latest run-rate (matches Overview)
+["s-pp"].forEach(id=>$("#"+id).addEventListener("input",()=>{forecast();rampChart();}));
+window.addEventListener("resize",()=>{drawn={};draw($$("nav.tabs button.on")[0].dataset.t);});
+draw("overview");
+// pre-warm everything for print
+setTimeout(()=>{["trends","accounts","topics","scope","roi","forecast"].forEach(draw);},200);
+</script>
+</body>
+</html>

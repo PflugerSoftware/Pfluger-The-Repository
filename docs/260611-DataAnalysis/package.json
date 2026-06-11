@@ -1,0 +1,5 @@
+{
+  "type": "commonjs",
+  "private": true,
+  "description": "Standalone CommonJS scope for the AI adoption dashboard build scripts (overrides the repo's type:module so process.js/build.js run with require())."
+}
