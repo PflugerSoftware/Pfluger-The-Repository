@@ -158,7 +158,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
 
       {/* Nav container */}
       <div
-        className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-card"
+        className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border"
         onMouseLeave={() => setHoveredId(null)}
       >
         {/* Main nav row */}
@@ -187,7 +187,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                 strokeWidth="10"
               />
             </svg>
-            <span className="text-xl font-bold text-white tracking-wide">Repository</span>
+            <span className="text-title font-bold tracking-wide">Repository</span>
           </button>
 
           {/* Nav items - centered */}
@@ -199,7 +199,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                 onMouseEnter={() => setHoveredId(section.id)}
                 onClick={handleLinkClick}
                 className={`text-sm transition-colors py-2 ${
-                  hoveredId === section.id ? 'text-white' : 'text-gray-400 hover:text-white'
+                  hoveredId === section.id ? 'text-white' : 'text-muted-foreground hover:text-white'
                 }`}
               >
                 {section.label}
@@ -211,18 +211,18 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
           {isAuthenticated && user ? (
             <div className="flex items-center gap-3">
               {/* Profile card */}
-              <div className="flex items-center gap-3 px-4 py-2 bg-gray-800/50 rounded-full border border-gray-700">
+              <div className="flex items-center gap-3 px-4 py-2 bg-secondary/50 rounded-full border border-border">
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue flex items-center justify-center text-white text-xs font-semibold">
                   {getInitials(user.name)}
                 </div>
                 {/* Name */}
-                <span className="text-sm text-white font-medium">{user.name}</span>
+                <span className="text-body font-medium">{user.name}</span>
               </div>
               {/* Logout button */}
               <button
                 onClick={handleAuthClick}
-                className="text-gray-400 hover:text-white transition-colors p-2"
+                className="text-muted-foreground hover:text-white transition-colors p-2"
                 title="Log out"
               >
                 <LogOut className="w-5 h-5" />
@@ -231,7 +231,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
           ) : (
             <button
               onClick={handleAuthClick}
-              className="text-gray-400 hover:text-white transition-colors p-2"
+              className="text-muted-foreground hover:text-white transition-colors p-2"
               title="Log in"
             >
               <LogIn className="w-5 h-5" />
@@ -247,7 +247,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="overflow-hidden border-t border-card"
+              className="overflow-hidden border-t border-border"
             >
               <div className="px-12 py-8">
                 {/* Special two-column layout for explore */}
@@ -255,7 +255,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                   <div className="flex gap-24">
                     {/* Left column - Explore items (big bold) */}
                     <div className="w-80">
-                      <p className="text-xs text-gray-500 mb-4 tracking-wide">explore</p>
+                      <p className="text-meta mb-4 tracking-wide">explore</p>
                       <div className="flex flex-col gap-1">
                         {EXPLORE_ITEMS.map((item, i) => (
                           <motion.div
@@ -267,7 +267,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                             <Link
                               to="/explore"
                               onClick={handleLinkClick}
-                              className="text-2xl font-bold text-white hover:text-gray-300 transition-colors text-left py-1 block"
+                              className="text-h3 hover:text-foreground-secondary transition-colors text-left py-1 block"
                             >
                               {item}
                             </Link>
@@ -278,7 +278,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
 
                     {/* Right columns - Work by year (horizontal) */}
                     <div className="flex-1">
-                      <p className="text-xs text-gray-500 mb-4 tracking-wide">work</p>
+                      <p className="text-meta mb-4 tracking-wide">work</p>
                       <div className="flex gap-10">
                         {workByYear.map((yearGroup, yi) => (
                           <motion.div
@@ -288,8 +288,8 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                             transition={{ delay: yi * 0.05 }}
                             className="min-w-0"
                           >
-                            <p className="text-sm text-gray-400 mb-1">{yearGroup.year}</p>
-                            <div className="space-y-0.5 pl-3 border-l border-gray-700">
+                            <p className="text-body-muted mb-1">{yearGroup.year}</p>
+                            <div className="space-y-0.5 pl-3 border-l border-border">
                               {[...yearGroup.projects].sort((a, b) => {
                                 const numA = parseInt(a.id.replace(/\D/g, '').slice(-2));
                                 const numB = parseInt(b.id.replace(/\D/g, '').slice(-2));
@@ -299,9 +299,9 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                                   key={project.id}
                                   to={`/explore/${project.id}`}
                                   onClick={handleLinkClick}
-                                  className="block text-sm text-gray-400 hover:text-white transition-colors py-0.5 whitespace-nowrap"
+                                  className="block text-body-muted hover:text-white transition-colors py-0.5 whitespace-nowrap"
                                 >
-                                  <span className="text-gray-600">{project.id}</span>
+                                  <span className="text-foreground-subtle">{project.id}</span>
                                   <span className="mx-2">-</span>
                                   <span>{project.title}</span>
                                 </Link>
@@ -315,7 +315,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                 ) : (
                   <>
                     {/* Section title */}
-                    <p className="text-xs text-gray-500 mb-4 tracking-wide">
+                    <p className="text-meta mb-4 tracking-wide">
                       {activeSection.label}
                     </p>
 
@@ -337,7 +337,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: i * 0.03 }}
-                              className="text-2xl font-bold text-white hover:text-gray-300 transition-colors text-left py-1"
+                              className="text-h3 hover:text-foreground-secondary transition-colors text-left py-1"
                             >
                               {label}
                             </motion.a>
@@ -354,7 +354,7 @@ export function TopNavbar({ onLogoClick }: TopNavbarProps) {
                             <Link
                               to={targetPath}
                               onClick={handleLinkClick}
-                              className="text-2xl font-bold text-white hover:text-gray-300 transition-colors text-left py-1 block"
+                              className="text-h3 hover:text-foreground-secondary transition-colors text-left py-1 block"
                             >
                               {label}
                             </Link>

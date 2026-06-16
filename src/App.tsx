@@ -136,7 +136,7 @@ function AppContent() {
       <div className="h-20" />
 
       <main>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" /></div>}>
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home onOpenProject={openProject} />} />
@@ -213,7 +213,7 @@ function AppRoutes() {
 
   if (location.pathname.startsWith('/survey/')) {
     return (
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-background"><div className="w-8 h-8 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" /></div>}>
+      <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-background"><div className="w-8 h-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" /></div>}>
         <Routes>
           <Route path="/survey/LeeCollegeMapSurveySpring2026" element={<LeeCollegeSurveyPage />} />
           <Route path="/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026" element={<WcjcSurveyPage />} />

@@ -96,15 +96,15 @@ export function SurveyQuestionView({
             )}
           </div>
           <div className="flex-1">
-            <span className="text-xs uppercase tracking-wider" style={{ color: section.color }}>
+            <span className="text-label" style={{ color: section.color }}>
               {section.label}
             </span>
           </div>
-          <span className="text-xs text-gray-600">
+          <span className="text-meta">
             {questionNumber}/{totalQuestions}
           </span>
         </div>
-        <h2 className="text-lg font-semibold text-white leading-snug">
+        <h2 className="text-h4 leading-snug">
           {question.question_text}
         </h2>
       </div>
@@ -195,7 +195,7 @@ export function SurveyQuestionView({
             {!showPinPanel ? (
               <button
                 onClick={() => setShowPinPanel(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white transition-all bg-white/5 border border-white/10 hover:bg-white/8"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-caption hover:text-white transition-all bg-white/5 border border-white/10 hover:bg-white/8"
               >
                 <MousePointerClick className="w-3.5 h-3.5" />
                 Pin a location on the map (optional)
@@ -203,7 +203,7 @@ export function SurveyQuestionView({
             ) : (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <span className="text-caption flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5" style={{ color: section.color }} />
                     Map Pin (optional)
                   </span>
@@ -212,7 +212,7 @@ export function SurveyQuestionView({
                       setShowPinPanel(false);
                       onUpdateAnswer({ ...answer, pins: [] });
                     }}
-                    className="p-1 text-gray-500 hover:text-red-400 transition-colors"
+                    className="p-1 text-foreground-subtle hover:text-destructive transition-colors"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -243,7 +243,7 @@ export function SurveyQuestionView({
       <div className="px-6 py-4 flex gap-3">
         <button
           onClick={onBack}
-          className="flex items-center gap-1 px-4 py-3 rounded-xl text-sm text-gray-400 hover:text-gray-200 transition-all"
+          className="flex items-center gap-1 px-4 py-3 rounded-xl text-body-muted hover:text-foreground transition-all"
           style={{
             background: 'rgba(255, 255, 255, 0.05)',
             backdropFilter: 'blur(8px)',

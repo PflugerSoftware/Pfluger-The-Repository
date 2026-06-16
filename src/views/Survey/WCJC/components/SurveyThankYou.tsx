@@ -17,11 +17,11 @@ export function SurveyThankYou({ surveyTitle }: SurveyThankYouProps) {
         animate={{ scale: 1 }}
         transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}
       >
-        <CheckCircle className="w-16 h-16 text-emerald-400 mb-6" />
+        <CheckCircle className="w-16 h-16 text-success mb-6" />
       </motion.div>
 
-      <h2 className="text-2xl font-bold text-white mb-3">Thank You!</h2>
-      <p className="text-gray-400 text-sm leading-relaxed max-w-xs">
+      <h2 className="text-h3 mb-3">Thank You!</h2>
+      <p className="text-body-muted leading-relaxed max-w-xs">
         Your response to the {surveyTitle} has been submitted. Your feedback helps us make better
         decisions about this space.
       </p>

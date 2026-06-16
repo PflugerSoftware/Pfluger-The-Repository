@@ -85,28 +85,28 @@ const Analytics: React.FC = () => {
       value: '1,480',
       change: '+240 this month',
       icon: Clock,
-      color: 'from-blue-400 to-cyan-500'
+      color: 'from-pfluger-skyBlue to-pfluger-darkBlue'
     },
     {
       label: 'Active Researchers',
       value: '12',
       change: '+3 new',
       icon: Users,
-      color: 'from-purple-400 to-pink-500'
+      color: 'from-pfluger-orange to-pfluger-salmon'
     },
     {
       label: 'Publications',
       value: '8',
       change: '3 pending',
       icon: BookOpen,
-      color: 'from-green-400 to-emerald-500'
+      color: 'from-pfluger-oliveGreen to-pfluger-chartreuse'
     },
     {
       label: 'Projects Influenced',
       value: '15',
       change: '+5 this quarter',
       icon: Building,
-      color: 'from-orange-400 to-red-500'
+      color: 'from-pfluger-brick to-pfluger-salmon'
     }
   ];
 
@@ -118,8 +118,8 @@ const Analytics: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8"
       >
-        <h1 className="text-3xl font-bold mb-2">Research Analytics</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <h1 className="text-h2 mb-2">Research Analytics</h1>
+        <p className="text-muted-foreground">
           Data-driven insights into research performance and impact
         </p>
       </motion.div>
@@ -134,13 +134,13 @@ const Analytics: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg"
+              className="bg-card rounded-xl p-6 shadow-lg"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold mt-1">{stat.value}</p>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-2 flex items-center gap-1">
+                  <p className="text-body-muted">{stat.label}</p>
+                  <p className="text-stat mt-1">{stat.value}</p>
+                  <p className="text-xs text-success mt-2 flex items-center gap-1">
                     <TrendingUp className="w-3 h-3" />
                     {stat.change}
                   </p>
@@ -160,7 +160,7 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+          className="bg-card rounded-xl shadow-lg p-6"
         >
           <h2 className="text-xl font-bold mb-4">Research Activity Trend</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -201,7 +201,7 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+          className="bg-card rounded-xl shadow-lg p-6"
         >
           <h2 className="text-xl font-bold mb-4">Research by Category</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -229,7 +229,7 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+          className="bg-card rounded-xl shadow-lg p-6"
         >
           <h2 className="text-xl font-bold mb-4">Research Impact Metrics</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -253,7 +253,7 @@ const Analytics: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+          className="bg-card rounded-xl shadow-lg p-6"
         >
           <h2 className="text-xl font-bold mb-4">Researcher Productivity</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -274,11 +274,11 @@ const Analytics: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6"
+        className="bg-card rounded-xl shadow-lg p-6"
       >
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Project Phase Distribution</h2>
-          <button className="flex items-center gap-2 px-4 py-2 bg-research-sky text-white rounded-lg hover:bg-research-blue transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent/90 transition-colors">
             <Download className="w-4 h-4" />
             Export Report
           </button>
@@ -311,7 +311,7 @@ const Analytics: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-research-sky via-research-blue to-research-purple text-white rounded-xl shadow-lg p-6"
+        className="bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue text-white rounded-xl shadow-lg p-6"
       >
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
           <Target className="w-6 h-6" />

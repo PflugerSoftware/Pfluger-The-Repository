@@ -52,17 +52,17 @@ export function MultipleChoiceInput({
             onClick={() => !isDisabled && handleToggle(option)}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm transition-all ${
               isSelected
-                ? 'bg-sky-500/20 border border-sky-500/50 text-white'
+                ? 'bg-accent/20 border border-accent/50 text-white'
                 : isDisabled
-                  ? 'bg-white/5 border border-white/5 text-gray-600 cursor-not-allowed'
-                  : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
+                  ? 'bg-white/5 border border-white/5 text-foreground-subtle cursor-not-allowed'
+                  : 'bg-white/5 border border-white/10 text-muted-foreground hover:bg-white/10'
             }`}
           >
             {/* Selection indicator */}
             <div
               className={`w-5 h-5 shrink-0 rounded-${isSingleSelect ? 'full' : 'md'} border flex items-center justify-center transition-all ${
                 isSelected
-                  ? 'bg-sky-500 border-sky-500'
+                  ? 'bg-accent border-accent'
                   : 'border-white/20'
               }`}
             >
@@ -85,12 +85,12 @@ export function MultipleChoiceInput({
               maxLength={500}
               rows={2}
               placeholder="Please specify..."
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-sky-500/50 transition-colors resize-none"
+              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-body placeholder:text-foreground-subtle focus:outline-none focus:border-accent/50 transition-colors resize-none"
             />
           </motion.div>
         )}
       {maxSelections && maxSelections > 1 && (
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-meta mt-1">
           Select up to {maxSelections} ({selected.length}/{maxSelections})
         </p>
       )}

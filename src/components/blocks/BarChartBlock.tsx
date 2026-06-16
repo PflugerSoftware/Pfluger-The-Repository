@@ -140,16 +140,16 @@ function Legend({ segments, unit, total, hoveredIndex, setHoveredIndex }: Legend
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: segment.color }}
               />
-              <span className="text-xs text-gray-400">{segment.label}</span>
+              <span className="text-caption">{segment.label}</span>
             </div>
-            <span className="text-xs font-medium text-white tabular-nums">
+            <span className="text-badge tabular-nums">
               {segment.value.toLocaleString()}{unit}
             </span>
           </div>
         ))}
         <div className="flex justify-between border-t border-white/10 mt-1 pt-1.5">
-          <span className="text-xs text-gray-500">Total</span>
-          <span className="text-xs font-medium text-white tabular-nums">{total.toLocaleString()}{unit}</span>
+          <span className="text-meta">Total</span>
+          <span className="text-badge tabular-nums">{total.toLocaleString()}{unit}</span>
         </div>
       </div>
     </div>
@@ -232,7 +232,7 @@ function GroupedBar({ groups, unit: _unit }: GroupedBarProps) {
                         backgroundColor: item.color,
                       }}
                     >
-                      <span className="text-white text-xs font-medium truncate px-1">
+                      <span className="text-badge truncate px-1">
                         {item.label}
                       </span>
                     </div>
@@ -243,7 +243,7 @@ function GroupedBar({ groups, unit: _unit }: GroupedBarProps) {
                     className="h-full w-full flex items-center justify-center"
                     style={{ backgroundColor: data.groupColor }}
                   >
-                    <span className="text-white text-sm font-medium">
+                    <span className="text-body font-medium">
                       {data.label}
                     </span>
                   </div>
@@ -304,7 +304,7 @@ function MultiGroupedBar({ groupedBars, unit }: MultiGroupedBarProps) {
           <div key={barIndex}>
             <div className="flex items-baseline justify-between mb-2">
               <h4 className="text-lg font-medium text-white">{bar.title}</h4>
-              <span className="text-sm text-gray-400 tabular-nums">
+              <span className="text-body-muted tabular-nums">
                 {bar.total.toLocaleString()}{unit}
               </span>
             </div>
@@ -345,7 +345,7 @@ function MultiGroupedBar({ groupedBars, unit }: MultiGroupedBarProps) {
                               backgroundColor: item.color,
                             }}
                           >
-                            <span className="text-white text-xs font-medium truncate px-1">
+                            <span className="text-badge truncate px-1">
                               {item.label}
                             </span>
                           </div>

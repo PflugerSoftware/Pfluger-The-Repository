@@ -11,7 +11,7 @@ export function SurveyProgress({ current, total }: SurveyProgressProps) {
   return (
     <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
       <motion.div
-        className="h-full bg-sky-500 rounded-full"
+        className="h-full bg-accent rounded-full"
         initial={{ width: 0 }}
         animate={{ width: `${percentage}%` }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}

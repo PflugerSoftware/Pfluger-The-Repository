@@ -53,7 +53,7 @@ function ActivityRing({ rating, color, size = 80, delay = 0 }: { rating: number;
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: delay + 0.5 }}
       >
-        <span className="text-lg font-bold text-white">{rating}</span>
+        <span className="text-h4">{rating}</span>
       </motion.div>
     </motion.div>
   );
@@ -81,7 +81,7 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-card border border-card rounded-2xl overflow-hidden"
+            className="bg-card border border-border rounded-2xl overflow-hidden"
           >
             {/* Main card content */}
             <div className="p-6">
@@ -91,8 +91,8 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-white mb-1">{tool.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{tool.category}</p>
+                  <h3 className="text-h4 mb-1">{tool.name}</h3>
+                  <p className="text-body-subtle mb-2">{tool.category}</p>
                   <div
                     className="inline-block px-2 py-0.5 rounded text-xs font-medium"
                     style={{ backgroundColor: tool.color + '20', color: tool.color }}
@@ -103,7 +103,7 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
               </div>
 
               {tool.description && (
-                <p className="text-sm text-gray-400 mt-4">{tool.description}</p>
+                <p className="text-body-muted mt-4">{tool.description}</p>
               )}
             </div>
 
@@ -112,7 +112,7 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
               <>
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : tool.name)}
-                  className="w-full px-6 py-3 flex items-center justify-between text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-colors border-t border-card"
+                  className="w-full px-6 py-3 flex items-center justify-between text-body-muted hover:text-white hover:bg-white/5 transition-colors border-t border-border"
                 >
                   <span>{isExpanded ? 'Hide details' : 'Show pros & cons'}</span>
                   <motion.div
@@ -137,11 +137,11 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
                         {/* Pros */}
                         {tool.pros && tool.pros.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Pros</p>
+                            <p className="text-label mb-2">Pros</p>
                             <ul className="space-y-1.5">
                               {tool.pros.map((pro, i) => (
-                                <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                                <li key={i} className="flex items-start gap-2 text-body">
+                                  <Check className="w-4 h-4 text-success shrink-0 mt-0.5" />
                                   <span>{pro}</span>
                                 </li>
                               ))}
@@ -152,11 +152,11 @@ export function ToolComparisonBlock({ data }: ToolComparisonBlockProps) {
                         {/* Cons */}
                         {tool.cons && tool.cons.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Cons</p>
+                            <p className="text-label mb-2">Cons</p>
                             <ul className="space-y-1.5">
                               {tool.cons.map((con, i) => (
-                                <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
-                                  <X className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                                <li key={i} className="flex items-start gap-2 text-body">
+                                  <X className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
                                   <span>{con}</span>
                                 </li>
                               ))}

@@ -243,10 +243,11 @@ The top navbar (`TopNavbar.tsx`) has a hover-expand dropdown system:
 ### Key Design Patterns
 
 **Theme System:**
-All colors are centralized in `ThemeManager.tsx` to match Pfluger brand:
-- `APP_COLORS` - Pfluger primary and secondary palette
+UI color + text styling are centralized as global tokens/classes in `src/index.css` (exposed via `tailwind.config.js`) - this is the source of truth for surfaces, borders, text, brand accent, and semantic states. See the **Color System** and **Typography System** sections.
+
+`ThemeManager.tsx` holds brand/data color CONSTANTS and helpers (not UI styling tokens):
+- `APP_COLORS` - Pfluger primary and secondary palette (hex constants for data/charts)
 - `RESEARCH_CATEGORY_COLORS` - Category-specific colors with icons
-- `DARK_THEME` - Material Design dark theme (#121212)
 - `getPhaseColor()` - Adjust brightness based on project phase
 - `getResearchCategoryColor()` - Get category styling
 
@@ -417,11 +418,37 @@ secondary: {
 }
 ```
 
-**Dark Theme:**
-- Background: `#121212` (Material Design)
-- Cards: `#1e1e1e`
-- Borders: `#2a2a2a`
-- Accent: Sky Blue `#00A9E0`
+**Theme tokens (single source of truth — `src/index.css` `:root`, exposed as Tailwind classes via `tailwind.config.js`):**
+
+Use these tokens for UI color; do NOT hardcode `bg-gray-800`, `bg-[#1a1a1a]`, off-brand Tailwind `emerald/orange/yellow/blue`, etc.
+
+| Token (class) | Value | Use |
+|---|---|---|
+| `bg-background` | `#181019` deep purple | page / base surface |
+| `bg-card` / `bg-popover` | `#221a28` | cards, panels, dropdowns, tooltips |
+| `bg-secondary` | `#2d2435` | raised strip on a card |
+| `bg-muted` | purple-tinted | muted surface |
+| `border-border` | `#2d2435` | borders (use this, not `border-card`) |
+| `border-input` | `#221a28` | form-field borders |
+| `text-foreground` / `text-muted-foreground` / `text-foreground-subtle` | 95% / 60% / 45% | text hierarchy |
+| `*-primary` / `*-accent` / `ring-ring` | `#00A9E0` sky blue | **brand accent / interactive / focus rings** |
+| `*-destructive` | red | errors/danger (intentionally non-brand) |
+
+**Semantic state tokens (brand-rooted) — `*-success | *-warning | *-info | *-neutral`:**
+- `success` = olive green (positive) · `warning` = orange (caution) · `info` = sky blue (informational) · `neutral` = chartreuse (moderate)
+- Work as `bg-`, `text-`, `border-` with opacity (`bg-success/10`, `text-warning`, `border-destructive/30`).
+
+**Semantic state tokens used as inline `style`:** for chart bars/SVG that can't take a class, read the token via CSS var — e.g. `style={{ backgroundColor: 'hsl(var(--success))' }}` (see `ScenarioBarChartBlock.tsx`) — so it still tracks the theme.
+
+**Decorative gradients** use the brand palette: `bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue` (avatars, the consistent brand blue) or other `pfluger-*` pairs (stat cards). Do NOT use raw Tailwind `from-blue-500 to-purple-600` etc.
+
+**Primary CTA buttons** use the `.btn-cta` class (see Styling).
+
+**Conventions:**
+- `--primary` and `--accent` are **sky blue** (`#00A9E0`), not the legacy neon red. `--destructive` stays red for errors. The old `neon-red`/`neon-glow` palette was removed.
+- Brand palette (`bg-pfluger-skyBlue`, etc.) and research-category hexes remain for data/branding; chart series colors live in data/config and stay as hex.
+- **Adding a token:** define the CSS var in `src/index.css` `:root` AND register it as a color in `tailwind.config.js` (`'name': "hsl(var(--name))"`). A var alone does NOT create a `text-name`/`bg-name` utility — the class silently no-ops and the build still passes. (This bit us with `foreground-subtle`, `text-accent`, and `research-*`.)
+- Legitimately hardcoded: opacity/glass overlays (`bg-black/X`, `bg-white/X`), inline `style` colors bound to data, SVG `fill`/`stroke` attributes driven by data, and color values stored in JS/TS data (chart series, research categories).
 
 ### Working with Authentication
 
@@ -464,7 +491,7 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 ### Code Style
 - Use TypeScript for type safety
 - Follow existing naming conventions
-- Leverage ThemeManager for all colors (no hardcoded colors)
+- Use the global theme tokens for color and the semantic classes for text (see Color System + Typography System) - no hardcoded `bg-gray-*`, `bg-[#...]`, or off-brand colors. `ThemeManager.tsx` holds brand/data color constants only.
 - Use Lucide icons consistently
 - Prefer Framer Motion for animations
 
@@ -475,10 +502,38 @@ To add/modify research projects, update the Supabase `projects` and `project_blo
 - Lazy load heavy components when needed
 
 ### Styling
-- Tailwind utility classes preferred
-- Use theme colors from ThemeManager
-- Material Design dark theme principles
+- **Use the semantic typography classes for text** (see Typography System below) - do NOT add inline `text-{size} font-{weight} text-{color}` combos for text styling
+- **Use the global theme tokens for color** (see Color System) - `bg-card`, `border-border`, `text-muted-foreground`, `bg-accent`, `text-success`, etc. - not hardcoded grays/hex/off-brand Tailwind colors
+- Tailwind utility classes for layout/spacing (margins, flex, grid, sizing)
+- **Primary CTA buttons** use the `.btn-cta` class (inverted white pill/icon style, defined in `src/index.css`) - pair with per-instance size/radius utilities. To rebrand all CTAs at once, edit that one class.
+- Dark purple/plum theme (`#181019` base); the full token set lives in `src/index.css`
 - Responsive design (mobile-first)
+
+### Typography System
+
+All text styling is centralized in `src/index.css` as semantic classes backed by theme CSS vars - this is the single source of truth. Reference these classes instead of inline `text-*` size/weight/color soup. To restyle text app-wide, edit the class or the CSS var, not the components.
+
+**Theme text tokens** (`:root` in `src/index.css`, HSL):
+- `--foreground` (primary), `--foreground-secondary`, `--muted-foreground`, `--foreground-subtle` - neutral hierarchy (brightest to dimmest)
+- `--text-accent` (sky blue), `--text-success` (olive/chartreuse), `--text-warning` (orange) - routed to the Pfluger brand palette
+
+**Semantic classes:**
+| Class | = | Use for |
+|---|---|---|
+| `.text-hero` `.text-h1` `.text-h2` `.text-h3` `.text-title` `.text-h4` | 5xl/4xl/3xl/2xl/xl/lg bold(semibold for title/h4) | heading hierarchy |
+| `.text-stat` `.text-stat-lg` | 2xl/4xl bold | numeric metric values |
+| `.text-body` `.text-body-muted` `.text-body-subtle` | text-sm, 3 color levels | body copy |
+| `.text-caption` `.text-meta` | text-xs, muted/subtle | captions, fine print, timestamps |
+| `.text-label` | text-xs medium uppercase tracking-wider | section labels |
+| `.text-badge` | text-xs medium | badge/control labels |
+| `.text-code` | text-xs mono | IDs / inline code |
+| `.text-accent` `.text-success` `.text-warning` | color-only | accent text (pair with a size class) |
+
+**Conventions:**
+- Body/caption classes set size+color ONLY (no weight) - pair with `font-medium`/`font-semibold` freely, e.g. `text-body font-medium`.
+- Heading classes set weight too; override with a weight utility if needed (e.g. `text-title font-bold`).
+- Classes live in `@layer components`, so one-off utilities added alongside (`text-center`, a brand color, etc.) still win the cascade.
+- Legitimately inline: state-driven conditional colors, arbitrary sizes (`text-[10px]`), SVG `<text>`, and color supplied via inline `style`.
 
 ### Performance
 - React.memo for expensive components

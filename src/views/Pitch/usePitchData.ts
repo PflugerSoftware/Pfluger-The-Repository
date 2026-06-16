@@ -101,9 +101,9 @@ export const calculateHoursPerWeek = (scope: string, timeline: string): number =
 };
 
 export const SCOPE_LABELS: Record<string, { label: string; color: string }> = {
-  simple: { label: 'Simple', color: 'text-green-400' },
-  medium: { label: 'Medium', color: 'text-yellow-400' },
-  complex: { label: 'Complex', color: 'text-red-400' },
+  simple: { label: 'Simple', color: 'text-success' },
+  medium: { label: 'Medium', color: 'text-neutral' },
+  complex: { label: 'Complex', color: 'text-destructive' },
 };
 
 const EMPTY_PITCH_DATA: PitchData = {

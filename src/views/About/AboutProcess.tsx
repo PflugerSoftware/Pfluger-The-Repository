@@ -41,8 +41,8 @@ const AboutProcess: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl"
       >
-        <h1 className="text-5xl font-bold text-white mb-4">Our Process</h1>
-        <p className="text-xl text-gray-400 mb-16">
+        <h1 className="text-hero mb-4">Our Process</h1>
+        <p className="text-xl text-muted-foreground mb-16">
           A rigorous approach to evidence-based design.
         </p>
 
@@ -55,12 +55,12 @@ const AboutProcess: React.FC = () => {
               transition={{ delay: index * 0.1 }}
               className="flex gap-8"
             >
-              <span className="text-4xl font-bold text-gray-700 shrink-0">
+              <span className="text-4xl font-bold text-foreground-subtle shrink-0">
                 {step.number}
               </span>
               <div>
-                <h2 className="text-2xl font-bold text-white mb-2">{step.title}</h2>
-                <p className="text-gray-400">{step.description}</p>
+                <h2 className="text-h3 mb-2">{step.title}</h2>
+                <p className="text-muted-foreground">{step.description}</p>
               </div>
             </motion.div>
           ))}

@@ -40,10 +40,10 @@ export function ChatPanel({
   };
 
   return (
-    <div className="bg-card border border-card rounded-2xl h-full flex flex-col">
-      <div className="p-4 border-b border-gray-800">
-        <h2 className="text-lg font-bold text-white">{title}</h2>
-        <p className="text-sm text-gray-500">{subtitle}</p>
+    <div className="bg-card border border-border rounded-2xl h-full flex flex-col">
+      <div className="p-4 border-b border-border">
+        <h2 className="text-h4">{title}</h2>
+        <p className="text-body-subtle">{subtitle}</p>
       </div>
 
       {/* Chat messages area */}
@@ -51,7 +51,7 @@ export function ChatPanel({
         {chatMessages.map((msg, i) => (
           <div key={i} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
             {msg.role === 'assistant' && (
-              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
                 <span className="text-xs text-white">AI</span>
               </div>
             )}
@@ -59,10 +59,10 @@ export function ChatPanel({
               className={`rounded-2xl p-3 max-w-[85%] ${
                 msg.role === 'user'
                   ? 'bg-white text-black rounded-tr-none'
-                  : 'bg-gray-800 rounded-tl-none'
+                  : 'bg-secondary rounded-tl-none'
               }`}
             >
-              <p className={`text-sm ${msg.role === 'user' ? 'text-black' : 'text-gray-300'}`}>
+              <p className={`text-sm ${msg.role === 'user' ? 'text-black' : 'text-foreground-secondary'}`}>
                 {msg.content}
               </p>
             </div>
@@ -71,7 +71,7 @@ export function ChatPanel({
       </div>
 
       {/* Chat input */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-border">
         <div className="flex gap-2">
           <input
             type="text"
@@ -79,11 +79,11 @@ export function ChatPanel({
             onChange={(e) => setChatMessage(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder={placeholder}
-            className="flex-1 bg-gray-800 text-white placeholder-gray-500 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-white"
+            className="flex-1 bg-secondary text-white placeholder-muted-foreground rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-white"
           />
           <button
             onClick={handleSendMessage}
-            className="p-2 bg-white text-black rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 btn-cta rounded-full transition-colors"
           >
             <Send className="w-4 h-4" />
           </button>

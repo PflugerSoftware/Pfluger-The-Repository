@@ -57,11 +57,11 @@ function VerticalTimeline({ data }: { data: TimelineData }) {
               {/* Content */}
               <div className="flex-1 pb-6">
                 <div className="flex items-center gap-3 mb-1">
-                  <span className="text-sm font-medium text-white">{event.title}</span>
-                  <span className="text-xs text-gray-500">{event.date}</span>
+                  <span className="text-body font-medium">{event.title}</span>
+                  <span className="text-meta">{event.date}</span>
                 </div>
                 {event.description && (
-                  <p className="text-sm text-gray-500">{event.description}</p>
+                  <p className="text-body-subtle">{event.description}</p>
                 )}
               </div>
             </motion.div>
@@ -131,11 +131,11 @@ function HorizontalTimeline({ data }: { data: TimelineData }) {
             >
               {/* Content - top aligned */}
               <div className="text-center max-w-[120px]">
-                <p className="text-xs text-gray-500 mb-0.5">{event.date}</p>
-                <p className="text-sm font-medium text-white leading-tight">{event.title}</p>
+                <p className="text-meta mb-0.5">{event.date}</p>
+                <p className="text-body font-medium leading-tight">{event.title}</p>
               </div>
               {/* Connector line - grows to fill space */}
-              <div className="w-px flex-1 bg-gray-600 my-2" />
+              <div className="w-px flex-1 bg-muted-foreground my-2" />
               {/* Icon - at bottom */}
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
@@ -151,10 +151,10 @@ function HorizontalTimeline({ data }: { data: TimelineData }) {
       {/* Center timeline with workload river */}
       <div className="relative" style={{ height: riverMaxHeight * 2 + 8 }}>
         {/* Labels */}
-        <div className="absolute -left-2 top-0 text-xs text-gray-500 uppercase tracking-wider" style={{ transform: 'translateY(-100%)' }}>
+        <div className="absolute -left-2 top-0 text-label" style={{ transform: 'translateY(-100%)' }}>
           Research
         </div>
-        <div className="absolute -left-2 bottom-0 text-xs text-gray-500 uppercase tracking-wider" style={{ transform: 'translateY(100%)' }}>
+        <div className="absolute -left-2 bottom-0 text-label" style={{ transform: 'translateY(100%)' }}>
           Project
         </div>
 
@@ -224,7 +224,7 @@ function HorizontalTimeline({ data }: { data: TimelineData }) {
           </svg>
         ) : (
           <div
-            className="absolute left-0 right-0 h-px bg-gray-700"
+            className="absolute left-0 right-0 h-px bg-border"
             style={{ top: '50%' }}
           />
         )}
@@ -245,13 +245,13 @@ function HorizontalTimeline({ data }: { data: TimelineData }) {
               style={{ left: `${left}%`, transform: 'translateX(-50%)' }}
             >
               {/* Dot */}
-              <div className="w-3 h-3 rounded-full bg-gray-600 border-2 border-gray-500" />
+              <div className="w-3 h-3 rounded-full bg-muted-foreground border-2 border-muted-foreground" />
               {/* Connector line */}
-              <div className="w-px h-4 bg-gray-600" />
+              <div className="w-px h-4 bg-muted-foreground" />
               {/* Content */}
               <div className="text-center mt-1 max-w-[120px]">
-                <p className="text-xs text-gray-500 mb-0.5">{event.date}</p>
-                <p className="text-sm text-gray-400 leading-tight">{event.title}</p>
+                <p className="text-meta mb-0.5">{event.date}</p>
+                <p className="text-body-muted leading-tight">{event.title}</p>
               </div>
             </motion.div>
           );

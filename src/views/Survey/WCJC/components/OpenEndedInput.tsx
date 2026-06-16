@@ -12,7 +12,7 @@ export function OpenEndedInput({ value, onChange, placeholder }: OpenEndedInputP
       maxLength={2000}
       rows={4}
       placeholder={placeholder || 'Type your answer...'}
-      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder:text-gray-600 focus:border-sky-500/50 focus:outline-none transition-colors resize-none"
+      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-body placeholder:text-foreground-subtle focus:border-accent/50 focus:outline-none transition-colors resize-none"
     />
   );
 }

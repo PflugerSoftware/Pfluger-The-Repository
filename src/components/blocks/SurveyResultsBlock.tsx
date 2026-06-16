@@ -72,8 +72,8 @@ function ChoiceDistribution({
           key={choice}
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 text-xs"
         >
-          <span className="text-gray-300">{choice}</span>
-          <span className="text-sky-400 font-semibold">{count}</span>
+          <span className="text-foreground">{choice}</span>
+          <span className="text-accent font-semibold">{count}</span>
         </span>
       ))}
     </div>
@@ -96,9 +96,9 @@ function RankingResults({
           key={item}
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 text-xs"
         >
-          <span className="text-gray-500 font-semibold">#{i + 1}</span>
-          <span className="text-gray-300">{item}</span>
-          <span className="text-gray-600 text-[10px]">avg {avgRank.toFixed(1)}</span>
+          <span className="text-foreground-subtle font-semibold">#{i + 1}</span>
+          <span className="text-foreground">{item}</span>
+          <span className="text-foreground-subtle text-[10px]">avg {avgRank.toFixed(1)}</span>
         </span>
       ))}
     </div>
@@ -134,7 +134,7 @@ function MatrixResults({
       <table className="w-full text-xs">
         <thead>
           <tr>
-            <th className="text-left text-gray-500 font-medium pb-2 pr-4" />
+            <th className="text-left text-foreground-subtle font-medium pb-2 pr-4" />
             {ratingLabels.map((label, i) => (
               <th
                 key={label}
@@ -151,7 +151,7 @@ function MatrixResults({
             const ratings = distribution.matrixCounts[subItem];
             return (
               <tr key={subItem} className="border-t border-white/5">
-                <td className="text-gray-300 py-2 pr-4 leading-snug max-w-xs">
+                <td className="text-foreground py-2 pr-4 leading-snug max-w-xs">
                   {subItem}
                 </td>
                 {ratingLabels.map((label) => {
@@ -161,7 +161,7 @@ function MatrixResults({
                       {count > 0 ? (
                         <span className="text-white font-medium">{count}</span>
                       ) : (
-                        <span className="text-gray-700">-</span>
+                        <span className="text-foreground-subtle">-</span>
                       )}
                     </td>
                   );
@@ -189,15 +189,15 @@ function OpenEndedResults({
       {answers.map((answer, i) => (
         <div
           key={i}
-          className="px-3 py-2.5 bg-white/5 rounded-lg border-l-2 border-sky-500/30"
+          className="px-3 py-2.5 bg-white/5 rounded-lg border-l-2 border-accent/30"
         >
-          <p className="text-xs text-gray-300 leading-relaxed italic">"{answer}"</p>
+          <p className="text-xs text-foreground leading-relaxed italic">"{answer}"</p>
         </div>
       ))}
       {distribution.openEndedAnswers.length > 4 && (
         <button
           onClick={() => setExpanded((v) => !v)}
-          className="flex items-center gap-1 text-xs text-sky-400 hover:text-sky-300 transition-colors pt-1"
+          className="flex items-center gap-1 text-xs text-accent hover:text-accent transition-colors pt-1"
         >
           {expanded ? (
             <>
@@ -275,7 +275,7 @@ export function SurveyResultsBlock({ data }: SurveyResultsBlockProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-6 h-6 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
       </div>
     );
   }
@@ -311,7 +311,7 @@ export function SurveyResultsBlock({ data }: SurveyResultsBlockProps) {
                     className="w-1 h-5 rounded-full"
                     style={{ backgroundColor: section.color }}
                   />
-                  <h4 className="text-sm font-semibold text-white">{section.label}</h4>
+                  <h4 className="text-body font-semibold">{section.label}</h4>
                 </div>
               )}
 
@@ -329,14 +329,14 @@ export function SurveyResultsBlock({ data }: SurveyResultsBlockProps) {
                     >
                       {/* Question header */}
                       <div className="flex items-start gap-3 mb-3">
-                        <div className="p-1.5 rounded-lg bg-white/5 text-sky-400 shrink-0 mt-0.5">
+                        <div className="p-1.5 rounded-lg bg-white/5 text-accent shrink-0 mt-0.5">
                           <QuestionTypeIcon type={question.question_type} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white font-medium leading-snug">
+                          <p className="text-body font-medium leading-snug">
                             Q{question.question_order}: {question.question_text}
                           </p>
-                          <p className="text-[10px] text-gray-600 mt-1">
+                          <p className="text-[10px] text-foreground-subtle mt-1">
                             {dist.totalAnswers} response{dist.totalAnswers !== 1 ? 's' : ''}
                           </p>
                         </div>

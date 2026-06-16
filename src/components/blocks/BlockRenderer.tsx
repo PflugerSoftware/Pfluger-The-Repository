@@ -86,7 +86,7 @@ export function BlockRenderer({ block }: BlockRendererProps) {
       default: {
         const _exhaustive: never = block;
         return (
-          <div className="p-4 bg-card border border-card rounded-xl text-gray-400 text-sm">
+          <div className="p-4 bg-card border border-border rounded-xl text-muted-foreground text-sm">
             Unknown block type: {(_exhaustive as BlockConfig).type}
           </div>
         );
@@ -107,8 +107,8 @@ export function BlockRenderer({ block }: BlockRendererProps) {
     <div className="mb-8">
       {(block.title || block.description) && (
         <div className="mb-6">
-          {block.title && <h3 className="text-xl font-bold text-white mb-1">{block.title}</h3>}
-          {block.description && <p className="text-gray-500">{block.description}</p>}
+          {block.title && <h3 className="text-title font-bold mb-1">{block.title}</h3>}
+          {block.description && <p className="text-foreground-subtle">{block.description}</p>}
         </div>
       )}
       <Suspense fallback={<BlockFallback />}>

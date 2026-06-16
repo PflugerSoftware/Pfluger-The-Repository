@@ -29,15 +29,15 @@ export function KeyFindingsBlock({ data }: KeyFindingsBlockProps) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="flex gap-4 p-5 bg-card border border-card rounded-2xl"
+            className="flex gap-4 p-5 bg-card border border-border rounded-2xl"
           >
             <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
               <Icon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 mb-1">{finding.title}</p>
-              <p className="text-2xl font-bold text-white mb-1">{finding.value}</p>
-              <p className="text-xs text-gray-500">{finding.detail}</p>
+              <p className="text-body-subtle mb-1">{finding.title}</p>
+              <p className="text-stat mb-1">{finding.value}</p>
+              <p className="text-meta">{finding.detail}</p>
             </div>
           </motion.div>
         );

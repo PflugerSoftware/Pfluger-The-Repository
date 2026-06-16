@@ -104,29 +104,29 @@ const PitchSubmission: React.FC = () => {
   const renderChoiceScreen = () => (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto pt-12">
       <div className="text-center mb-12">
-        <h2 className="text-2xl font-bold text-white mb-3">How would you like to pitch?</h2>
-        <p className="text-gray-400">Choose a path that fits your research idea</p>
+        <h2 className="text-h3 mb-3">How would you like to pitch?</h2>
+        <p className="text-muted-foreground">Choose a path that fits your research idea</p>
       </div>
       <div className="grid md:grid-cols-2 gap-6">
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleStartGreenLit}
-          className="bg-card border border-card rounded-xl p-8 text-left hover:border-green-800 transition-all group">
-          <div className="w-12 h-12 bg-green-900/50 rounded-full flex items-center justify-center mb-6 group-hover:bg-green-900/70 transition-colors">
-            <Zap className="w-6 h-6 text-green-400" />
+          className="bg-card border border-border rounded-xl p-8 text-left hover:border-success transition-all group">
+          <div className="w-12 h-12 bg-success/20 rounded-full flex items-center justify-center mb-6 group-hover:bg-success/30 transition-colors">
+            <Zap className="w-6 h-6 text-success" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Choose a GreenLit Topic</h3>
-          <p className="text-gray-400 text-sm mb-4">Select from pre-approved research topics already worked out by the R&B team.</p>
-          <div className="flex items-center gap-2 text-green-400 text-sm">
+          <h3 className="text-title font-bold mb-2">Choose a GreenLit Topic</h3>
+          <p className="text-body-muted mb-4">Select from pre-approved research topics already worked out by the R&B team.</p>
+          <div className="flex items-center gap-2 text-sm text-success">
             <Sparkles className="w-4 h-4" /><span>Fast-track approval</span>
           </div>
         </motion.button>
         <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleStartCustom}
-          className="bg-card border border-card rounded-xl p-8 text-left hover:border-gray-600 transition-all group">
-          <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-6 group-hover:bg-gray-700 transition-colors">
+          className="bg-card border border-border rounded-xl p-8 text-left hover:border-foreground-subtle transition-all group">
+          <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mb-6 group-hover:bg-muted transition-colors">
             <Lightbulb className="w-6 h-6 text-white" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">Pitch Your Own Idea</h3>
-          <p className="text-gray-400 text-sm mb-4">Have a unique research idea? Build your pitch through conversation with AI.</p>
-          <div className="flex items-center gap-2 text-gray-400 text-sm">
+          <h3 className="text-title font-bold mb-2">Pitch Your Own Idea</h3>
+          <p className="text-body-muted mb-4">Have a unique research idea? Build your pitch through conversation with AI.</p>
+          <div className="flex items-center gap-2 text-body-muted">
             <CheckCircle className="w-4 h-4" /><span>AI-assisted development</span>
           </div>
         </motion.button>
@@ -138,7 +138,7 @@ const PitchSubmission: React.FC = () => {
     if (data.isLoading) {
       return (
         <div className="h-full flex items-center justify-center">
-          <Loader2 className="w-8 h-8 text-gray-500 animate-spin" />
+          <Loader2 className="w-8 h-8 text-foreground-subtle animate-spin" />
         </div>
       );
     }
@@ -197,7 +197,7 @@ const PitchSubmission: React.FC = () => {
       case 'empty':
       default:
         return (
-          <div className="h-full flex items-center justify-center text-gray-500">
+          <div className="h-full flex items-center justify-center text-foreground-subtle">
             <div className="text-center">
               <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p>Select a pitch or create a new one</p>
@@ -225,15 +225,15 @@ const PitchSubmission: React.FC = () => {
           <div className="flex items-center gap-4">
             {(contentView === 'builder' || contentView === 'greenlit') && (
               <motion.button initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                onClick={handleBack} className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-800 text-white hover:bg-gray-700 transition-all">
+                onClick={handleBack} className="w-10 h-10 rounded-full flex items-center justify-center bg-secondary text-white hover:bg-muted transition-all">
                 <ArrowLeft className="w-5 h-5" />
               </motion.button>
             )}
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold text-white">Pitch</h1>
+                <h1 className="text-h2">Pitch</h1>
                 {data.authUser?.role === 'admin' && (
-                  <span className="px-3 py-1 text-xs font-semibold rounded-full bg-purple-900/50 text-purple-300 border border-purple-700">
+                  <span className="px-3 py-1 text-xs font-semibold rounded-full bg-accent/20 text-accent border border-accent/40">
                     Admin
                   </span>
                 )}

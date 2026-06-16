@@ -40,7 +40,7 @@ export default function DynamicProjectDashboard({ projectId, onBack }: DynamicPr
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="w-6 h-6 animate-spin" />
           <span>Loading project...</span>
         </div>
@@ -52,11 +52,11 @@ export default function DynamicProjectDashboard({ projectId, onBack }: DynamicPr
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-400 mb-4">{error || 'Project not found'}</p>
+          <p className="text-destructive mb-4">{error || 'Project not found'}</p>
           {onBack && (
             <button
               onClick={onBack}
-              className="text-sky-400 hover:text-sky-300 transition-colors"
+              className="text-accent hover:text-accent transition-colors"
             >
               Go back
             </button>

@@ -489,7 +489,7 @@ export default function WcjcSurveyPage() {
           <AnimatePresence mode="wait">
             {phase === 'loading' && (
               <div className="flex items-center justify-center h-full" key="loading">
-                <div className="w-6 h-6 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
               </div>
             )}
 
@@ -518,10 +518,10 @@ export default function WcjcSurveyPage() {
                     style={{ background: currentSection.color }}
                   />
                 </div>
-                <h2 className="text-xl font-bold text-white mb-2">
+                <h2 className="text-title font-bold mb-2">
                   {currentSection.label}
                 </h2>
-                <p className="text-sm text-gray-400 mb-8 leading-relaxed max-w-xs">
+                <p className="text-body-muted mb-8 leading-relaxed max-w-xs">
                   {currentSection.description}
                 </p>
                 <button
@@ -567,7 +567,7 @@ export default function WcjcSurveyPage() {
                 key="error"
                 className="flex flex-col items-center justify-center h-full px-6 text-center"
               >
-                <p className="text-red-400 text-sm">{errorMessage}</p>
+                <p className="text-destructive text-sm">{errorMessage}</p>
               </div>
             )}
           </AnimatePresence>

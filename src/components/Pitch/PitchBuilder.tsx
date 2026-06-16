@@ -93,8 +93,8 @@ export function PitchBuilder({
 
       {/* Right: Progress Sidebar */}
       <div className="w-72 shrink-0 h-full">
-        <div className="bg-card border border-card rounded-2xl p-4 h-full flex flex-col">
-          <h3 className="text-sm font-semibold text-white mb-4">Pitch Progress</h3>
+        <div className="bg-card border border-border rounded-2xl p-4 h-full flex flex-col">
+          <h3 className="text-body font-semibold mb-4">Pitch Progress</h3>
           <div className="space-y-3 flex-1">
             {PITCH_STEPS.map((step, index) => {
               const isComplete = completed[index];
@@ -102,23 +102,23 @@ export function PitchBuilder({
               return (
                 <div key={step.id} className="flex items-start gap-3">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-medium ${
-                    isComplete ? 'bg-green-500 text-white' :
-                    isCurrent ? 'bg-sky-500 text-white' :
-                    'bg-gray-700 text-gray-400'
+                    isComplete ? 'bg-success text-white' :
+                    isCurrent ? 'bg-accent text-white' :
+                    'bg-muted text-muted-foreground'
                   }`}>
                     {isComplete ? <CheckCircle className="w-4 h-4" /> : index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-medium ${isComplete || isCurrent ? 'text-white' : 'text-gray-500'}`}>
+                    <p className={`text-sm font-medium ${isComplete || isCurrent ? 'text-white' : 'text-foreground-subtle'}`}>
                       {step.label}
                     </p>
-                    <p className="text-xs text-gray-600 truncate">{step.description}</p>
+                    <p className="text-meta truncate">{step.description}</p>
                   </div>
                 </div>
               );
             })}
           </div>
-          <div className="mt-4 pt-4 border-t border-gray-800">
+          <div className="mt-4 pt-4 border-t border-border">
             <ScheduleCard
               proposedScope={pitchData.scopeTier as 'simple' | 'medium' | 'complex' | ''}
               hoursPerWeek={pitchData.scopeTier && pitchData.timeline ? calculateHoursPerWeek(pitchData.scopeTier, pitchData.timeline) : undefined}

@@ -24,9 +24,9 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
   };
 
   const getBarColor = (scenario: { total: number }) => {
-    if (scenario.total > baseTotal) return '#ef4444'; // red for over budget
-    if (scenario.total < baseTotal) return '#10b981'; // green for under
-    return '#3b82f6'; // blue for base
+    if (scenario.total > baseTotal) return 'hsl(var(--destructive))'; // over budget
+    if (scenario.total < baseTotal) return 'hsl(var(--success))';     // under budget
+    return 'hsl(var(--info))';                                        // base
   };
 
   return (
@@ -37,7 +37,7 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
           <button
             onClick={() => setShowCostPerSF(false)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              !showCostPerSF ? 'bg-white/10 shadow text-white' : 'text-gray-400'
+              !showCostPerSF ? 'bg-white/10 shadow text-white' : 'text-muted-foreground'
             }`}
           >
             Total Cost
@@ -45,7 +45,7 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
           <button
             onClick={() => setShowCostPerSF(true)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              showCostPerSF ? 'bg-white/10 shadow text-white' : 'text-gray-400'
+              showCostPerSF ? 'bg-white/10 shadow text-white' : 'text-muted-foreground'
             }`}
           >
             Cost per SF
@@ -72,14 +72,14 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
               className="group"
             >
               <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-white text-sm">
+                <span className="text-body font-medium">
                   {scenario.name}
                 </span>
                 <motion.span
                   key={`${scenario.name}-${showCostPerSF}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="font-semibold text-gray-300"
+                  className="font-semibold text-foreground"
                 >
                   {showCostPerSF
                     ? `$${scenario.costPerSF.toFixed(2)}/SF`
@@ -108,7 +108,7 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: hoveredBar === index ? 1 : 0 }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-medium text-white bg-black/60 px-2 py-1 rounded"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-badge bg-black/60 px-2 py-1 rounded"
                   >
                     {scenario.total > baseTotal ? '+' : ''}
                     {formatCurrency(scenario.total - baseTotal)}
@@ -121,17 +121,17 @@ export function ScenarioBarChartBlock({ data }: ScenarioBarChartBlockProps) {
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex items-center gap-4 text-sm text-gray-400">
+      <div className="mt-6 flex items-center gap-4 text-body-muted">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-blue-500" />
+          <div className="w-3 h-3 rounded bg-info" />
           <span>Base</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-red-500" />
+          <div className="w-3 h-3 rounded bg-destructive" />
           <span>Over Base</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded bg-green-500" />
+          <div className="w-3 h-3 rounded bg-success" />
           <span>Under Base</span>
         </div>
       </div>

@@ -101,7 +101,7 @@ function RingCard({ item, index }: { item: ActivityRingsItem; index: number }) {
               y={center + 14}
               textAnchor="middle"
               dominantBaseline="middle"
-              className="fill-gray-500 text-xs"
+              className="fill-muted-foreground text-xs"
             >
               {centerLabel}
             </text>
@@ -111,8 +111,8 @@ function RingCard({ item, index }: { item: ActivityRingsItem; index: number }) {
 
       {/* Title area - below rings */}
       <div className="text-center mb-4">
-        <h4 className="text-lg font-bold text-white">{title}</h4>
-        {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
+        <h4 className="text-h4">{title}</h4>
+        {subtitle && <p className="text-body-muted">{subtitle}</p>}
       </div>
 
       {/* Ring legend - compact with percentages */}
@@ -123,8 +123,8 @@ function RingCard({ item, index }: { item: ActivityRingsItem; index: number }) {
               className="w-2.5 h-2.5 rounded-full flex-shrink-0"
               style={{ backgroundColor: ring.color }}
             />
-            <span className="text-sm text-gray-400">{ring.name}</span>
-            <span className="text-sm text-gray-500 ml-auto">{ring.value}%</span>
+            <span className="text-body-muted">{ring.name}</span>
+            <span className="text-body-subtle ml-auto">{ring.value}%</span>
           </div>
         ))}
       </div>
@@ -153,7 +153,7 @@ export function ActivityRingsBlock({ data }: ActivityRingsBlockProps) {
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: group.color }}
             />
-            <h3 className="text-lg font-semibold text-white">{group.vendor}</h3>
+            <h3 className="text-h4">{group.vendor}</h3>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 

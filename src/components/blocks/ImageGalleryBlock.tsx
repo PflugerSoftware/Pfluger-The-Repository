@@ -46,7 +46,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
             className="group cursor-pointer"
             onClick={() => openLightbox(index)}
           >
-            <div className="relative overflow-hidden bg-black aspect-[4/3] border border-[#1a1a1a]">
+            <div className="relative overflow-hidden bg-black aspect-[4/3] border border-border">
               <img
                 src={getStorageUrl(image.src)}
                 alt={image.alt}
@@ -56,7 +56,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
               {image.caption && (
                 <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <p className="text-sm text-white">{image.caption}</p>
+                  <p className="text-body">{image.caption}</p>
                 </div>
               )}
             </div>
@@ -124,7 +124,7 @@ export function ImageGalleryBlock({ data }: ImageGalleryBlockProps) {
                   className="max-w-full max-h-[85vh] object-contain"
                 />
                 {images[lightboxIndex].caption && (
-                  <p className="mt-4 text-center text-gray-300 text-lg">
+                  <p className="mt-4 text-center text-foreground text-lg">
                     {images[lightboxIndex].caption}
                   </p>
                 )}

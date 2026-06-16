@@ -93,12 +93,12 @@ export function StatGridBlock({ data }: StatGridBlockProps) {
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ delay: index * 0.1, duration: 0.5 }}
         >
-          <p className="text-5xl font-bold text-white tracking-tight mb-1">
+          <p className="text-hero tracking-tight mb-1">
             <AnimatedNumber value={stat.value} duration={1200 + index * 100} trigger={isInView} />
           </p>
-          <p className="text-sm text-gray-500 uppercase tracking-wider">{stat.label}</p>
+          <p className="text-sm text-foreground-subtle uppercase tracking-wider">{stat.label}</p>
           {stat.detail && (
-            <p className="text-xs text-gray-600 mt-1">{stat.detail}</p>
+            <p className="text-meta mt-1">{stat.detail}</p>
           )}
         </motion.div>
       ))}

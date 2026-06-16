@@ -63,7 +63,7 @@ export function MapPinPlacer({
             </div>
             <button
               onClick={() => onRemovePin(index)}
-              className="p-1 hover:text-red-400 transition-colors"
+              className="p-1 hover:text-destructive transition-colors"
               style={{ color: '#ffffff' }}
             >
               <X className="w-3.5 h-3.5" />

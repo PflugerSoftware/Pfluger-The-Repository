@@ -17,7 +17,7 @@ export default function ProjectDashboard({ config, onBack }: ProjectDashboardPro
           {onBack && (
             <button
               onClick={onBack}
-              className="absolute -left-1.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+              className="absolute -left-1.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
             >
               <ChevronLeft className="w-9 h-9" />
             </button>
@@ -27,10 +27,10 @@ export default function ProjectDashboard({ config, onBack }: ProjectDashboardPro
               <h1 className="text-4xl font-bold text-white tracking-tight font-mono">
                 {config.code}
               </h1>
-              <p className="text-xl text-gray-300 mt-1">{config.title}</p>
+              <p className="text-xl text-foreground mt-1">{config.title}</p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-500">Researcher</p>
+              <p className="text-body-subtle">Researcher</p>
               <p className="text-lg text-white">{config.researcher}</p>
             </div>
           </div>
@@ -50,8 +50,8 @@ export default function ProjectDashboard({ config, onBack }: ProjectDashboardPro
               <div key={block.id} className="mb-8">
                 {(block.title || block.description) && (
                   <div className="max-w-5xl mx-auto px-12 mb-6">
-                    {block.title && <h3 className="text-xl font-bold text-white mb-1">{block.title}</h3>}
-                    {block.description && <p className="text-gray-500">{block.description}</p>}
+                    {block.title && <h3 className="text-title font-bold mb-1">{block.title}</h3>}
+                    {block.description && <p className="text-foreground-subtle">{block.description}</p>}
                   </div>
                 )}
                 <BlockRenderer block={block} />
@@ -64,8 +64,8 @@ export default function ProjectDashboard({ config, onBack }: ProjectDashboardPro
               <div key={block.id} className="mb-8">
                 {(block.title || block.description) && (
                   <div className="max-w-5xl mx-auto px-12 mb-6">
-                    {block.title && <h3 className="text-xl font-bold text-white mb-1">{block.title}</h3>}
-                    {block.description && <p className="text-gray-500">{block.description}</p>}
+                    {block.title && <h3 className="text-title font-bold mb-1">{block.title}</h3>}
+                    {block.description && <p className="text-foreground-subtle">{block.description}</p>}
                   </div>
                 )}
                 {/* Left-aligned with padding, extends to right edge */}

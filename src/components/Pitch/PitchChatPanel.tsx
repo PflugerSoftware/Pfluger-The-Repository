@@ -153,16 +153,16 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
   };
 
   return (
-    <div className="bg-card border border-card rounded-2xl h-full flex flex-col">
+    <div className="bg-card border border-border rounded-2xl h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-4 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Ezra</h2>
-            <p className="text-xs text-gray-500">Pitch Assistant</p>
+            <h2 className="text-h4 font-bold">Ezra</h2>
+            <p className="text-meta">Pitch Assistant</p>
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
           >
             <div className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
               {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue flex items-center justify-center shrink-0">
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
               )}
@@ -186,10 +186,10 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
                   className={`inline-block rounded-2xl p-3 ${
                     msg.role === 'user'
                       ? 'bg-white text-black rounded-tr-sm'
-                      : 'bg-gray-800 rounded-tl-sm'
+                      : 'bg-secondary rounded-tl-sm'
                   }`}
                 >
-                  <p className={`text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'text-black' : 'text-gray-300'}`}>
+                  <p className={`text-sm whitespace-pre-wrap ${msg.role === 'user' ? 'text-black' : 'text-foreground'}`}>
                     {msg.role === 'assistant' ? stripMarkdown(stripPitchTags(msg.content)) : msg.content}
                   </p>
                 </div>
@@ -205,14 +205,14 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
             animate={{ opacity: 1, y: 0 }}
             className="flex gap-3"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pfluger-skyBlue to-pfluger-darkBlue flex items-center justify-center shrink-0">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <div className="bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-3">
+            <div className="bg-secondary rounded-2xl rounded-tl-sm px-4 py-3">
               <div className="flex gap-1">
-                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
             </div>
           </motion.div>
@@ -222,7 +222,7 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-gray-800">
+      <div className="p-4 border-t border-border">
         <div className="flex gap-2">
           <input
             type="text"
@@ -231,12 +231,12 @@ export function PitchChatPanel({ pitchId, userId, initialMessages, onPitchUpdate
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
             placeholder="Tell me about your research idea..."
             disabled={isLoading}
-            className="flex-1 bg-gray-800 text-white placeholder-gray-500 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-sky-500 disabled:opacity-50"
+            className="flex-1 bg-secondary text-body placeholder-muted-foreground rounded-full px-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
           />
           <button
             onClick={handleSend}
             disabled={!inputValue.trim() || isLoading}
-            className="w-10 h-10 flex items-center justify-center bg-white text-black rounded-full hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-10 h-10 flex items-center justify-center btn-cta rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Send className="w-4 h-4" />
           </button>

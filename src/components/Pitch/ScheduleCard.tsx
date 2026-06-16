@@ -61,17 +61,17 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
   };
 
   return (
-    <div className="bg-card border border-card rounded-xl p-4">
+    <div className="bg-card border border-border rounded-xl p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
-          <span className="text-sm font-medium text-white">Your Schedule</span>
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <span className="text-body font-medium">Your Schedule</span>
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="text-caption">
           {totalProjectHours}hrs/wk on projects
           {proposedHours > 0 && (
-            <span className="text-yellow-400"> + {proposedHours}hrs research</span>
+            <span className="text-neutral"> + {proposedHours}hrs research</span>
           )}
         </div>
       </div>
@@ -79,12 +79,12 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
       {/* Timeline */}
       <div className="relative">
         {/* Month headers */}
-        <div className="flex border-b border-gray-800 pb-2 mb-3">
+        <div className="flex border-b border-border pb-2 mb-3">
           {months.map((month, i) => (
             <div
               key={month}
               className={`flex-1 text-xs text-center ${
-                i === currentMonth ? 'text-white font-medium' : 'text-gray-600'
+                i === currentMonth ? 'text-white font-medium' : 'text-foreground-subtle'
               }`}
             >
               {month}
@@ -113,7 +113,7 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
                     borderLeft: `2px solid ${project.color}`
                   }}
                 >
-                  <span className="text-xs text-gray-300 truncate">{project.name}</span>
+                  <span className="text-xs text-foreground truncate">{project.name}</span>
                 </motion.div>
               </div>
             );
@@ -126,14 +126,14 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: '40%', opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
-                className="absolute h-full rounded-md flex items-center px-2 overflow-hidden border border-dashed border-yellow-600"
+                className="absolute h-full rounded-md flex items-center px-2 overflow-hidden border border-dashed border-neutral"
                 style={{
                   left: `${(currentMonth / months.length) * 100}%`,
                   backgroundColor: 'rgba(234, 179, 8, 0.1)'
                 }}
               >
-                <Plus className="w-3 h-3 text-yellow-500 mr-1 shrink-0" />
-                <span className="text-xs text-yellow-400 truncate">New Research</span>
+                <Plus className="w-3 h-3 text-neutral mr-1 shrink-0" />
+                <span className="text-xs text-neutral truncate">New Research</span>
               </motion.div>
             </div>
           )}
@@ -142,10 +142,10 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
           {!proposedScope && (
             <div className="relative h-6">
               <div
-                className="absolute h-full rounded-md flex items-center justify-center px-2 border border-dashed border-gray-700 bg-gray-800/30"
+                className="absolute h-full rounded-md flex items-center justify-center px-2 border border-dashed border-border bg-secondary/30"
                 style={{ left: '0%', width: '100%' }}
               >
-                <span className="text-xs text-gray-600">Research time will appear here</span>
+                <span className="text-meta">Research time will appear here</span>
               </div>
             </div>
           )}
@@ -153,14 +153,14 @@ export function ScheduleCard({ proposedScope, hoursPerWeek }: ScheduleCardProps)
       </div>
 
       {/* Capacity indicator */}
-      <div className="mt-4 pt-3 border-t border-gray-800">
+      <div className="mt-4 pt-3 border-t border-border">
         <div className="flex items-center justify-between text-xs mb-1">
-          <span className="text-gray-500">Weekly capacity</span>
-          <span className={totalWithResearch > 40 ? 'text-red-400' : 'text-gray-400'}>
+          <span className="text-meta">Weekly capacity</span>
+          <span className={totalWithResearch > 40 ? 'text-destructive' : 'text-muted-foreground'}>
             {totalWithResearch}/40 hrs
           </span>
         </div>
-        <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
             initial={{ width: 0 }}

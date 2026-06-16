@@ -9,12 +9,12 @@ const AboutRB: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-3xl"
       >
-        <h1 className="text-5xl font-bold text-white mb-4">Research & Benchmarking</h1>
-        <p className="text-xl text-gray-400 mb-12">
+        <h1 className="text-hero mb-4">Research & Benchmarking</h1>
+        <p className="text-xl text-muted-foreground mb-12">
           Advancing educational architecture through evidence-based design.
         </p>
 
-        <div className="space-y-8 text-gray-300">
+        <div className="space-y-8 text-foreground">
           <p>
             The Research & Benchmarking department at Pfluger Architects is dedicated to
             improving educational environments through rigorous research and data-driven insights.
@@ -27,8 +27,8 @@ const AboutRB: React.FC = () => {
           </p>
 
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white">Our Focus Areas</h2>
-            <ul className="space-y-2 text-gray-400">
+            <h2 className="text-h3">Our Focus Areas</h2>
+            <ul className="space-y-2 text-muted-foreground">
               <li>Student well-being and mental health</li>
               <li>Sustainable building practices</li>
               <li>Immersive learning environments</li>
@@ -39,8 +39,8 @@ const AboutRB: React.FC = () => {
           </div>
 
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-white">Our Team</h2>
-            <p className="text-gray-400">
+            <h2 className="text-h3">Our Team</h2>
+            <p className="text-muted-foreground">
               Our interdisciplinary team brings together architects, researchers, and educators
               to tackle complex questions about how design shapes learning and development.
             </p>
@@ -51,10 +51,10 @@ const AboutRB: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 hover:opacity-70 transition-opacity"
               >
-                <Linkedin className="w-5 h-5 text-gray-500 fill-gray-500 shrink-0" />
+                <Linkedin className="w-5 h-5 text-foreground-subtle fill-foreground-subtle shrink-0" />
                 <div>
                   <p className="text-white">Alexander Wickes, RA, LEED BD+C</p>
-                  <p className="text-sm text-gray-500">Design Performance Leader, Research</p>
+                  <p className="text-body-subtle">Design Performance Leader, Research</p>
                 </div>
               </a>
               <a
@@ -63,10 +63,10 @@ const AboutRB: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 hover:opacity-70 transition-opacity"
               >
-                <Linkedin className="w-5 h-5 text-gray-500 fill-gray-500 shrink-0" />
+                <Linkedin className="w-5 h-5 text-foreground-subtle fill-foreground-subtle shrink-0" />
                 <div>
                   <p className="text-white">Christian Owens, AIA</p>
-                  <p className="text-sm text-gray-500">Director of Design</p>
+                  <p className="text-body-subtle">Director of Design</p>
                 </div>
               </a>
               <a
@@ -75,10 +75,10 @@ const AboutRB: React.FC = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 hover:opacity-70 transition-opacity"
               >
-                <Linkedin className="w-5 h-5 text-gray-500 fill-gray-500 shrink-0" />
+                <Linkedin className="w-5 h-5 text-foreground-subtle fill-foreground-subtle shrink-0" />
                 <div>
                   <p className="text-white">Brenda Swirczynski, MSc, ALEP</p>
-                  <p className="text-sm text-gray-500">Education Facilities Planner</p>
+                  <p className="text-body-subtle">Education Facilities Planner</p>
                 </div>
               </a>
             </div>

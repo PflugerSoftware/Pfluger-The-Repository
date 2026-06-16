@@ -50,10 +50,10 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
         )}
 
         {/* Company name */}
-        {subtitle && <h4 className="text-lg font-semibold text-white mb-1">{subtitle}</h4>}
+        {subtitle && <h4 className="text-h4 mb-1">{subtitle}</h4>}
 
         {/* Product line / Selected option name */}
-        <p className="text-sm text-gray-400 mb-4">
+        <p className="text-body-muted mb-4">
           {selectedOption ? selectedOption.name : name}
         </p>
 
@@ -83,7 +83,7 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
                 <span className="font-semibold text-white">{formatPrice(selectedOption.price)}</span>
               </p>
             ) : (
-              <p className="text-sm text-gray-300">
+              <p className="text-body">
                 {minPrice === maxPrice ? (
                   <span className="font-medium">{formatPrice(minPrice)}</span>
                 ) : (
@@ -106,8 +106,8 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
             className="flex flex-wrap justify-center gap-x-3 gap-y-1 mb-2"
           >
             {selectedOption.specs.map(spec => (
-              <span key={spec.label} className="text-xs text-gray-500">
-                {spec.label}: <span className="text-gray-400">{spec.value}</span>
+              <span key={spec.label} className="text-meta">
+                {spec.label}: <span className="text-muted-foreground">{spec.value}</span>
               </span>
             ))}
           </motion.div>
@@ -115,7 +115,7 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
 
         {/* Expand hint */}
         <motion.div
-          className="mt-4 text-gray-600 cursor-pointer"
+          className="mt-4 text-foreground-subtle cursor-pointer"
           animate={{ rotate: expanded ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           onClick={() => setExpanded(!expanded)}
@@ -153,7 +153,7 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: option.color }}
                       />
-                      <span className="text-sm font-medium text-white">{option.name}</span>
+                      <span className="text-body font-medium">{option.name}</span>
                     </div>
                     {option.price > 0 && (
                       <span className="text-sm font-semibold" style={{ color: option.color }}>
@@ -166,8 +166,8 @@ function ProductLineCard({ line, index }: { line: ProductLine; index: number }) 
                   {option.specs && option.specs.length > 0 && (
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
                       {option.specs.map(spec => (
-                        <span key={spec.label} className="text-xs text-gray-500">
-                          {spec.label}: <span className="text-gray-400">{spec.value}</span>
+                        <span key={spec.label} className="text-meta">
+                          {spec.label}: <span className="text-muted-foreground">{spec.value}</span>
                         </span>
                       ))}
                     </div>

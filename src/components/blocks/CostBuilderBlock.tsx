@@ -67,30 +67,30 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
     <div className="w-full">
       {/* Total Display */}
       <motion.div
-        className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 mb-8 border border-white/10"
+        className="bg-gradient-to-br from-secondary to-card rounded-2xl p-6 mb-8 border border-white/10"
         layout
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <p className="text-gray-400 text-sm mb-1">Estimated Total</p>
-            <motion.p className="text-4xl font-bold text-white">
+            <p className="text-body-muted mb-1">Estimated Total</p>
+            <motion.p className="text-stat-lg">
               {formatCurrency(Math.round(animatedTotal))}
             </motion.p>
           </div>
           <div className="flex gap-6">
             <div>
-              <p className="text-gray-400 text-sm mb-1">Cost per SF</p>
-              <p className="text-xl font-semibold text-white">${costPerSF.toFixed(2)}/SF</p>
+              <p className="text-body-muted mb-1">Cost per SF</p>
+              <p className="text-title">${costPerSF.toFixed(2)}/SF</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm mb-1">vs Base</p>
+              <p className="text-body-muted mb-1">vs Base</p>
               <motion.p
                 className={`text-xl font-semibold ${
                   differenceFromBase > 0
-                    ? 'text-red-400'
+                    ? 'text-destructive'
                     : differenceFromBase < 0
-                    ? 'text-green-400'
-                    : 'text-gray-400'
+                    ? 'text-success'
+                    : 'text-muted-foreground'
                 }`}
                 key={differenceFromBase}
                 initial={{ scale: 1.2 }}
@@ -127,7 +127,7 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
               transition={{ type: 'spring', stiffness: 100, damping: 20 }}
             />
           </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <div className="flex justify-between text-meta mt-1">
             <span>$0</span>
             <span>Base: {formatCurrency(baseTotal)}</span>
             <span>{formatCurrency(baseTotal * 2)}</span>
@@ -139,8 +139,8 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
       <div className="grid md:grid-cols-2 gap-6">
         {/* Add Alternates */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-6 h-6 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center text-sm">+</span>
+          <h3 className="text-h4 mb-4 flex items-center gap-2">
+            <span className="w-6 h-6 bg-destructive/20 text-destructive rounded-full flex items-center justify-center text-sm">+</span>
             Add Alternates
           </h3>
           <div className="space-y-3">
@@ -158,8 +158,8 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
 
         {/* Deduct Alternates */}
         <div>
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="w-6 h-6 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center text-sm">-</span>
+          <h3 className="text-h4 mb-4 flex items-center gap-2">
+            <span className="w-6 h-6 bg-success/20 text-success rounded-full flex items-center justify-center text-sm">-</span>
             Deduct Alternates
           </h3>
           <div className="space-y-3">
@@ -187,7 +187,7 @@ export function CostBuilderBlock({ data }: CostBuilderBlockProps) {
           >
             <button
               onClick={() => setSelectedAlternates([])}
-              className="text-gray-400 hover:text-white text-sm underline transition-colors"
+              className="text-body-muted hover:text-white underline transition-colors"
             >
               Reset to Base Budget
             </button>
@@ -214,8 +214,8 @@ function AlternateCard({ alternate, isSelected, onToggle, formatCurrency }: Alte
       className={`w-full text-left p-4 rounded-xl border-2 transition-colors ${
         isSelected
           ? isAdd
-            ? 'border-red-500/50 bg-red-500/10'
-            : 'border-green-500/50 bg-green-500/10'
+            ? 'border-destructive/50 bg-destructive/10'
+            : 'border-success/50 bg-success/10'
           : 'border-white/10 bg-white/5 hover:border-white/20'
       }`}
       whileHover={{ scale: 1.01 }}
@@ -227,7 +227,7 @@ function AlternateCard({ alternate, isSelected, onToggle, formatCurrency }: Alte
             Alt {alternate.id}: {alternate.description}
           </p>
           <p className={`text-lg font-semibold mt-1 ${
-            isAdd ? 'text-red-400' : 'text-green-400'
+            isAdd ? 'text-destructive' : 'text-success'
           }`}>
             {isAdd ? '+' : ''}{formatCurrency(alternate.amount)}
           </p>
@@ -235,9 +235,9 @@ function AlternateCard({ alternate, isSelected, onToggle, formatCurrency }: Alte
         <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
           isSelected
             ? isAdd
-              ? 'bg-red-500 border-red-500'
-              : 'bg-green-500 border-green-500'
-            : 'border-gray-500'
+              ? 'bg-destructive border-destructive'
+              : 'bg-success border-success'
+            : 'border-muted-foreground'
         }`}>
           {isSelected && (
             <motion.svg

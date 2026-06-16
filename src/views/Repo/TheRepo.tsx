@@ -246,12 +246,12 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
   return (
     <div className="h-[calc(100vh-5rem)] flex overflow-hidden">
       {/* Left Sidebar - Chat History */}
-      <div className="w-64 shrink-0 bg-card border-r border-card flex flex-col">
+      <div className="w-64 shrink-0 bg-card border-r border-border flex flex-col">
         {/* New Chat Button */}
         <div className="p-4">
           <button
             onClick={startNewChat}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white text-black rounded-xl font-medium hover:bg-gray-100 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 btn-cta rounded-xl font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             New Chat
@@ -262,13 +262,13 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
         <div className="flex-1 overflow-y-auto px-3 pb-4">
           {isLoadingSessions ? (
             <div className="text-center py-8">
-              <div className="w-6 h-6 border-2 border-gray-600 border-t-white rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-sm text-gray-600">Loading history...</p>
+              <div className="w-6 h-6 border-2 border-border border-t-white rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-body-subtle">Loading history...</p>
             </div>
           ) : chatSessions.length === 0 ? (
             <div className="text-center py-8">
-              <MessageSquare className="w-8 h-8 text-gray-700 mx-auto mb-2" />
-              <p className="text-sm text-gray-600">No conversations yet</p>
+              <MessageSquare className="w-8 h-8 text-foreground-subtle mx-auto mb-2" />
+              <p className="text-body-subtle">No conversations yet</p>
             </div>
           ) : (
             <div className="space-y-1">
@@ -278,17 +278,17 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                   onClick={() => loadSession(session)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors group ${
                     activeSessionId === session.id
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                      ? 'bg-secondary text-white'
+                      : 'text-muted-foreground hover:bg-secondary/50 hover:text-white'
                   }`}
                 >
                   <MessageSquare className="w-4 h-4 shrink-0" />
                   <span className="flex-1 text-sm truncate">{session.title}</span>
                   <button
                     onClick={(e) => deleteSession(session.id, e)}
-                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-secondary rounded transition-all"
                   >
-                    <Trash2 className="w-3 h-3 text-gray-500" />
+                    <Trash2 className="w-3 h-3 text-foreground-subtle" />
                   </button>
                 </button>
               ))}
@@ -310,8 +310,8 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                 exit={{ opacity: 0, y: -20 }}
                 className="flex-1 flex flex-col items-center justify-center max-w-2xl mx-auto w-full"
               >
-                <h1 className="text-4xl font-bold text-white mb-3">Ezra</h1>
-                <p className="text-gray-400 text-center mb-12">
+                <h1 className="text-h1 mb-3">Ezra</h1>
+                <p className="text-muted-foreground text-center mb-12">
                   Your research assistant
                 </p>
 
@@ -326,10 +326,10 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 + index * 0.05 }}
                         onClick={() => handleQuickPrompt(item.prompt)}
-                        className="flex items-center gap-3 p-4 bg-card border border-card rounded-xl text-left hover:border-gray-600 transition-colors group"
+                        className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl text-left hover:border-border transition-colors group"
                       >
-                        <Icon className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
-                        <span className="text-sm text-gray-300 group-hover:text-white transition-colors">
+                        <Icon className="w-5 h-5 text-foreground-subtle group-hover:text-white transition-colors" />
+                        <span className="text-body group-hover:text-white transition-colors">
                           {item.label}
                         </span>
                       </motion.button>
@@ -347,12 +347,12 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Ask Ezra..."
-                      className="flex-1 bg-card border border-card text-white placeholder-gray-500 rounded-full px-6 py-4 focus:outline-none focus:border-gray-600 transition-colors"
+                      className="flex-1 bg-card border border-input text-white placeholder-muted-foreground rounded-full px-6 py-4 focus:outline-none focus:border-input transition-colors"
                     />
                     <button
                       onClick={() => handleSend()}
                       disabled={!inputValue.trim()}
-                      className="w-12 h-12 flex items-center justify-center bg-white text-black rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-12 h-12 flex items-center justify-center btn-cta rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Send className="w-5 h-5" />
                     </button>
@@ -369,8 +369,8 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
               >
                 {/* Header */}
                 <div className="shrink-0 pb-6">
-                  <h1 className="text-2xl font-bold text-white">Ezra</h1>
-                  <p className="text-sm text-gray-500">Your research assistant</p>
+                  <h1 className="text-h3">Ezra</h1>
+                  <p className="text-body-subtle">Your research assistant</p>
                 </div>
 
                 {/* Messages */}
@@ -383,7 +383,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                       className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
                     >
                       {msg.role === 'assistant' && (
-                        <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                           <Sparkles className="w-5 h-5 text-white" />
                         </div>
                       )}
@@ -392,33 +392,33 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                           className={`inline-block rounded-2xl px-4 py-3 ${
                             msg.role === 'user'
                               ? 'bg-white text-black rounded-tr-sm'
-                              : 'bg-card border border-card rounded-tl-sm'
+                              : 'bg-card border border-border rounded-tl-sm'
                           }`}
                         >
                           <MessageContent
                             content={msg.content}
                             onProjectClick={onOpenProject}
-                            className={msg.role === 'user' ? 'text-black' : 'text-gray-300'}
+                            className={msg.role === 'user' ? 'text-black' : 'text-foreground-secondary'}
                           />
                         </div>
                         {/* Sources */}
                         {msg.sources && msg.sources.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-gray-800">
-                            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                          <div className="mt-3 pt-3 border-t border-border">
+                            <div className="flex items-center gap-1.5 text-meta mb-2">
                               <BookOpen className="w-3 h-3" />
                               <span>Sources</span>
                               {msg.model && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-gray-800 rounded text-[10px] text-gray-400">
+                                <span className="ml-2 px-1.5 py-0.5 bg-secondary rounded text-[10px] text-muted-foreground">
                                   {msg.model}
                                 </span>
                               )}
                             </div>
                             {msg.sources.map((source, index) => (
-                              <div key={source.id} className="text-xs text-gray-500 mb-1">
-                                <span className="text-gray-400 font-medium">[{index + 1}]</span>{' '}
+                              <div key={source.id} className="text-meta mb-1">
+                                <span className="text-muted-foreground font-medium">[{index + 1}]</span>{' '}
                                 <button
                                   onClick={() => onOpenProject?.(source.project_id)}
-                                  className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition-colors"
+                                  className="text-accent hover:text-accent underline cursor-pointer transition-colors"
                                 >
                                   {source.project_id}
                                 </button>{' '}
@@ -427,7 +427,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                                     href={source.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="hover:text-gray-300 transition-colors"
+                                    className="hover:text-foreground-secondary transition-colors"
                                   >
                                     {source.author && `${source.author}. `}{source.title}
                                   </a>
@@ -449,14 +449,14 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                       animate={{ opacity: 1, y: 0 }}
                       className="flex gap-4"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
-                      <div className="bg-card border border-card rounded-2xl rounded-tl-sm px-4 py-3">
+                      <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
                         <div className="flex gap-1">
-                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                          <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          <span className="w-2 h-2 bg-foreground-subtle rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                          <span className="w-2 h-2 bg-foreground-subtle rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                          <span className="w-2 h-2 bg-foreground-subtle rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                         </div>
                       </div>
                     </motion.div>
@@ -466,7 +466,7 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                 </div>
 
                 {/* Input */}
-                <div className="shrink-0 pt-4 border-t border-gray-800">
+                <div className="shrink-0 pt-4 border-t border-border">
                   <div className="flex gap-3">
                     <input
                       ref={inputRef}
@@ -475,12 +475,12 @@ const TheRepo: React.FC<TheRepoProps> = ({ onOpenProject }) => {
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                       placeholder="Ask a follow-up question..."
-                      className="flex-1 bg-card border border-card text-white placeholder-gray-500 rounded-full px-5 py-3 focus:outline-none focus:border-gray-600 transition-colors"
+                      className="flex-1 bg-card border border-input text-white placeholder-muted-foreground rounded-full px-5 py-3 focus:outline-none focus:border-input transition-colors"
                     />
                     <button
                       onClick={() => handleSend()}
                       disabled={!inputValue.trim() || isTyping}
-                      className="w-11 h-11 flex items-center justify-center bg-white text-black rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                      className="w-11 h-11 flex items-center justify-center btn-cta rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                     >
                       <Send className="w-5 h-5" />
                     </button>

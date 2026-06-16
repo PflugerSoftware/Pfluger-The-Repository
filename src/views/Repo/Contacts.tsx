@@ -75,8 +75,8 @@ export default function Contacts() {
     <div className="px-12 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-5xl font-bold text-white mb-2">Contacts</h1>
-        <p className="text-gray-400">Research partners and collaborators</p>
+        <h1 className="text-hero mb-2">Contacts</h1>
+        <p className="text-muted-foreground">Research partners and collaborators</p>
       </div>
 
       <div className="flex gap-8">
@@ -91,14 +91,14 @@ export default function Contacts() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-colors ${
                   filter === type
                     ? 'bg-white text-black'
-                    : 'text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500'
+                    : 'text-muted-foreground hover:text-white border border-border hover:border-border'
                 }`}
               >
                 {type !== 'all' && <Icon className="w-4 h-4" />}
                 {label}
               </button>
             ))}
-            <span className="ml-auto text-sm text-gray-500">{filteredContacts.length} contacts</span>
+            <span className="ml-auto text-body-subtle">{filteredContacts.length} contacts</span>
           </div>
 
           {/* Contact List */}
@@ -113,30 +113,30 @@ export default function Contacts() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.02 }}
-                  className="bg-card border border-card rounded-xl overflow-hidden"
+                  className="bg-card border border-border rounded-xl overflow-hidden"
                 >
                   {/* Collapsed row - always visible */}
                   <button
                     onClick={() => toggleContact(contact.id)}
-                    className="w-full p-3 flex items-center gap-3 hover:bg-gray-800/30 transition-colors"
+                    className="w-full p-3 flex items-center gap-3 hover:bg-secondary/30 transition-colors"
                   >
                     <motion.div
                       animate={{ rotate: isExpanded ? 90 : 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
+                      <ChevronRight className="w-4 h-4 text-foreground-subtle" />
                     </motion.div>
 
                     {/* Type icon */}
-                    <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center shrink-0">
-                      <TypeIcon className="w-4 h-4 text-gray-400" />
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <TypeIcon className="w-4 h-4 text-muted-foreground" />
                     </div>
 
                     {/* Name and org */}
                     <div className="flex-1 text-left min-w-0">
                       <span className="text-white font-medium">{contact.name}</span>
-                      <span className="text-gray-500 mx-2">-</span>
-                      <span className="text-gray-400">{contact.organization}</span>
+                      <span className="text-foreground-subtle mx-2">-</span>
+                      <span className="text-muted-foreground">{contact.organization}</span>
                     </div>
                   </button>
 
@@ -150,16 +150,16 @@ export default function Contacts() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="px-4 pb-4 pt-2 border-t border-gray-800 ml-11">
+                        <div className="px-4 pb-4 pt-2 border-t border-border ml-11">
                           {/* Role */}
-                          <p className="text-sm text-gray-400 mb-3">{contact.role}</p>
+                          <p className="text-body-muted mb-3">{contact.role}</p>
 
                           {/* Contact details */}
                           <div className="space-y-2">
                             {contact.email && (
                               <a
                                 href={`mailto:${contact.email}`}
-                                className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors"
+                                className="flex items-center gap-2 text-body-subtle hover:text-white transition-colors"
                               >
                                 <Mail className="w-4 h-4" />
                                 <span>{contact.email}</span>
@@ -168,7 +168,7 @@ export default function Contacts() {
                             {contact.phone && (
                               <a
                                 href={`tel:${contact.phone}`}
-                                className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors"
+                                className="flex items-center gap-2 text-body-subtle hover:text-white transition-colors"
                               >
                                 <Phone className="w-4 h-4" />
                                 <span>{contact.phone}</span>
@@ -179,7 +179,7 @@ export default function Contacts() {
                                 href={`https://${contact.website}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors"
+                                className="flex items-center gap-2 text-body-subtle hover:text-white transition-colors"
                               >
                                 <Globe className="w-4 h-4" />
                                 <span>{contact.website}</span>

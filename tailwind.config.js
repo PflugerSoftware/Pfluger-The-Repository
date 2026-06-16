@@ -22,21 +22,6 @@ export default {
           salmon: '#f16555',
         },
 
-        // Neon Red Theme (legacy, keeping for backward compatibility)
-        'neon-red': {
-          50: '#e6f7ff',
-          100: '#bae7ff',
-          200: '#91d5ff',
-          300: '#69c0ff',
-          400: '#40a9ff',
-          500: '#00A9E0',       // Updated to Sky Blue
-          600: '#0086b3',
-          700: '#006d99',
-          800: '#005580',
-          900: '#003d66',
-        },
-        'neon-glow': '#00A9E0',  // Sky Blue
-
         // Dark theme colors (Custom purple/plum)
         'dark-bg': '#181019',
         'dark-card': '#221a28',
@@ -48,6 +33,8 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        'foreground-secondary': "hsl(var(--foreground-secondary))",
+        'foreground-subtle': "hsl(var(--foreground-subtle))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -60,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        // Brand-rooted semantic state colors
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
+        neutral: "hsl(var(--neutral))",
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",

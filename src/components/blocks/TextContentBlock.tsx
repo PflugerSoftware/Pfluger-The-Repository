@@ -21,10 +21,10 @@ export function TextContentBlock({ data }: TextContentBlockProps) {
     return lines.map((line, index) => {
       // Headers
       if (line.startsWith('### ')) {
-        return <h3 key={index} className="text-lg font-semibold text-white mt-4 mb-2">{line.slice(4)}</h3>;
+        return <h3 key={index} className="text-h4 mt-4 mb-2">{line.slice(4)}</h3>;
       }
       if (line.startsWith('## ')) {
-        return <h2 key={index} className="text-xl font-bold text-white mt-6 mb-3">{line.slice(3)}</h2>;
+        return <h2 key={index} className="text-title font-bold mt-6 mb-3">{line.slice(3)}</h2>;
       }
 
       // Bold text processing helper
@@ -37,7 +37,7 @@ export function TextContentBlock({ data }: TextContentBlockProps) {
         return (
           <li
             key={index}
-            className="text-gray-400 ml-4 mb-1"
+            className="text-muted-foreground ml-4 mb-1"
             dangerouslySetInnerHTML={{ __html: bulletContent }}
           />
         );
@@ -54,7 +54,7 @@ export function TextContentBlock({ data }: TextContentBlockProps) {
       return (
         <p
           key={index}
-          className="text-gray-400 mb-2"
+          className="text-muted-foreground mb-2"
           dangerouslySetInnerHTML={{ __html: processedLine }}
         />
       );

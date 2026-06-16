@@ -12,11 +12,11 @@ export function ComparisonTableBlock({ data }: ComparisonTableBlockProps) {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-card">
+          <tr className="border-b border-border">
             {headers.map((header, i) => (
               <th
                 key={header}
-                className={`py-3 px-4 text-sm font-medium text-gray-500 ${
+                className={`py-3 px-4 text-body-subtle font-medium ${
                   i === 0 ? 'text-left' : 'text-center'
                 }`}
               >
@@ -32,17 +32,17 @@ export function ComparisonTableBlock({ data }: ComparisonTableBlockProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: rowIndex * 0.03 }}
-              className={`border-b border-card ${
+              className={`border-b border-border ${
                 row.highlight ? 'bg-white/5' : ''
               }`}
             >
-              <td className="py-3 px-4 text-sm font-medium text-white">
+              <td className="py-3 px-4 text-body font-medium">
                 {row.label}
               </td>
               {row.values.map((value, i) => (
                 <td
                   key={i}
-                  className="py-3 px-4 text-sm text-gray-400 text-center"
+                  className="py-3 px-4 text-body-muted text-center"
                 >
                   {typeof value === 'number' ? value.toLocaleString() : value}
                 </td>

@@ -64,8 +64,8 @@ const Dashboard: React.FC = () => {
     <div className="px-12 py-8">
       {/* Header */}
       <div className="mb-12">
-        <h1 className="text-5xl font-bold text-white mb-2">Dashboard</h1>
-        <p className="text-gray-400">Manage your research projects</p>
+        <h1 className="text-hero mb-2">Dashboard</h1>
+        <p className="text-muted-foreground">Manage your research projects</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-8">
           {/* My Projects */}
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6">My Projects</h2>
+            <h2 className="text-h3 mb-6">My Projects</h2>
 
             {/* Filters */}
             <div className="flex gap-2 mb-6">
@@ -88,7 +88,7 @@ const Dashboard: React.FC = () => {
                   className={`px-4 py-2 rounded-full text-sm transition-all ${
                     projectFilter === filter.id
                       ? 'bg-white text-black'
-                      : 'bg-transparent text-gray-400 hover:text-white'
+                      : 'bg-transparent text-muted-foreground hover:text-white'
                   }`}
                 >
                   {filter.label}
@@ -116,8 +116,8 @@ const Dashboard: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                    <span className="text-xs text-gray-300 mb-1">{project.phase}</span>
-                    <h3 className="text-lg font-bold text-white">{project.title}</h3>
+                    <span className="text-xs text-foreground-secondary mb-1">{project.phase}</span>
+                    <h3 className="text-h4">{project.title}</h3>
                   </div>
                 </motion.div>
               ))}
@@ -126,14 +126,14 @@ const Dashboard: React.FC = () => {
 
           {/* Post Update */}
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6">Post Update</h2>
-            <div className="bg-card border border-card rounded-2xl p-6">
+            <h2 className="text-h3 mb-6">Post Update</h2>
+            <div className="bg-card border border-border rounded-2xl p-6">
               <textarea
                 placeholder="Share a project update..."
-                className="w-full bg-transparent text-white placeholder-gray-500 resize-none h-24 focus:outline-none"
+                className="w-full bg-transparent text-white placeholder-muted-foreground resize-none h-24 focus:outline-none"
               />
-              <div className="flex justify-end pt-4 border-t border-gray-800">
-                <button className="px-5 py-2 bg-white text-black text-sm font-medium rounded-full hover:bg-gray-100 transition-colors">
+              <div className="flex justify-end pt-4 border-t border-border">
+                <button className="px-5 py-2 btn-cta text-sm font-medium rounded-full transition-colors">
                   Post
                 </button>
               </div>
@@ -142,20 +142,20 @@ const Dashboard: React.FC = () => {
 
           {/* Updates */}
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6">Updates</h2>
-            <div className="bg-card border border-card rounded-2xl overflow-hidden divide-y divide-gray-800">
+            <h2 className="text-h3 mb-6">Updates</h2>
+            <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
               {updates.map((update, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className="p-4 hover:bg-gray-800/50 transition-colors cursor-pointer"
+                  className="p-4 hover:bg-secondary/50 transition-colors cursor-pointer"
                 >
-                  <p className="text-xs text-gray-500 mb-1">{update.project}</p>
+                  <p className="text-meta mb-1">{update.project}</p>
                   <div className="flex items-center justify-between">
                     <p className="text-white">{update.action}</p>
-                    <span className="text-sm text-gray-500">{update.time}</span>
+                    <span className="text-body-subtle">{update.time}</span>
                   </div>
                 </motion.div>
               ))}
@@ -167,23 +167,23 @@ const Dashboard: React.FC = () => {
         <div className="space-y-6">
           {/* Key Milestones - Always visible */}
           <section>
-            <h2 className="text-2xl font-bold text-white mb-6">Upcoming</h2>
-            <div className="bg-card border border-card rounded-2xl overflow-hidden divide-y divide-gray-800">
+            <h2 className="text-h3 mb-6">Upcoming</h2>
+            <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
               {KEY_MILESTONES.map((milestone, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-4 p-4 hover:bg-gray-800/50 transition-colors cursor-pointer"
+                  className="flex items-center gap-4 p-4 hover:bg-secondary/50 transition-colors cursor-pointer"
                 >
                   <div className="text-right min-w-[60px]">
-                    <p className="text-sm font-medium text-white">{milestone.date}</p>
+                    <p className="text-body font-medium">{milestone.date}</p>
                   </div>
-                  <div className="w-px h-10 bg-gray-700" />
+                  <div className="w-px h-10 bg-border" />
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">{milestone.project}</p>
-                    <p className="text-sm text-white">{milestone.label}</p>
+                    <p className="text-meta mb-1">{milestone.project}</p>
+                    <p className="text-body">{milestone.label}</p>
                   </div>
                 </motion.div>
               ))}
@@ -193,22 +193,22 @@ const Dashboard: React.FC = () => {
           {/* Calendar */}
           <section>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">February 2025</h2>
+              <h2 className="text-h3">February 2025</h2>
               <div className="flex gap-1">
-                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors">
-                  <ChevronLeft className="w-4 h-4 text-gray-400" />
+                <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+                  <ChevronLeft className="w-4 h-4 text-muted-foreground" />
                 </button>
-                <button className="p-2 hover:bg-gray-800 rounded-full transition-colors">
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                <button className="p-2 hover:bg-secondary rounded-full transition-colors">
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
               </div>
             </div>
 
-            <div className="bg-card border border-card rounded-2xl p-4">
+            <div className="bg-card border border-border rounded-2xl p-4">
               {/* Week days header */}
               <div className="grid grid-cols-7 mb-2">
                 {weekDays.map(day => (
-                  <div key={day} className="text-center text-xs text-gray-500 py-2">
+                  <div key={day} className="text-center text-meta py-2">
                     {day}
                   </div>
                 ))}
@@ -235,8 +235,8 @@ const Dashboard: React.FC = () => {
                         isSelected
                           ? 'bg-white text-black'
                           : hasEvents
-                          ? 'text-white hover:bg-gray-800'
-                          : 'text-gray-500 hover:text-gray-300'
+                          ? 'text-white hover:bg-secondary'
+                          : 'text-foreground-subtle hover:text-foreground-secondary'
                       }`}
                     >
                       {day}
@@ -256,14 +256,14 @@ const Dashboard: React.FC = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <h3 className="text-lg font-bold text-white mb-4">
+              <h3 className="text-h4 mb-4">
                 February {selectedDate}
               </h3>
               <div className="space-y-2">
                 {CALENDAR_EVENTS[selectedDate].map((event, i) => (
                   <div
                     key={i}
-                    className="p-4 bg-card border border-card rounded-xl text-sm text-white hover:border-gray-700 transition-colors cursor-pointer"
+                    className="p-4 bg-card border border-border rounded-xl text-body hover:border-border transition-colors cursor-pointer"
                   >
                     {event}
                   </div>

@@ -18,13 +18,13 @@ export function SourcesBlock({ data }: SourcesBlockProps) {
           transition={{ delay: index * 0.05 }}
           className="flex items-start gap-2"
         >
-          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-medium text-gray-400">
+          <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shrink-0 text-xs font-medium text-muted-foreground">
             {source.id}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm text-gray-400">{source.title}</p>
+            <p className="text-body-muted">{source.title}</p>
             {source.author && (
-              <p className="text-xs text-gray-600">{source.author}</p>
+              <p className="text-meta">{source.author}</p>
             )}
           </div>
         </motion.div>

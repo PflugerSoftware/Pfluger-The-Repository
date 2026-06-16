@@ -34,30 +34,30 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
       <div className="px-6 pt-8 pb-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(0, 169, 224, 0.15)', backdropFilter: 'blur(8px)' }}>
-            <MapPin className="w-5 h-5 text-sky-400" />
+            <MapPin className="w-5 h-5 text-accent" />
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase tracking-wider">Survey</p>
-            <h1 className="text-lg font-bold text-white">{survey.title}</h1>
+            <p className="text-label">Survey</p>
+            <h1 className="text-h4">{survey.title}</h1>
           </div>
         </div>
 
         {survey.description && (
-          <p className="text-sm text-gray-400 leading-relaxed">{survey.description}</p>
+          <p className="text-body-muted leading-relaxed">{survey.description}</p>
         )}
       </div>
 
       {/* Form */}
       <div className="flex-1 px-6 space-y-5 overflow-y-auto">
         <div>
-          <label className="block text-sm text-gray-400 mb-2">First Name</label>
+          <label className="block text-body-muted mb-2">First Name</label>
           <input
             type="text"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             maxLength={100}
             placeholder="Enter your first name"
-            className="w-full px-4 py-3 rounded-xl text-white placeholder:text-gray-600 focus:border-sky-500/50 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 rounded-xl text-white placeholder:text-foreground-subtle focus:border-accent/50 focus:outline-none transition-colors"
             style={{
               background: 'rgba(255, 255, 255, 0.06)',
               backdropFilter: 'blur(8px)',
@@ -67,7 +67,7 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
         </div>
 
         <div>
-          <label className="block text-sm text-gray-400 mb-2">I am a...</label>
+          <label className="block text-body-muted mb-2">I am a...</label>
           <div className="grid grid-cols-1 gap-2">
             {roles.map((r) => (
               <button
@@ -75,8 +75,8 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
                 onClick={() => setRole(r)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all text-left ${
                   role === r
-                    ? 'text-sky-300'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'text-accent'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
                 style={{
                   background: role === r ? 'rgba(0, 169, 224, 0.15)' : 'rgba(255, 255, 255, 0.05)',
@@ -98,8 +98,8 @@ export function SurveyIntro({ survey, onStart }: SurveyIntroProps) {
           disabled={!canStart}
           className={`w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-medium transition-all ${
             canStart
-              ? 'bg-sky-500 text-white hover:bg-sky-400'
-              : 'bg-white/5 text-gray-600 cursor-not-allowed'
+              ? 'bg-accent text-white hover:bg-accent/90'
+              : 'bg-white/5 text-foreground-subtle cursor-not-allowed'
           }`}
         >
           Start Survey

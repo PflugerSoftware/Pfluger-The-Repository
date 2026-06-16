@@ -54,7 +54,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="w-12 h-12 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading projects...</p>
+          <p className="text-muted-foreground">Loading projects...</p>
         </div>
       </div>
     );
@@ -68,7 +68,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="text-5xl font-bold text-white py-10 px-8"
+            className="text-hero py-10 px-8"
           >
             {year}
           </motion.h2>
@@ -81,7 +81,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.03 }}
-                className="group cursor-pointer relative aspect-video overflow-hidden border border-[#1a1a1a]"
+                className="group cursor-pointer relative aspect-video overflow-hidden border border-border"
                 onClick={() => handleProjectClick(project)}
               >
                 <img
@@ -99,7 +99,7 @@ const Portfolio: React.FC<PortfolioProps> = ({ onOpenProjectDashboard }) => {
                   <h3 className="text-lg font-medium text-white/90 group-hover:text-white transition-colors">
                     {project.title}
                   </h3>
-                  <span className="text-3xl font-bold text-white tracking-tight">
+                  <span className="text-h2 tracking-tight">
                     {project.id}
                   </span>
                 </div>

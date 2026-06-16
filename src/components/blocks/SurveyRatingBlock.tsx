@@ -99,14 +99,14 @@ export function SurveyRatingBlock({ data }: SurveyRatingBlockProps) {
           </motion.div>
           <div>
             <h4 className="font-semibold text-white">{title}</h4>
-            <p className="text-sm text-gray-400">{totalResponses} responses</p>
+            <p className="text-body-muted">{totalResponses} responses</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-bold text-white">
+          <p className="text-h2">
             <AnimatedNumber value={calculatedAverage} />
           </p>
-          <p className="text-xs text-gray-400">avg rating</p>
+          <p className="text-caption">avg rating</p>
         </div>
       </motion.div>
 
@@ -135,7 +135,7 @@ export function SurveyRatingBlock({ data }: SurveyRatingBlockProps) {
                     whileHover={{ scale: 1.2, rotate: 15 }}
                     transition={{ type: 'spring', stiffness: 300 }}
                   >
-                    <Star className="w-3 h-3 text-gray-500 group-hover:text-yellow-400 transition-colors" fill="currentColor" />
+                    <Star className="w-3 h-3 text-foreground-subtle group-hover:text-neutral transition-colors" fill="currentColor" />
                   </motion.div>
                 </div>
 
@@ -178,7 +178,7 @@ export function SurveyRatingBlock({ data }: SurveyRatingBlockProps) {
                   transition={{ delay: index * 0.15 + 0.6 }}
                 >
                   <span className="text-white font-medium">{item.count}</span>
-                  <span className="text-gray-500 text-sm ml-1">({responsePercentage}%)</span>
+                  <span className="text-body-subtle ml-1">({responsePercentage}%)</span>
                 </motion.div>
               </motion.div>
             </motion.div>

@@ -442,7 +442,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
       {/* Loading overlay */}
       {loading && (
         <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
-          <div className="w-6 h-6 border-2 border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
         </div>
       )}
 
@@ -458,28 +458,28 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
         <div className="p-4 space-y-4">
           {/* Header */}
           <div className="flex items-center gap-2">
-            <MapIcon className="w-4 h-4 text-sky-400" />
-            <h3 className="text-sm font-semibold text-white">Survey Analytics</h3>
+            <MapIcon className="w-4 h-4 text-accent" />
+            <h3 className="text-body font-semibold">Survey Analytics</h3>
           </div>
 
           {/* Layer toggles */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-2.5 px-1 py-1 cursor-pointer group">
-              <Eye className={`w-3 h-3 ${showPins ? 'text-sky-300' : 'text-gray-500'}`} />
-              <span className={`text-xs font-medium flex-1 ${showPins ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Pins</span>
+              <Eye className={`w-3 h-3 ${showPins ? 'text-accent' : 'text-foreground-subtle'}`} />
+              <span className={`text-xs font-medium flex-1 ${showPins ? 'text-accent' : 'text-muted-foreground group-hover:text-white'}`}>Pins</span>
               <button
                 onClick={() => setShowPins((v) => !v)}
-                className={`w-8 h-4 rounded-full relative transition-colors ${showPins ? 'bg-sky-500' : 'bg-white/10'}`}
+                className={`w-8 h-4 rounded-full relative transition-colors ${showPins ? 'bg-accent' : 'bg-white/10'}`}
               >
                 <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${showPins ? 'translate-x-4' : 'translate-x-0.5'}`} />
               </button>
             </label>
             <label className="flex items-center gap-2.5 px-1 py-1 cursor-pointer group">
-              <Layers className={`w-3 h-3 ${showContour ? 'text-sky-300' : 'text-gray-500'}`} />
-              <span className={`text-xs font-medium flex-1 ${showContour ? 'text-sky-300' : 'text-gray-400 group-hover:text-white'}`}>Density</span>
+              <Layers className={`w-3 h-3 ${showContour ? 'text-accent' : 'text-foreground-subtle'}`} />
+              <span className={`text-xs font-medium flex-1 ${showContour ? 'text-accent' : 'text-muted-foreground group-hover:text-white'}`}>Density</span>
               <button
                 onClick={() => setShowContour((v) => !v)}
-                className={`w-8 h-4 rounded-full relative transition-colors ${showContour ? 'bg-sky-500' : 'bg-white/10'}`}
+                className={`w-8 h-4 rounded-full relative transition-colors ${showContour ? 'bg-accent' : 'bg-white/10'}`}
               >
                 <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-transform ${showContour ? 'translate-x-4' : 'translate-x-0.5'}`} />
               </button>
@@ -492,8 +492,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               onClick={() => setMapMode('3d')}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 mapMode === '3d'
-                  ? 'bg-sky-500/20 text-sky-300'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-muted-foreground hover:text-white'
               }`}
             >
               <Building2 className="w-3 h-3" />
@@ -503,8 +503,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               onClick={() => setMapMode('satellite')}
               className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
                 mapMode === 'satellite'
-                  ? 'bg-sky-500/20 text-sky-300'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-accent/20 text-accent'
+                  : 'text-muted-foreground hover:text-white'
               }`}
             >
               <Satellite className="w-3 h-3" />
@@ -515,13 +515,13 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           {/* Question filter */}
           <div>
             <div className="flex items-center gap-1.5 mb-2">
-              <Filter className="w-3 h-3 text-gray-500" />
-              <span className="text-xs text-gray-500">Filter by Question</span>
+              <Filter className="w-3 h-3 text-foreground-subtle" />
+              <span className="text-meta">Filter by Question</span>
             </div>
             <select
               value={selectedQuestionId || ''}
               onChange={(e) => setSelectedQuestionId(e.target.value || null)}
-              className="w-full px-3 py-2 rounded-lg text-xs text-white focus:outline-none focus:border-sky-500/50 cursor-pointer"
+              className="w-full px-3 py-2 rounded-lg text-xs text-white focus:outline-none focus:border-accent/50 cursor-pointer"
               style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               <option value="" style={{ background: '#1e1e1e', color: '#fff' }}>All Questions</option>
@@ -554,24 +554,24 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           {stats && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <Users className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">{stats.totalResponses} Responses</span>
+                <Users className="w-3 h-3 text-foreground-subtle" />
+                <span className="text-meta">{stats.totalResponses} Responses</span>
               </div>
               <div className="space-y-1">
                 {Object.entries(stats.roleBreakdown).map(([role, count]) => (
                   <div key={role} className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400 capitalize">{role}</span>
+                    <span className="text-caption capitalize">{role}</span>
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-white/5 rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-sky-500/60 rounded-full"
+                          className="h-full bg-accent/60 rounded-full"
                           initial={{ width: 0 }}
                           animate={{
                             width: `${(count / stats.totalResponses) * 100}%`,
                           }}
                         />
                       </div>
-                      <span className="text-xs text-gray-500 w-6 text-right">{count}</span>
+                      <span className="text-meta w-6 text-right">{count}</span>
                     </div>
                   </div>
                 ))}
@@ -583,8 +583,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           {pins.length > 0 && (
             <div>
               <div className="flex items-center gap-1.5">
-                <MapPin className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">{pins.length} total pins</span>
+                <MapPin className="w-3 h-3 text-foreground-subtle" />
+                <span className="text-meta">{pins.length} total pins</span>
               </div>
             </div>
           )}
@@ -593,8 +593,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           {distribution && selectedQuestion && (
             <div>
               <div className="flex items-center gap-1.5 mb-2">
-                <MessageSquare className="w-3 h-3 text-gray-500" />
-                <span className="text-xs text-gray-500">Answers</span>
+                <MessageSquare className="w-3 h-3 text-foreground-subtle" />
+                <span className="text-meta">Answers</span>
               </div>
 
               {(distribution.questionType === 'multiple_choice' || distribution.questionType === 'likert_single') &&
@@ -605,16 +605,16 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                       .map(([choice, count]) => (
                         <div key={choice} className="space-y-0.5">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-300 truncate max-w-[160px]">
+                            <span className="text-xs text-foreground truncate max-w-[160px]">
                               {choice}
                             </span>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-meta">
                               {count} ({Math.round((count / distribution.totalAnswers) * 100)}%)
                             </span>
                           </div>
                           <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                             <motion.div
-                              className="h-full bg-sky-500 rounded-full"
+                              className="h-full bg-accent rounded-full"
                               initial={{ width: 0 }}
                               animate={{
                                 width: `${(count / distribution.totalAnswers) * 100}%`,
@@ -631,14 +631,14 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                   <div className="space-y-2">
                     {Object.entries(distribution.matrixCounts).map(([subItem, ratings]) => (
                       <div key={subItem} className="space-y-0.5">
-                        <span className="text-xs text-gray-300 block truncate">{subItem}</span>
+                        <span className="text-xs text-foreground block truncate">{subItem}</span>
                         <div className="flex gap-0.5">
                           {Object.entries(ratings)
                             .sort(([, a], [, b]) => b - a)
                             .map(([rating, count]) => (
                               <div
                                 key={rating}
-                                className="h-1.5 bg-sky-500/60 rounded-full"
+                                className="h-1.5 bg-accent/60 rounded-full"
                                 style={{ flex: count }}
                                 title={`${rating}: ${count}`}
                               />
@@ -655,13 +655,13 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                     {distribution.openEndedAnswers.slice(0, 10).map((answer, i) => (
                       <div
                         key={i}
-                        className="px-3 py-2 bg-white/5 rounded-lg text-xs text-gray-300"
+                        className="px-3 py-2 bg-white/5 rounded-lg text-xs text-foreground"
                       >
                         "{answer}"
                       </div>
                     ))}
                     {distribution.openEndedAnswers.length > 10 && (
-                      <p className="text-[10px] text-gray-600">
+                      <p className="text-[10px] text-foreground-subtle">
                         +{distribution.openEndedAnswers.length - 10} more responses
                       </p>
                     )}
@@ -673,7 +673,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
           {/* Empty state */}
           {!loading && pins.length === 0 && stats?.totalResponses === 0 && (
             <div className="text-center py-6">
-              <p className="text-xs text-gray-500">No responses yet</p>
+              <p className="text-meta">No responses yet</p>
             </div>
           )}
         </div>
@@ -698,27 +698,27 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               {/* Header with close button */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-sky-400" />
-                  <h3 className="text-sm font-semibold text-white">Pin Details</h3>
+                  <MapPin className="w-4 h-4 text-accent" />
+                  <h3 className="text-body font-semibold">Pin Details</h3>
                 </div>
                 <button
                   onClick={() => setSelectedPin(null)}
                   className="p-1 rounded-lg hover:bg-white/10 transition-colors"
                 >
-                  <X className="w-4 h-4 text-gray-400" />
+                  <X className="w-4 h-4 text-muted-foreground" />
                 </button>
               </div>
 
               {/* Respondent info */}
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5">
-                  <User className="w-3 h-3 text-gray-500" />
-                  <span className="text-xs text-gray-500">Respondent</span>
+                  <User className="w-3 h-3 text-foreground-subtle" />
+                  <span className="text-meta">Respondent</span>
                 </div>
                 {pinDetailLoading ? (
                   <div className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-lg">
-                    <div className="w-3 h-3 border border-sky-500/30 border-t-sky-500 rounded-full animate-spin" />
-                    <span className="text-xs text-gray-400">Loading...</span>
+                    <div className="w-3 h-3 border border-accent/30 border-t-accent rounded-full animate-spin" />
+                    <span className="text-caption">Loading...</span>
                   </div>
                 ) : pinRespondent ? (
                   <div className="px-3 py-2 bg-white/5 rounded-lg space-y-1">
@@ -726,12 +726,12 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                       {pinRespondent.firstName || 'Anonymous'}
                     </p>
                     {pinRespondent.role && (
-                      <p className="text-xs text-gray-400 capitalize">{pinRespondent.role}</p>
+                      <p className="text-caption capitalize">{pinRespondent.role}</p>
                     )}
                   </div>
                 ) : (
                   <div className="px-3 py-2 bg-white/5 rounded-lg">
-                    <p className="text-xs text-gray-500">Unknown respondent</p>
+                    <p className="text-meta">Unknown respondent</p>
                   </div>
                 )}
               </div>
@@ -744,8 +744,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                 return (
                   <div className="space-y-2">
                     <div className="flex items-center gap-1.5">
-                      <MessageSquare className="w-3 h-3 text-gray-500" />
-                      <span className="text-xs text-gray-500">Question</span>
+                      <MessageSquare className="w-3 h-3 text-foreground-subtle" />
+                      <span className="text-meta">Question</span>
                     </div>
                     {section && (
                       <span
@@ -758,7 +758,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
                         {section.label}
                       </span>
                     )}
-                    <p className="text-xs text-gray-300 leading-relaxed">
+                    <p className="text-xs text-foreground leading-relaxed">
                       Q{question.question_order}: {question.question_text}
                     </p>
                   </div>
@@ -768,9 +768,9 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               {/* Note */}
               {selectedPin.note && (
                 <div className="space-y-2">
-                  <span className="text-xs text-gray-500">Note</span>
-                  <div className="px-3 py-2.5 bg-white/5 rounded-lg border-l-2 border-sky-500/40">
-                    <p className="text-xs text-gray-200 leading-relaxed italic">
+                  <span className="text-meta">Note</span>
+                  <div className="px-3 py-2.5 bg-white/5 rounded-lg border-l-2 border-accent/40">
+                    <p className="text-xs text-foreground leading-relaxed italic">
                       "{selectedPin.note}"
                     </p>
                   </div>
@@ -779,8 +779,8 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
 
               {/* Timestamp */}
               <div className="flex items-center gap-1.5 pt-2 border-t border-white/5">
-                <Clock className="w-3 h-3 text-gray-600" />
-                <span className="text-[10px] text-gray-600">
+                <Clock className="w-3 h-3 text-foreground-subtle" />
+                <span className="text-[10px] text-foreground-subtle">
                   {new Date(selectedPin.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
@@ -792,7 +792,7 @@ export function SurveyMapBlock({ data }: SurveyMapBlockProps) {
               </div>
 
               {/* Coordinates */}
-              <div className="text-[10px] text-gray-600">
+              <div className="text-[10px] text-foreground-subtle">
                 {selectedPin.latitude.toFixed(5)}, {selectedPin.longitude.toFixed(5)}
               </div>
             </div>

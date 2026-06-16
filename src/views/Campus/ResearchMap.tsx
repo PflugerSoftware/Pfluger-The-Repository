@@ -163,20 +163,20 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
       >
         {/* Header */}
         <div className="p-5">
-          <h2 className="text-xl font-bold text-white">Research Campus</h2>
-          <p className="text-sm text-gray-500 mt-1">Projects by office</p>
+          <h2 className="text-title font-bold">Research Campus</h2>
+          <p className="text-body-subtle mt-1">Projects by office</p>
         </div>
 
         {/* Search */}
         <div className="px-5 pb-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-foreground-subtle" />
             <input
               type="text"
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-gray-500 focus:border-white/20 focus:outline-none transition-colors"
+              className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-foreground-subtle focus:border-white/20 focus:outline-none transition-colors"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
           <div className="space-y-6">
             {Object.entries(projectsByOffice).map(([office, projects]) => (
               <div key={office}>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">{office}</p>
+                <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-3">{office}</p>
                 <div className="space-y-2">
                   {projects.map(project => {
                     const markerColor = categoryColors[project.category];
@@ -211,10 +211,10 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
                           style={{ backgroundColor: markerColor }}
                         />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium truncate text-white">
+                          <p className="text-body font-medium truncate">
                             {project.title}
                           </p>
-                          <p className="text-xs text-gray-500 truncate">{project.researcher}</p>
+                          <p className="text-meta truncate">{project.researcher}</p>
                         </div>
                       </motion.div>
                     );
@@ -244,12 +244,12 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
             {/* Header */}
             <div className="p-5 flex items-start justify-between border-b border-white/10">
               <div className="flex-1 min-w-0">
-                <h2 className="text-xl font-bold truncate text-white">{selectedProject.title}</h2>
-                <p className="text-sm text-gray-500">{selectedProject.id}</p>
+                <h2 className="text-title font-bold truncate">{selectedProject.title}</h2>
+                <p className="text-body-subtle">{selectedProject.id}</p>
               </div>
               <button
                 onClick={() => setSelectedProject(null)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors text-muted-foreground hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -258,48 +258,48 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
             <div className="p-5 space-y-5 overflow-y-auto max-h-[calc(100%-5rem)]">
               {/* Researcher */}
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Researcher</p>
+                <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-1">Researcher</p>
                 <p className="text-white">{selectedProject.researcher}</p>
               </div>
 
               {/* Office */}
               {selectedProject.office && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <p className="text-sm text-gray-400">{selectedProject.office}</p>
+                  <MapPin className="w-4 h-4 text-foreground-subtle" />
+                  <p className="text-body-muted">{selectedProject.office}</p>
                 </div>
               )}
 
               {/* Phase */}
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Phase</p>
-                <span className="inline-block px-3 py-1 bg-white/10 rounded-full text-sm text-white">
+                <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-2">Phase</p>
+                <span className="inline-block px-3 py-1 bg-white/10 rounded-full text-body">
                   {selectedProject.phase}
                 </span>
               </div>
 
               {/* Description */}
               <div>
-                <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Description</p>
-                <p className="text-sm text-gray-300 leading-relaxed">{selectedProject.description}</p>
+                <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-2">Description</p>
+                <p className="text-body leading-relaxed">{selectedProject.description}</p>
               </div>
 
               {/* Timeline */}
               {(selectedProject.startDate || selectedProject.completionDate) && (
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Timeline</p>
+                  <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-2">Timeline</p>
                   <div className="space-y-2">
                     {selectedProject.startDate && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-400">Started:</span>
+                        <Calendar className="w-4 h-4 text-foreground-subtle" />
+                        <span className="text-muted-foreground">Started:</span>
                         <span className="text-white">{selectedProject.startDate}</span>
                       </div>
                     )}
                     {selectedProject.completionDate && (
                       <div className="flex items-center gap-2 text-sm">
-                        <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-400">Completed:</span>
+                        <Calendar className="w-4 h-4 text-foreground-subtle" />
+                        <span className="text-muted-foreground">Completed:</span>
                         <span className="text-white">{selectedProject.completionDate}</span>
                       </div>
                     )}
@@ -310,12 +310,12 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
               {/* Partners */}
               {selectedProject.partners && selectedProject.partners.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">Partners</p>
+                  <p className="text-xs text-foreground-subtle uppercase tracking-wide mb-2">Partners</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.partners.map(partner => (
                       <span
                         key={partner}
-                        className="px-3 py-1 bg-white/10 text-sm text-gray-300 rounded-full"
+                        className="px-3 py-1 bg-white/10 text-body rounded-full"
                       >
                         {partner}
                       </span>
@@ -328,7 +328,7 @@ const ResearchMap: React.FC<ResearchMapProps> = ({ onOpenProjectDashboard }) => 
               {hasProject(selectedProject.id) && onOpenProjectDashboard && (
                 <motion.button
                   onClick={() => onOpenProjectDashboard(selectedProject.id)}
-                  className="w-full py-3 px-4 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 px-4 btn-cta font-medium rounded-xl transition-all flex items-center justify-center gap-2"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

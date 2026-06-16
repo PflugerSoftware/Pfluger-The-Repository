@@ -26,20 +26,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#121212] flex items-center justify-center p-8">
+        <div className="min-h-screen bg-background flex items-center justify-center p-8">
           <div className="max-w-md text-center space-y-6">
-            <h1 className="text-2xl font-bold text-white">Something went wrong</h1>
-            <p className="text-gray-400">
+            <h1 className="text-h3">Something went wrong</h1>
+            <p className="text-muted-foreground">
               An unexpected error occurred. Please reload the page to continue.
             </p>
             {this.state.error && (
-              <pre className="text-left text-xs text-gray-500 bg-[#1e1e1e] border border-[#2a2a2a] rounded-xl p-4 overflow-auto max-h-40">
+              <pre className="text-left text-meta bg-card border border-border rounded-xl p-4 overflow-auto max-h-40">
                 {this.state.error.message}
               </pre>
             )}
             <button
               onClick={() => window.location.reload()}
-              className="px-6 py-2.5 bg-[#00A9E0] hover:bg-[#0090c0] text-white font-medium rounded-lg transition-colors"
+              className="px-6 py-2.5 bg-accent hover:bg-accent/90 text-white font-medium rounded-lg transition-colors"
             >
               Reload Page
             </button>

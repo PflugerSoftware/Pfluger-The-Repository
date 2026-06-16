@@ -70,7 +70,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
           <button
             key={`link-${idx}`}
             onClick={() => onProjectClick?.(match.text)}
-            className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition-colors"
+            className="text-accent hover:text-accent underline cursor-pointer transition-colors"
           >
             {match.text}
           </button>
@@ -82,7 +82,7 @@ export const MessageContent: React.FC<MessageContentProps> = ({
             href={match.text}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 underline transition-colors"
+            className="text-accent hover:text-accent underline transition-colors"
           >
             {match.text}
           </a>

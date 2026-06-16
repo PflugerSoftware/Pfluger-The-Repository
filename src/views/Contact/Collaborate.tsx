@@ -50,8 +50,8 @@ const Collaborate: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-12"
       >
-        <h1 className="text-5xl font-bold text-white mb-2">Let's Connect</h1>
-        <p className="text-gray-400">
+        <h1 className="text-hero mb-2">Let's Connect</h1>
+        <p className="text-muted-foreground">
           Interested in partnering on research or learning more about our work?
         </p>
       </motion.div>
@@ -74,8 +74,8 @@ const Collaborate: React.FC = () => {
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
                   <Check className="w-8 h-8 text-black" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">Message Sent</h3>
-                <p className="text-gray-400">We'll get back to you soon.</p>
+                <h3 className="text-h3 mb-2">Message Sent</h3>
+                <p className="text-muted-foreground">We'll get back to you soon.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -86,7 +86,7 @@ const Collaborate: React.FC = () => {
                   className={`flex items-center gap-3 px-4 py-3 rounded-full transition-all ${
                     isConfidential
                       ? 'bg-white text-black'
-                      : 'bg-transparent text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500'
+                      : 'bg-transparent text-muted-foreground hover:text-white border border-border hover:border-foreground-subtle'
                   }`}
                 >
                   <Lock className="w-4 h-4" />
@@ -97,7 +97,7 @@ const Collaborate: React.FC = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">
+                    <label className="block text-body-muted mb-2">
                       Name
                     </label>
                     <input
@@ -105,13 +105,13 @@ const Collaborate: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-xl text-white placeholder:text-gray-600 focus:border-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-transparent border border-border rounded-xl text-white placeholder:text-foreground-subtle focus:border-white focus:outline-none transition-colors"
                       placeholder="Your name"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">
+                    <label className="block text-body-muted mb-2">
                       Email
                     </label>
                     <input
@@ -119,27 +119,27 @@ const Collaborate: React.FC = () => {
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
-                      className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-xl text-white placeholder:text-gray-600 focus:border-white focus:outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-transparent border border-border rounded-xl text-white placeholder:text-foreground-subtle focus:border-white focus:outline-none transition-colors"
                       placeholder="your@email.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-body-muted mb-2">
                     Organization
                   </label>
                   <input
                     type="text"
                     value={formData.organization}
                     onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                    className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-xl text-white placeholder:text-gray-600 focus:border-white focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-transparent border border-border rounded-xl text-white placeholder:text-foreground-subtle focus:border-white focus:outline-none transition-colors"
                     placeholder="School district, institution, etc."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-body-muted mb-2">
                     Message
                   </label>
                   <textarea
@@ -147,7 +147,7 @@ const Collaborate: React.FC = () => {
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     required
                     rows={5}
-                    className="w-full px-4 py-3 bg-transparent border border-gray-700 rounded-xl text-white placeholder:text-gray-600 focus:border-white focus:outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3 bg-transparent border border-border rounded-xl text-white placeholder:text-foreground-subtle focus:border-white focus:outline-none transition-colors resize-none"
                     placeholder="Tell us about your interest in collaborating..."
                   />
                 </div>
@@ -156,7 +156,7 @@ const Collaborate: React.FC = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-3 bg-white text-black font-medium rounded-full hover:bg-gray-100 disabled:opacity-50 transition-all flex items-center gap-2"
+                    className="px-6 py-3 btn-cta font-medium rounded-full disabled:opacity-50 transition-all flex items-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -185,7 +185,7 @@ const Collaborate: React.FC = () => {
         >
           {/* Partnership Opportunities */}
           <div>
-            <h2 className="text-xl font-bold text-white mb-4">
+            <h2 className="text-title font-bold mb-4">
               Partnership Opportunities
             </h2>
             <ul className="space-y-2">
@@ -195,7 +195,7 @@ const Collaborate: React.FC = () => {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + index * 0.05 }}
-                  className="text-sm text-gray-400"
+                  className="text-body-muted"
                 >
                   {item}
                 </motion.li>
@@ -205,30 +205,30 @@ const Collaborate: React.FC = () => {
 
           {/* Research & Benchmarking */}
           <div>
-            <h3 className="text-xl font-bold text-white mb-4">
+            <h3 className="text-title font-bold mb-4">
               Research & Benchmarking
             </h3>
-            <p className="text-gray-400 text-sm mb-6">
+            <p className="text-body-muted mb-6">
               Our team explores innovative approaches to educational architecture,
               focusing on student well-being, sustainability, and learning outcomes.
             </p>
 
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <Building2 className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                <p className="text-sm text-white">Pfluger Architects</p>
+                <Building2 className="w-4 h-4 text-foreground-subtle flex-shrink-0" />
+                <p className="text-body">Pfluger Architects</p>
               </div>
 
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                <p className="text-sm text-gray-400">Austin, Texas</p>
+                <MapPin className="w-4 h-4 text-foreground-subtle flex-shrink-0" />
+                <p className="text-body-muted">Austin, Texas</p>
               </div>
 
               <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                <Mail className="w-4 h-4 text-foreground-subtle flex-shrink-0" />
                 <a
                   href="mailto:research@pflugerarchitects.com"
-                  className="text-sm text-white hover:text-gray-300 transition-colors"
+                  className="text-body hover:text-foreground transition-colors"
                 >
                   research@pflugerarchitects.com
                 </a>

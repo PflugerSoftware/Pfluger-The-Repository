@@ -322,7 +322,7 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
         });
 
         // Update tooltip
-        let tooltipContent = `<div class="text-xs text-gray-400 mb-1">${monthData.month}</div>`;
+        let tooltipContent = `<div class="text-xs text-muted-foreground mb-1">${monthData.month}</div>`;
         tooltipContent += `<div class="text-sm text-white font-medium mb-2">${totalHours} total hrs</div>`;
         keys.forEach(key => {
           const hours = (monthData as Record<string, number | string>)[key] as number;
@@ -331,7 +331,7 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
             const color = project ? getStatusColor(project.status) : '#666';
             tooltipContent += `<div class="flex items-center gap-2 text-xs">
               <span class="w-2 h-2 rounded-full" style="background:${color}"></span>
-              <span class="text-gray-400">${key}:</span>
+              <span class="text-muted-foreground">${key}:</span>
               <span class="text-white">${hours}h</span>
             </div>`;
           }
@@ -358,7 +358,7 @@ function StackedAreaChart({ data, projectBars, maxY }: StackedAreaChartProps) {
         <svg ref={svgRef} className="w-full" />
         <div
           ref={tooltipRef}
-          className="absolute pointer-events-none bg-card border border-gray-700 rounded-lg px-3 py-2 transition-opacity"
+          className="absolute pointer-events-none bg-card border border-border rounded-lg px-3 py-2 transition-opacity"
           style={{ opacity: 0 }}
         />
       </div>
@@ -373,7 +373,7 @@ function ProgressBar({ yearProgress }: { yearProgress: number }) {
       {/* Bar */}
       <div className="flex items-center gap-4">
         <div className="w-12 shrink-0" />
-        <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
           {/* Fill */}
           <motion.div
             initial={{ width: 0 }}
@@ -393,7 +393,7 @@ function ProgressBar({ yearProgress }: { yearProgress: number }) {
         <div className="w-12 shrink-0" />
         <div className="flex-1 flex justify-between">
           {MONTHS.map(month => (
-            <span key={month} className="text-xs text-gray-600 w-0 text-center">
+            <span key={month} className="text-meta w-0 text-center">
               {month}
             </span>
           ))}
@@ -509,8 +509,8 @@ export default function Schedule() {
     <div className="px-12 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-5xl font-bold text-white mb-2">Schedule</h1>
-        <p className="text-gray-400">2025 Research Activity</p>
+        <h1 className="text-hero mb-2">Schedule</h1>
+        <p className="text-muted-foreground">2025 Research Activity</p>
       </div>
 
       {/* Controls Row */}
@@ -519,8 +519,8 @@ export default function Schedule() {
         <div className="flex gap-6">
           {viewMode === 'timeline' && Object.entries(EVENT_ICONS).map(([type, Icon]) => (
             <div key={type} className="flex items-center gap-2">
-              <Icon className="w-3 h-3 text-gray-500" />
-              <span className="text-xs text-gray-600 capitalize">{type}</span>
+              <Icon className="w-3 h-3 text-foreground-subtle" />
+              <span className="text-meta capitalize">{type}</span>
             </div>
           ))}
           {viewMode === 'hours' && projectBars.map((project) => {
@@ -528,7 +528,7 @@ export default function Schedule() {
             return (
               <div key={project.id} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: statusColor }} />
-                <span className="text-xs text-gray-400">{project.id.replace('X25-', '')}</span>
+                <span className="text-caption">{project.id.replace('X25-', '')}</span>
               </div>
             );
           })}
@@ -541,10 +541,10 @@ export default function Schedule() {
             {(['all', 'in-progress', 'completed', 'future'] as const).map((filter) => {
               const isActive = statusFilter === filter;
               const colorClasses = {
-                'all': isActive ? 'bg-gray-700 text-white' : 'text-gray-500 hover:text-white',
-                'in-progress': isActive ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-400',
-                'completed': isActive ? 'bg-green-600 text-white' : 'text-gray-500 hover:text-green-400',
-                'future': isActive ? 'bg-yellow-600 text-white' : 'text-gray-500 hover:text-yellow-400',
+                'all': isActive ? 'bg-secondary text-white' : 'text-foreground-subtle hover:text-white',
+                'in-progress': isActive ? 'bg-accent text-white' : 'text-foreground-subtle hover:text-accent',
+                'completed': isActive ? 'bg-success text-white' : 'text-foreground-subtle hover:text-success',
+                'future': isActive ? 'bg-neutral text-white' : 'text-foreground-subtle hover:text-neutral',
               };
               return (
                 <button
@@ -558,14 +558,14 @@ export default function Schedule() {
             })}
           </div>
 
-          <div className="w-px h-6 bg-gray-700" />
+          <div className="w-px h-6 bg-border" />
 
           {/* View toggle */}
-          <div className="flex items-center gap-1 bg-gray-800 rounded-full p-1">
+          <div className="flex items-center gap-1 bg-secondary rounded-full p-1">
             <button
               onClick={() => setViewMode('timeline')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-colors ${
-                viewMode === 'timeline' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'
+                viewMode === 'timeline' ? 'bg-white text-black' : 'text-muted-foreground hover:text-white'
               }`}
             >
               <GanttChart className="w-3 h-3" />
@@ -574,7 +574,7 @@ export default function Schedule() {
             <button
               onClick={() => setViewMode('hours')}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs transition-colors ${
-                viewMode === 'hours' ? 'bg-white text-black' : 'text-gray-400 hover:text-white'
+                viewMode === 'hours' ? 'bg-white text-black' : 'text-muted-foreground hover:text-white'
               }`}
             >
               <BarChart3 className="w-3 h-3" />
@@ -592,7 +592,7 @@ export default function Schedule() {
           {/* Empty state */}
           {projectBars.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-gray-500">No projects match the selected filter</p>
+              <p className="text-foreground-subtle">No projects match the selected filter</p>
             </div>
           )}
 
@@ -614,7 +614,7 @@ export default function Schedule() {
                   className="flex items-center gap-4"
                 >
                   <div className="w-12 shrink-0 text-right">
-                    <span className="text-xs font-mono text-gray-500">
+                    <span className="text-code">
                       {project.id.replace('X25-', '')}
                     </span>
                   </div>
@@ -677,7 +677,7 @@ export default function Schedule() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="mx-auto mt-12 p-6 bg-card border border-gray-800 rounded-2xl"
+            className="mx-auto mt-12 p-6 bg-card border border-border rounded-2xl"
             style={{ width: '80%' }}
           >
             <div className="flex items-start justify-between">
@@ -698,14 +698,14 @@ export default function Schedule() {
                       </span>
                     );
                   })()}
-                  <span className="text-xs font-mono text-gray-500">{selectedEvent.projectId}</span>
+                  <span className="text-code">{selectedEvent.projectId}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-1">{selectedEvent.title}</h3>
-                <p className="text-gray-400">{selectedEvent.projectTitle}</p>
+                <h3 className="text-h3 mb-1">{selectedEvent.title}</h3>
+                <p className="text-muted-foreground">{selectedEvent.projectTitle}</p>
               </div>
 
               <div className="text-right">
-                <div className="flex items-center gap-2 text-gray-400">
+                <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="w-4 h-4" />
                   <span className="text-sm">
                     {selectedEvent.date.toLocaleDateString('en-US', {
@@ -718,20 +718,20 @@ export default function Schedule() {
               </div>
             </div>
 
-            <p className="mt-4 text-gray-300">{selectedEvent.description}</p>
+            <p className="mt-4 text-foreground-secondary">{selectedEvent.description}</p>
 
             {(() => {
               const project = projectBars.find(p => p.id === selectedEvent.projectId);
               if (project?.researcher && project.researcher !== 'TBD') {
                 return (
-                  <div className="mt-4 pt-4 border-t border-gray-800">
-                    <div className="flex items-center gap-2 text-gray-500 mb-2">
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <div className="flex items-center gap-2 text-foreground-subtle mb-2">
                       <Users className="w-4 h-4" />
                       <span className="text-xs">Team</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {project.researcher.split(',').map((member, i) => (
-                        <span key={i} className="text-sm text-gray-300 px-2 py-1 bg-gray-800 rounded">
+                        <span key={i} className="text-body px-2 py-1 bg-secondary rounded">
                           {member.trim()}
                         </span>
                       ))}

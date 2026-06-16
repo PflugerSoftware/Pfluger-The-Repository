@@ -207,14 +207,14 @@ const AboutTools: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h1 className="text-5xl font-bold text-white mb-4">Our Tools</h1>
-        <p className="text-xl text-gray-400 mb-16">
+        <h1 className="text-hero mb-4">Our Tools</h1>
+        <p className="text-xl text-muted-foreground mb-16">
           The software, AI tools, and custom platforms we use to conduct research.
         </p>
 
         {/* Software Section */}
         <section className="mb-20">
-          <h2 className="text-2xl font-bold text-white mb-8">Software</h2>
+          <h2 className="text-h3 mb-8">Software</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SOFTWARE.map((tool, index) => (
               <motion.div
@@ -224,12 +224,12 @@ const AboutTools: React.FC = () => {
                 transition={{ delay: index * 0.05 }}
                 className="space-y-3"
               >
-                <p className="text-xs text-gray-500 uppercase tracking-wide">{tool.category}</p>
-                <h3 className="text-xl font-bold text-white">{tool.name}</h3>
-                <p className="text-sm text-gray-400">{tool.description}</p>
+                <p className="text-xs text-foreground-subtle uppercase tracking-wide">{tool.category}</p>
+                <h3 className="text-title font-bold">{tool.name}</h3>
+                <p className="text-body-muted">{tool.description}</p>
                 <ul className="space-y-1">
                   {tool.capabilities.map((cap) => (
-                    <li key={cap} className="text-sm text-gray-500">{cap}</li>
+                    <li key={cap} className="text-body-subtle">{cap}</li>
                   ))}
                 </ul>
               </motion.div>
@@ -239,18 +239,18 @@ const AboutTools: React.FC = () => {
 
         {/* AI Tools Section */}
         <section className="mb-20">
-          <h2 className="text-2xl font-bold text-white mb-8">AI Tools</h2>
+          <h2 className="text-h3 mb-8">AI Tools</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-            <div className="bg-card border border-card rounded-2xl p-6">
-              <h3 className="text-xl font-bold text-white mb-2">Design Team</h3>
-              <p className="text-sm text-gray-400">
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h3 className="text-title font-bold mb-2">Design Team</h3>
+              <p className="text-body-muted">
                 Access to all AI and creative tools for concept development, visualization, research, and production.
               </p>
             </div>
-            <div className="bg-card border border-card rounded-2xl p-6">
-              <h3 className="text-xl font-bold text-white mb-2">Production Team</h3>
-              <p className="text-sm text-gray-400">
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h3 className="text-title font-bold mb-2">Production Team</h3>
+              <p className="text-body-muted">
                 Access to Claude AI for writing assistance, research, code review, and analysis.
               </p>
             </div>
@@ -268,7 +268,7 @@ const AboutTools: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="bg-card border border-card rounded-2xl p-6 hover:border-gray-600 transition-all block"
+                  className="bg-card border border-border rounded-2xl p-6 hover:border-foreground-subtle transition-all block"
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div
@@ -278,21 +278,21 @@ const AboutTools: React.FC = () => {
                       <Icon className={tool.name === 'Claude AI' ? 'w-8 h-8' : 'w-5 h-5'} style={{ color: tool.color }} />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold text-white">{tool.name}</h3>
+                      <h3 className="text-title font-bold">{tool.name}</h3>
                       <p className="text-xs text-white">{tool.subtitle}</p>
                     </div>
                   </div>
 
                   <ul className="space-y-1.5 mb-4">
                     {tool.bullets.map((b) => (
-                      <li key={b} className="text-sm text-gray-400 flex items-start gap-2">
-                        <span className="text-gray-600 mt-1">•</span>
+                      <li key={b} className="text-body-muted flex items-start gap-2">
+                        <span className="text-foreground-subtle mt-1">•</span>
                         {b}
                       </li>
                     ))}
                   </ul>
 
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-2 text-meta">
                     <Lock className="w-3 h-3" />
                     <span className="font-mono">{tool.login}</span>
                   </div>
@@ -302,13 +302,13 @@ const AboutTools: React.FC = () => {
           </div>
 
           {/* Claude Office Logins */}
-          <div className="bg-card border border-card rounded-2xl p-8 mt-4">
-            <h3 className="text-lg font-bold text-white mb-1">Claude AI — Office Logins</h3>
+          <div className="bg-card border border-border rounded-2xl p-8 mt-4">
+            <h3 className="text-h4 mb-1">Claude AI — Office Logins</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-8 gap-y-4">
               {CLAUDE_LOGINS.map((login) => (
                 <div key={login.office}>
-                  <p className="text-sm font-semibold text-white">{login.office}</p>
-                  <p className="text-xs font-mono text-gray-500">{login.email}</p>
+                  <p className="text-body font-semibold">{login.office}</p>
+                  <p className="text-code">{login.email}</p>
                 </div>
               ))}
             </div>

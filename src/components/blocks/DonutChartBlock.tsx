@@ -112,19 +112,19 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
             >
               {hoveredSlice !== null ? (
                 <>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-stat">
                     {formatValue(arcs[hoveredSlice]?.value)}
                   </p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-body-muted">
                     {formatPercent(arcs[hoveredSlice]?.value)}
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-stat">
                     {formatValue(total)}
                   </p>
-                  <p className="text-sm text-gray-400">{centerLabel || 'Total'}</p>
+                  <p className="text-body-muted">{centerLabel || 'Total'}</p>
                 </>
               )}
             </motion.div>
@@ -156,7 +156,7 @@ export function DonutChartBlock({ data }: DonutChartBlockProps) {
             />
             <div>
               <p className="font-medium text-white text-sm">{arc.label}</p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-body-muted">
                 {formatValue(arc.value)} ({formatPercent(arc.value)})
               </p>
             </div>

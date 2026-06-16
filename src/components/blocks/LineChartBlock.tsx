@@ -67,7 +67,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
             y={yScale(tick)}
             textAnchor="end"
             dominantBaseline="middle"
-            className="fill-gray-500 text-[11px]"
+            className="fill-muted-foreground text-[11px]"
           >
             {Math.round(tick)}{unit || ''}
           </text>
@@ -80,7 +80,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
             x={xScale(i)}
             y={chartHeight - padding.bottom + 20}
             textAnchor="middle"
-            className="fill-gray-500 text-[11px]"
+            className="fill-muted-foreground text-[11px]"
           >
             {label}
           </text>
@@ -93,7 +93,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
             y={chartHeight / 2}
             textAnchor="middle"
             transform={`rotate(-90, 16, ${chartHeight / 2})`}
-            className="fill-gray-600 text-[11px]"
+            className="fill-foreground-subtle text-[11px]"
           >
             {yLabel}
           </text>
@@ -103,7 +103,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
             x={chartWidth / 2}
             y={chartHeight - 6}
             textAnchor="middle"
-            className="fill-gray-600 text-[11px]"
+            className="fill-foreground-subtle text-[11px]"
           >
             {xLabel}
           </text>
@@ -178,7 +178,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
           return (
             <g>
               <rect x={tooltipX} y={tooltipY} width={110} height={36} rx={6} fill="rgba(30,30,30,0.95)" stroke="rgba(255,255,255,0.1)" />
-              <text x={tooltipX + 8} y={tooltipY + 15} className="fill-gray-400 text-[10px]">{d.label}</text>
+              <text x={tooltipX + 8} y={tooltipY + 15} className="fill-muted-foreground text-[10px]">{d.label}</text>
               <circle cx={tooltipX + 8} cy={tooltipY + 27} r={3} fill={color} />
               <text x={tooltipX + 16} y={tooltipY + 30} className="fill-white text-[11px] font-medium">
                 {s.name}: {d.value}{unit || ''}
@@ -194,7 +194,7 @@ export function LineChartBlock({ data }: LineChartBlockProps) {
           {series.map((s, si) => (
             <div key={s.name} className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: s.color || defaultColors[si % defaultColors.length] }} />
-              <span className="text-xs text-gray-400">{s.name}</span>
+              <span className="text-caption">{s.name}</span>
             </div>
           ))}
         </div>

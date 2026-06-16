@@ -13,7 +13,7 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={star}
           className={`w-3 h-3 ${
-            star <= rating ? 'text-yellow-400' : 'text-gray-600'
+            star <= rating ? 'text-neutral' : 'text-foreground-subtle'
           }`}
           fill={star <= rating ? 'currentColor' : 'none'}
         />
@@ -43,13 +43,13 @@ export function QuotesBlock({ data }: QuotesBlockProps) {
         >
           {/* Quote icon */}
           <div className="absolute -top-3 -left-2">
-            <div className="w-8 h-8 bg-sky-500/20 rounded-full flex items-center justify-center">
-              <QuoteIcon className="w-4 h-4 text-sky-400" />
+            <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center">
+              <QuoteIcon className="w-4 h-4 text-accent" />
             </div>
           </div>
 
           {/* Quote text */}
-          <blockquote className="text-white text-sm leading-relaxed mb-4 pt-2">
+          <blockquote className="text-body leading-relaxed mb-4 pt-2">
             "{quote.text}"
           </blockquote>
 
@@ -58,11 +58,11 @@ export function QuotesBlock({ data }: QuotesBlockProps) {
             <div className="flex items-center gap-3">
               {quote.rating && <StarRating rating={quote.rating} />}
               {quote.source && (
-                <span className="text-xs text-gray-500">{quote.source}</span>
+                <span className="text-meta">{quote.source}</span>
               )}
             </div>
             {quote.author && (
-              <span className="text-xs text-gray-400">- {quote.author}</span>
+              <span className="text-caption">- {quote.author}</span>
             )}
           </div>
         </motion.div>

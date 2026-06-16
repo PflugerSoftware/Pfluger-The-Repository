@@ -135,27 +135,27 @@ export function PitchCard({ data, onUpdate, isGreenLit, greenLitTitle }: PitchCa
   };
 
   return (
-    <div className="bg-card border border-card rounded-2xl overflow-hidden h-full flex flex-col">
+    <div className="bg-card border border-border rounded-2xl overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-800">
+      <div className="p-4 border-b border-border">
         {/* Title */}
-        <h3 className="text-lg font-semibold text-white mb-2">
+        <h3 className="text-h4 mb-2">
           {greenLitTitle || (data.researchIdea ? data.researchIdea.slice(0, 60) + (data.researchIdea.length > 60 ? '...' : '') : 'Building your pitch...')}
         </h3>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-sm text-gray-500">X26-RB__</span>
+            <span className="font-mono text-body-subtle">X26-RB__</span>
             {isGreenLit && (
-              <span className="flex items-center gap-1 text-xs text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">
+              <span className="flex items-center gap-1 text-xs text-success bg-success/30 px-2 py-0.5 rounded-full">
                 <Zap className="w-3 h-3" />
                 GreenLit
               </span>
             )}
           </div>
           <div className="flex items-center gap-2">
-            <div className="text-xs text-gray-500">{completeness}%</div>
-            <div className="w-16 h-1.5 bg-gray-800 rounded-full overflow-hidden">
+            <div className="text-meta">{completeness}%</div>
+            <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-white rounded-full"
                 initial={{ width: 0 }}
@@ -183,17 +183,17 @@ export function PitchCard({ data, onUpdate, isGreenLit, greenLitTitle }: PitchCa
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="bg-gray-800 rounded-lg p-3"
+                    className="bg-secondary rounded-lg p-3"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <Icon className="w-4 h-4 text-gray-400" />
-                      <span className="text-xs font-medium text-gray-400">{field.label}</span>
+                      <Icon className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-caption font-medium">{field.label}</span>
                     </div>
                     {field.multiline ? (
                       <textarea
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        className="w-full bg-gray-900 text-white text-sm rounded-lg p-2 resize-none focus:outline-none focus:ring-1 focus:ring-white"
+                        className="w-full bg-background text-body rounded-lg p-2 resize-none focus:outline-none focus:ring-1 focus:ring-white"
                         rows={3}
                         autoFocus
                       />
@@ -202,20 +202,20 @@ export function PitchCard({ data, onUpdate, isGreenLit, greenLitTitle }: PitchCa
                         type="text"
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
-                        className="w-full bg-gray-900 text-white text-sm rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-white"
+                        className="w-full bg-background text-body rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-white"
                         autoFocus
                       />
                     )}
                     <div className="flex justify-end gap-2 mt-2">
                       <button
                         onClick={cancelEdit}
-                        className="p-1.5 text-gray-400 hover:text-white transition-colors"
+                        className="p-1.5 text-muted-foreground hover:text-white transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
                       <button
                         onClick={saveEdit}
-                        className="p-1.5 bg-white text-black rounded-md hover:bg-gray-200 transition-colors"
+                        className="p-1.5 btn-cta rounded-md transition-colors"
                       >
                         <Check className="w-4 h-4" />
                       </button>
@@ -229,25 +229,25 @@ export function PitchCard({ data, onUpdate, isGreenLit, greenLitTitle }: PitchCa
                     onClick={() => startEditing(field.key)}
                     className={`w-full flex items-start gap-3 p-3 rounded-lg text-left transition-all ${
                       isEmpty
-                        ? 'bg-gray-800/30 hover:bg-gray-800/50 border border-dashed border-gray-700'
-                        : 'bg-gray-800/50 hover:bg-gray-800'
+                        ? 'bg-secondary/30 hover:bg-secondary/50 border border-dashed border-border'
+                        : 'bg-secondary/50 hover:bg-secondary'
                     }`}
                   >
-                    <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${isEmpty ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${isEmpty ? 'text-foreground-subtle' : 'text-muted-foreground'}`} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-medium ${isEmpty ? 'text-gray-600' : 'text-gray-500'}`}>
+                        <span className={`text-xs font-medium ${isEmpty ? 'text-foreground-subtle' : 'text-foreground-subtle'}`}>
                           {field.label}
                         </span>
                         {!isEmpty && (
-                          <Check className="w-3 h-3 text-green-500" />
+                          <Check className="w-3 h-3 text-success" />
                         )}
                       </div>
-                      <p className={`text-sm mt-0.5 ${isEmpty ? 'text-gray-600 italic' : 'text-gray-300'}`}>
+                      <p className={`text-sm mt-0.5 ${isEmpty ? 'text-foreground-subtle italic' : 'text-foreground'}`}>
                         {isEmpty ? field.placeholder : value}
                       </p>
                     </div>
-                    <Edit3 className="w-3 h-3 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                    <Edit3 className="w-3 h-3 text-foreground-subtle opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
                   </motion.button>
                 )}
               </AnimatePresence>
