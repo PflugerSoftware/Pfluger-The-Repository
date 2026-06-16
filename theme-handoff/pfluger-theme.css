@@ -1,0 +1,105 @@
+/* ============================================================================
+   PFLUGER DESIGN SYSTEM — Tailwind theme (CSS half)
+   ----------------------------------------------------------------------------
+   For a Tailwind v3 project. Two steps:
+     1) Paste the :root + @layer blocks below into your global Tailwind stylesheet
+        (the file that already has @tailwind base; @tailwind components; @tailwind utilities;).
+     2) Merge tailwind.theme.js into your tailwind.config.js (see that file).
+   Both are required — the classes here use color tokens that only resolve once
+   the config half registers them. A token without a registered color silently
+   no-ops (the class does nothing, and the build still passes).
+
+   Usage in markup:
+     <h1 class="text-h1">Title</h1>
+     <p class="text-body">Body</p>
+     <span class="text-caption">Small print</span>
+     <button class="btn-cta px-4 py-2 rounded-full">Primary</button>
+   ============================================================================ */
+
+@layer base {
+  :root {
+    /* Surfaces (dark purple/plum) */
+    --background: 293 22% 8%;          /* #181019 */
+    --foreground: 0 0% 95%;            /* primary text */
+    --foreground-secondary: 0 0% 75%;  /* supporting text */
+    --foreground-subtle: 0 0% 45%;     /* meta / fine print */
+    --card: 274 21% 13%;               /* #221a28 */
+    --card-foreground: 0 0% 95%;
+    --popover: 274 21% 13%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 195 100% 44%;           /* #00A9E0 brand sky blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 272 19% 17%;          /* #2d2435 */
+    --secondary-foreground: 0 0% 95%;
+    --muted: 270 15% 20%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 195 100% 44%;            /* #00A9E0 brand accent */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;          /* red — error/danger */
+    --destructive-foreground: 0 0% 100%;
+    --border: 272 19% 17%;
+    --input: 274 21% 13%;
+    --ring: 195 100% 44%;
+    --radius: 0.75rem;
+
+    /* Semantic state (brand-rooted) */
+    --success: 82 40% 50%;             /* olive/chartreuse green */
+    --warning: 41 100% 47%;            /* #F2A900 orange */
+    --info: 195 100% 44%;              /* sky blue */
+    --neutral: 63 70% 45%;             /* chartreuse — moderate */
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * { border-color: hsl(var(--border)); }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  h1 { @apply text-4xl font-bold text-foreground; }
+}
+
+@layer components {
+  /* ---- Typography (the header / body / body-small system) ---- */
+  /* Headings */
+  .text-hero  { @apply text-5xl font-bold text-foreground; }   /* 48px */
+  .text-h1    { @apply text-4xl font-bold text-foreground; }   /* 36px */
+  .text-h2    { @apply text-3xl font-bold text-foreground; }   /* 30px */
+  .text-h3    { @apply text-2xl font-bold text-foreground; }   /* 24px */
+  .text-title { @apply text-xl  font-semibold text-foreground; } /* 20px */
+  .text-h4    { @apply text-lg  font-semibold text-foreground; } /* 18px */
+
+  /* Numeric stat values */
+  .text-stat    { @apply text-2xl font-bold text-foreground; } /* 24px */
+  .text-stat-lg { @apply text-4xl font-bold text-foreground; } /* 36px */
+
+  /* Body (14px) — size+color only, NOT weight; pair with font-medium/semibold freely */
+  .text-body        { @apply text-sm; color: hsl(var(--foreground)); }
+  .text-body-muted  { @apply text-sm; color: hsl(var(--muted-foreground)); }
+  .text-body-subtle { @apply text-sm; color: hsl(var(--foreground-subtle)); }
+
+  /* Small / captions (12px) */
+  .text-caption { @apply text-xs; color: hsl(var(--muted-foreground)); }
+  .text-meta    { @apply text-xs; color: hsl(var(--foreground-subtle)); }
+  .text-label   { @apply text-xs font-medium uppercase tracking-wider; color: hsl(var(--muted-foreground)); }
+  .text-badge   { @apply text-xs font-medium text-foreground; }
+
+  /* Specialized */
+  .text-link { @apply text-sm; color: hsl(var(--accent)); }
+  .text-code { @apply text-xs font-mono; color: hsl(var(--muted-foreground)); }
+
+  /* Note: text-accent / text-success / text-warning / text-info / text-neutral
+     and bg-/border- variants come from the Tailwind color tokens in the config. */
+
+  /* ---- Primary CTA button (inverted white pill) ---- */
+  .btn-cta { @apply bg-white text-black transition-colors; }
+  .btn-cta:hover { @apply bg-white/90; }
+}

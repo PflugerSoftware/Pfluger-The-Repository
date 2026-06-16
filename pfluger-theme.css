@@ -1,0 +1,151 @@
+/* ============================================================================
+   PFLUGER DESIGN SYSTEM — standalone theme
+   ----------------------------------------------------------------------------
+   Drop-in CSS. No framework required (works with or without Tailwind).
+   Usage:
+     <link rel="stylesheet" href="pfluger-theme.css">
+     <body>  (gets the dark purple bg + base font automatically)
+     <h1 class="text-h1">Title</h1>
+     <p class="text-body">Body copy</p>
+     <span class="text-caption">Small print</span>
+     <button class="btn-cta">Primary action</button>
+
+   Everything is driven by the CSS variables in :root — change a token there
+   and it updates everywhere. Colors are HSL triplets so you can add opacity:
+     color: hsl(var(--accent) / 0.5);
+   ============================================================================ */
+
+:root {
+  /* --- Surfaces (dark purple/plum) --- */
+  --background: 293 22% 8%;          /* #181019 page background */
+  --card: 274 21% 13%;               /* #221a28 cards, panels, tooltips */
+  --popover: 274 21% 13%;            /* #221a28 dropdowns/popovers */
+  --secondary: 272 19% 17%;          /* #2d2435 raised surface */
+  --muted: 270 15% 20%;              /* muted surface */
+  --border: 272 19% 17%;             /* #2d2435 borders */
+  --input: 274 21% 13%;              /* form-field bg/border */
+
+  /* --- Text hierarchy --- */
+  --foreground: 0 0% 95%;            /* primary text */
+  --foreground-secondary: 0 0% 75%;  /* supporting text */
+  --muted-foreground: 0 0% 60%;      /* muted text */
+  --foreground-subtle: 0 0% 45%;     /* meta / fine print */
+
+  /* --- Brand / interactive --- */
+  --primary: 195 100% 44%;           /* #00A9E0 Pfluger sky blue */
+  --accent: 195 100% 44%;            /* #00A9E0 (same — brand accent) */
+  --ring: 195 100% 44%;              /* focus rings */
+
+  /* --- Semantic state (brand-rooted) --- */
+  --success: 82 40% 50%;             /* olive/chartreuse green */
+  --warning: 41 100% 47%;            /* #F2A900 orange */
+  --info: 195 100% 44%;              /* sky blue */
+  --neutral: 63 70% 45%;             /* chartreuse — moderate */
+  --destructive: 0 84% 60%;          /* red — error/danger */
+
+  /* --- Pfluger brand palette (for data/charts/branding) --- */
+  --pfluger-brick: #9A3324;
+  --pfluger-medium-gray: #707372;
+  --pfluger-light-gray: #C7C9C7;
+  --pfluger-dark-blue: #003C71;
+  --pfluger-sky-blue: #00A9E0;
+  --pfluger-olive-green: #67823A;
+  --pfluger-chartreuse: #B5BD00;
+  --pfluger-orange: #F2A900;
+  --pfluger-salmon: #f16555;
+
+  /* --- Type families --- */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, Menlo, Monaco, "Cascadia Code", "Courier New", monospace;
+
+  --radius: 0.75rem;
+}
+
+/* --- Base --- */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   TYPOGRAPHY  (the "header / body / body-small" system)
+   ============================================================================ */
+
+/* Headings */
+.text-hero  { font-size: 3rem;     line-height: 1;       font-weight: 700; color: hsl(var(--foreground)); }  /* 48px */
+.text-h1    { font-size: 2.25rem;  line-height: 2.5rem;  font-weight: 700; color: hsl(var(--foreground)); }  /* 36px */
+.text-h2    { font-size: 1.875rem; line-height: 2.25rem; font-weight: 700; color: hsl(var(--foreground)); }  /* 30px */
+.text-h3    { font-size: 1.5rem;   line-height: 2rem;    font-weight: 700; color: hsl(var(--foreground)); }  /* 24px */
+.text-title { font-size: 1.25rem;  line-height: 1.75rem; font-weight: 600; color: hsl(var(--foreground)); }  /* 20px */
+.text-h4    { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; color: hsl(var(--foreground)); }  /* 18px */
+
+/* Numeric stat values */
+.text-stat    { font-size: 1.5rem;  line-height: 2rem;    font-weight: 700; color: hsl(var(--foreground)); } /* 24px */
+.text-stat-lg { font-size: 2.25rem; line-height: 2.5rem;  font-weight: 700; color: hsl(var(--foreground)); } /* 36px */
+
+/* Body (14px). These set size+color only — add your own font-weight freely. */
+.text-body        { font-size: 0.875rem; line-height: 1.25rem; color: hsl(var(--foreground)); }
+.text-body-muted  { font-size: 0.875rem; line-height: 1.25rem; color: hsl(var(--muted-foreground)); }
+.text-body-subtle { font-size: 0.875rem; line-height: 1.25rem; color: hsl(var(--foreground-subtle)); }
+
+/* Small / captions (12px) */
+.text-caption { font-size: 0.75rem; line-height: 1rem; color: hsl(var(--muted-foreground)); }
+.text-meta    { font-size: 0.75rem; line-height: 1rem; color: hsl(var(--foreground-subtle)); }
+.text-label   { font-size: 0.75rem; line-height: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; color: hsl(var(--muted-foreground)); }
+.text-badge   { font-size: 0.75rem; line-height: 1rem; font-weight: 500; color: hsl(var(--foreground)); }
+
+/* Specialized */
+.text-link { font-size: 0.875rem; line-height: 1.25rem; color: hsl(var(--accent)); }
+.text-code { font-size: 0.75rem;  line-height: 1rem; font-family: var(--font-mono); color: hsl(var(--muted-foreground)); }
+
+/* ============================================================================
+   COLOR HELPERS  (use when you need a color outside the text classes)
+   ============================================================================ */
+
+/* Backgrounds */
+.bg-background { background-color: hsl(var(--background)); }
+.bg-card       { background-color: hsl(var(--card)); }
+.bg-secondary  { background-color: hsl(var(--secondary)); }
+.bg-muted      { background-color: hsl(var(--muted)); }
+.bg-accent     { background-color: hsl(var(--accent)); }
+.bg-success    { background-color: hsl(var(--success)); }
+.bg-warning    { background-color: hsl(var(--warning)); }
+.bg-info       { background-color: hsl(var(--info)); }
+.bg-neutral    { background-color: hsl(var(--neutral)); }
+.bg-destructive{ background-color: hsl(var(--destructive)); }
+
+/* Text colors */
+.text-foreground           { color: hsl(var(--foreground)); }
+.text-foreground-secondary { color: hsl(var(--foreground-secondary)); }
+.text-muted-foreground     { color: hsl(var(--muted-foreground)); }
+.text-foreground-subtle    { color: hsl(var(--foreground-subtle)); }
+.text-accent      { color: hsl(var(--accent)); }
+.text-success     { color: hsl(var(--success)); }
+.text-warning     { color: hsl(var(--warning)); }
+.text-info        { color: hsl(var(--info)); }
+.text-neutral     { color: hsl(var(--neutral)); }
+.text-destructive { color: hsl(var(--destructive)); }
+
+/* Borders */
+.border-border { border: 1px solid hsl(var(--border)); }
+.border-input  { border: 1px solid hsl(var(--input)); }
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+/* Primary CTA — inverted white pill. Pair with your own padding/radius. */
+.btn-cta {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.btn-cta:hover { background-color: rgba(255, 255, 255, 0.9); }
