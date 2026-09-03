@@ -37,12 +37,49 @@ wrangler pages deploy dist --project-name=pfluger-the-repo
 - **Host:** Cloudflare Pages
 - **Project name:** `pfluger-the-repo`
 - **Production URL:** `repository.pflugerarchitects.com`
+- **Pages hostname (canonical):** `pfluger-the-repo-67g.pages.dev` — the project's real hostname and the **CNAME target** for the custom domain. Note the `-67g` suffix; plain `pfluger-the-repo.pages.dev` does not resolve.
 - **Preview URL pattern:** `<hash>.pfluger-the-repo-67g.pages.dev`
 - **Deploy via CLI:** `wrangler pages deploy dist --project-name=pfluger-the-repo`
 - **Requires:** `wrangler` CLI authenticated (`wrangler login` if needed)
 - **No auto-deploy on push.** Deploys are manual via CLI after `npm run build`.
 - **Rollback:** Cloudflare Pages dashboard > Deployments > select previous deployment > "Rollback to this deploy"
 - **Release tagging:** Tag releases before deploying: `git tag v1.x.x && git push origin v1.x.x`
+
+### DNS (custom domain)
+
+DNS is **split**: the domain/zone lives at **Bluehost** (authoritative on `ns1`/`ns2.bluehost.com`), the app is on **Cloudflare Pages**. A single CNAME wires them together.
+
+**The record** (Bluehost cPanel > Zone Editor > Manage > Add Record):
+
+| Field | Value |
+|---|---|
+| Type | CNAME |
+| Name | `repository.pflugerarchitects.com.` (full name + trailing dot — this dialog does *not* auto-append the domain) |
+| CNAME | `pfluger-the-repo-67g.pages.dev` |
+
+`repository.pflugerarchitects.com` must also be listed under **Custom domains** in the Pages project, so Cloudflare serves it and issues the TLS cert.
+
+**Do NOT create a `repository` entry under cPanel > Domains > Subdomains.** That generates an `A repository` record plus 7 service records (`www` / `webdisk` / `cpanel` / `whm` / `webmail` / `autoconfig` / `autodiscover` prefixed) which override the CNAME and route traffic to Bluehost's Apache. Use the Zone Editor only. The appearance of any `*.repository` record is the early warning that this happened.
+
+**Health check — one command identifies the failure mode:**
+
+```bash
+curl -sSI https://repository.pflugerarchitects.com
+```
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `Server: cloudflare` + 200 | healthy | — |
+| `Server: Apache` + 403 (and `ERR_CERT_COMMON_NAME_INVALID`) | a cPanel Subdomain is overriding the CNAME | delete the Subdomain, re-add the CNAME |
+| NXDOMAIN | the CNAME is missing from the zone | re-add the CNAME |
+
+**Gotchas when verifying a fix:**
+- Bluehost does **not** bump the SOA serial on a zone edit. An unchanged serial does not mean the edit failed to publish.
+- PowerShell's `Resolve-DnsName` caches negative answers aggressively and keeps reporting NXDOMAIN after the record is live. Run `Clear-DnsClientCache`, then cross-check with `nslookup -type=CNAME repository.pflugerarchitects.com ns1.bluehost.com` (queries the authoritative NS, skipping cache).
+- Negative-cache TTL on this zone is **300s**, so a fix propagates publicly in ~5 min. The 4-hour TTL applies to positive records.
+- `tina.pflugerarchitects.com` → `pfluger-tina.pages.dev` uses the identical pattern. The other subdomains (`prism`, `vision`, `phoenix`, `vizzy`, `books`, `tickets`, `demo`) are Bluehost-hosted cPanel subdomains and are unrelated to Pages.
+
+**Outage history:** Jul 1 2026 — cPanel Subdomain override, Apache 403. Sep 3 2026 — CNAME absent from zone, NXDOMAIN.
 
 ### Database Access
 
