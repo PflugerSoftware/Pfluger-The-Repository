@@ -583,9 +583,9 @@ async function fetchGeneralKnowledge(query: string, context?: string): Promise<s
 // Claude API call via Supabase Edge Function
 async function callClaude(prompt: string, model: 'haiku' | 'sonnet' | 'opus', system?: string): Promise<string> {
   const modelMap = {
-    haiku: 'claude-haiku-4-5-20251001',
-    sonnet: 'claude-sonnet-4-5-20250929',
-    opus: 'claude-opus-4-5-20251101',
+    haiku: 'claude-haiku-4-5',
+    sonnet: 'claude-sonnet-5',
+    opus: 'claude-opus-5',
   };
 
   // Supabase Edge Function endpoint

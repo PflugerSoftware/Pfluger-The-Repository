@@ -177,7 +177,7 @@ async function callClaude(
 
   try {
     const body: Record<string, unknown> = {
-      model: 'claude-sonnet-4-5-20250929',
+      model: 'claude-sonnet-5',
       messages,
       max_tokens: 1024,
     };

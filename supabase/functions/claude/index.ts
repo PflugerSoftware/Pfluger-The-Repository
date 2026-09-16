@@ -6,8 +6,12 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5173',
 ];
 
+// Current generation (preferred)
 const ALLOWED_MODELS = [
-  'claude-3-5-haiku-20241022',
+  'claude-haiku-4-5',
+  'claude-sonnet-5',
+  'claude-opus-5',
+  // Previous generation - kept so cached browser bundles keep working
   'claude-haiku-4-5-20251001',
   'claude-sonnet-4-5-20250929',
   'claude-opus-4-5-20251101',
@@ -38,7 +42,7 @@ Deno.serve(async (req) => {
     const { model, system, prompt, messages: providedMessages, max_tokens } = body;
 
     // Input validation
-    const resolvedModel = model || 'claude-3-5-haiku-20241022';
+    const resolvedModel = model || 'claude-haiku-4-5';
     if (!ALLOWED_MODELS.includes(resolvedModel)) {
       return new Response(
         JSON.stringify({ error: `Invalid model. Allowed: ${ALLOWED_MODELS.join(', ')}` }),

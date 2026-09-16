@@ -213,6 +213,7 @@ The platform includes a full survey system for collecting spatial feedback via i
 |---|---|---|
 | X26-RB08 Lee College | `LeeCollegeMapSurveySpring2026` | `src/views/Survey/LeeCollege/LeeCollegeSurveyPage.tsx` |
 | X26-RB10 WCJC | `WhartonCountyJuniorCollegeMasterPlanSurvey2026` | `src/views/Survey/WCJC/WcjcSurveyPage.tsx` |
+| X26-RB11 CTC | `CentralTexasCollegeMasterPlanSurvey2026` | `src/views/Survey/CTC/CtcSurveyPage.tsx` |
 
 **Per-Survey Folder Structure:**
 Each survey gets its own folder under `src/views/Survey/<SchoolName>/` containing the page + a private `components/` folder (SurveyQuestion, MapPinPlacer, MatrixLikertInput, etc.). The page hardcodes its own `SURVEY_SLUG` constant rather than reading it from the URL.
@@ -352,9 +353,12 @@ src/
 │   │   ├── LeeCollege/
 │   │   │   ├── LeeCollegeSurveyPage.tsx # Bespoke Lee College survey
 │   │   │   └── components/              # Lee College's own forked components
-│   │   └── WCJC/
-│   │       ├── WcjcSurveyPage.tsx       # Bespoke WCJC survey (Richmond + Sugarland-Richmond skip rule)
-│   │       └── components/              # WCJC's own forked components
+│   │   ├── WCJC/
+│   │   │   ├── WcjcSurveyPage.tsx       # Bespoke WCJC survey (Richmond + Sugarland-Richmond skip rule)
+│   │   │   └── components/              # WCJC's own forked components
+│   │   └── CTC/
+│   │       ├── CtcSurveyPage.tsx        # Bespoke CTC survey (single campus, no location question)
+│   │       └── components/              # CTC's own forked components
 │   └── projects/
 │       ├── ProjectDashboard.tsx         # Block-based project view
 │       └── DynamicProjectDashboard.tsx  # Loads config from Supabase
@@ -426,7 +430,7 @@ The Research Campus map (ResearchMap.tsx) uses Mapbox GL JS with:
 
 ### Confidential Projects
 
-Projects marked `is_confidential = true` (e.g. X25-RB09, X25-RB10, X25-RB11, X00-DEMO, X25-RB02, X26-RB08, X26-RB10):
+Projects marked `is_confidential = true` (e.g. X25-RB09, X25-RB10, X25-RB11, X00-DEMO, X25-RB02, X26-RB08, X26-RB10, X26-RB11):
 - **Hidden from public views**: filtered out by `loadProjects()` query (`is_confidential = false`)
 - **Blocked from direct URL access**: `resolveProjectIdentifier()` checks `is_confidential` and returns null for unauthenticated users
 - **Hidden from nav**: explore dropdown dynamically loads from DB, only showing non-confidential projects for public users

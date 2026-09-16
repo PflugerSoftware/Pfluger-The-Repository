@@ -193,6 +193,16 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
     totalHours: 0,
     accentColor: '#B5BD00',
   },
+  'X26-RB11': {
+    id: 'X26-RB11',
+    title: 'CTC Master Plan Survey',
+    code: 'X26-RB11',
+    subtitle: 'Central Texas College Main Campus Discovery Survey',
+    category: 'campus-life',
+    researcher: 'Alex Wickes',
+    totalHours: 0,
+    accentColor: '#B5BD00',
+  },
 };
 
 // Database block row type

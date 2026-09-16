@@ -29,6 +29,7 @@ const AboutTools = lazy(() => import('./views/About/AboutTools'));
 const AboutSources = lazy(() => import('./views/About/AboutSources'));
 const LeeCollegeSurveyPage = lazy(() => import('./views/Survey/LeeCollege/LeeCollegeSurveyPage'));
 const WcjcSurveyPage = lazy(() => import('./views/Survey/WCJC/WcjcSurveyPage'));
+const CtcSurveyPage = lazy(() => import('./views/Survey/CTC/CtcSurveyPage'));
 
 // Project dashboards (used in overlay route)
 import { ProjectDashboard, DynamicProjectDashboard } from './views/projects';
@@ -217,6 +218,7 @@ function AppRoutes() {
         <Routes>
           <Route path="/survey/LeeCollegeMapSurveySpring2026" element={<LeeCollegeSurveyPage />} />
           <Route path="/survey/WhartonCountyJuniorCollegeMasterPlanSurvey2026" element={<WcjcSurveyPage />} />
+          <Route path="/survey/CentralTexasCollegeMasterPlanSurvey2026" element={<CtcSurveyPage />} />
         </Routes>
       </Suspense>
     );
