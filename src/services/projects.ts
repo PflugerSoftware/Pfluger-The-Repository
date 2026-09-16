@@ -199,7 +199,7 @@ const PROJECT_METADATA: Record<string, Omit<ProjectConfig, 'blocks'>> = {
     code: 'X26-RB11',
     subtitle: 'Central Texas College Main Campus Discovery Survey',
     category: 'campus-life',
-    researcher: 'Alex Wickes',
+    researcher: 'Alex Wickes, Abigail Spears, Jazmin Mendez, Kent Brittain, Kurtis Pung',
     totalHours: 0,
     accentColor: '#B5BD00',
   },
