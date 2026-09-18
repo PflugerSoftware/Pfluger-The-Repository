@@ -112,8 +112,8 @@ function MatrixResults({
 }) {
   const subItems = Object.keys(distribution.matrixCounts);
 
-  // Collect all unique rating labels, sorted by a logical likert order
-  const likertOrder = ['Strongly Agree', 'Agree', 'Disagree', 'Strongly Disagree'];
+  // Collect all unique rating labels, sorted disagree (left) to agree (right) to match the survey UI
+  const likertOrder = ['Strongly Disagree', 'Disagree', 'Agree', 'Strongly Agree'];
   const allRatings = new Set<string>();
   for (const ratings of Object.values(distribution.matrixCounts)) {
     for (const key of Object.keys(ratings)) {
