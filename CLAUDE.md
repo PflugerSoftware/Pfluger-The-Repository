@@ -202,7 +202,7 @@ The platform includes a full survey system for collecting spatial feedback via i
 **Survey Tables:**
 - `surveys` - top-level config with `boundary_polygon` (jsonb), `sections` (jsonb), `roles` (jsonb)
 - `survey_questions` - questions with `category` (section key), `is_map_based`, `allow_pin`, `question_type`
-- `survey_responses` - one per respondent with `first_name`, `role`
+- `survey_responses` - one per respondent with `first_name`, `role`, `created_at`, `completed_at`. This is the ONLY identity data captured: no email, last name, IP, user agent, device, or session ID, and no survey question asks for contact info. Duplicate first names can't be told apart from the data alone (as of Oct 2026: Lee 175 responses / 161 distinct names, WCJC 184 / 163). If a client needs to identify individuals (e.g. a raffle), a contact field must be added to that survey before it launches.
 - `survey_answers` - one per question per response with `answer_text`, `answer_choices`, `answer_matrix`, `answer_ranking`
 - `survey_pins` - map pins with `latitude`, `longitude`, `note`
 
@@ -247,7 +247,23 @@ Each survey has its own explicit `<Route>` in `App.tsx`. There is no `/survey/:s
 6. Submission writes response, answers, and pins to DB
 
 **Purging Test Data:**
-`DELETE FROM survey_responses WHERE first_name = 'test' AND project_id = '<id>';` (cascades to answers + pins).
+`DELETE FROM survey_responses WHERE lower(trim(first_name)) = 'test' AND project_id = '<id>';` (cascades to answers + pins). Match case-insensitively: testers enter both `test` and `Test`.
+
+**Exporting Survey Data:**
+Read-only `pg_dump` of the five survey tables (all surveys) to one SQL file. Run from the repo root in Git Bash; `pg_dump`/`psql` live in `C:\Program Files\PostgreSQL\17\bin`.
+```bash
+export $(grep '^DATABASE_URL' .env | xargs)
+pg_dump "$DATABASE_URL" --no-owner --no-privileges \
+  -t public.surveys -t public.survey_questions -t public.survey_responses \
+  -t public.survey_answers -t public.survey_pins \
+  -f ~/Downloads/survey_dump_$(date +%F).sql
+```
+- Save to `Downloads`, never the repo: the dump contains respondents' first names and free-text answers.
+- The dump includes `test` responses; filter them out (see above) when reporting counts.
+- The file creates tables from scratch, so it fails on a target DB where those tables already exist. The sentiment trigger is included but its function is not; create the function in the target first or delete the trigger line.
+- Older exports (May 2026, per-survey `.sql` + `.json` with an analysis kickoff prompt) are in `docs/Archive/260513-SurveyData/`.
+
+**Survey visits are not tracked.** `user_page_views.user_id` is a NOT NULL FK to `users`, so only logged-in staff page views are recorded. There is no way to tell whether anonymous respondents opened a survey link without submitting.
 
 ### Navigation
 
